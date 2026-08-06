@@ -23,10 +23,10 @@ textbooks and educational publishing.
 
 | Case study | |
 |---|---|
-| [Grade-4 Science](https://kannisshk.pages.dev/work/jaipuria-science-textbook) | Full textbook set across all 13 chapters — openers, classroom scenes, science diagrams, two recurring hero characters |
-| [Grade-3 Science](https://kannisshk.pages.dev/work/jaipuria-science-grade3) | Chapter-by-chapter set — human body, food, plants, animals, weather, soil, birds, the night sky |
-| [English Literature, Grade 1](https://kannisshk.pages.dev/work/english-literature-grade1) | Full-book set — seaside day out, phonics word-play, a night-sky adventure, village animal tales |
-| [English Literature, Grade 2](https://kannisshk.pages.dev/work/english-literature-grade2) | Folktales, a moonlit fantasy, a bird field-guide, travel writing, classroom scenes |
+| [Grade-4 Science](https://kannisshk.pages.dev/work/jaipuria-science-textbook/) | Full textbook set across all 13 chapters — openers, classroom scenes, science diagrams, two recurring hero characters |
+| [Grade-3 Science](https://kannisshk.pages.dev/work/jaipuria-science-grade3/) | Chapter-by-chapter set — human body, food, plants, animals, weather, soil, birds, the night sky |
+| [English Literature, Grade 1](https://kannisshk.pages.dev/work/english-literature-grade1/) | Full-book set — seaside day out, phonics word-play, a night-sky adventure, village animal tales |
+| [English Literature, Grade 2](https://kannisshk.pages.dev/work/english-literature-grade2/) | Folktales, a moonlit fantasy, a bird field-guide, travel writing, classroom scenes |
 
 ## How the artwork was made
 
