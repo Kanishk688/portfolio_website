@@ -113,6 +113,10 @@ gallery:
 tags: ["Textbook", "Grade 3", "Science", "Diagrams", "Character Design"]
 date: 2026-05-20
 featured: true
+company: "Possibility Edutech — Jaipuria Group"
+role: "Assistant Manager, AI Initiatives"
+tools: ["Claude Code + MCP", "Gemini / Nano-Banana", "GPT Image", "Magnific", "Photoshop", "Python"]
+eraNote: "By 2026 the models could hold a character and a style across a long run, so consistency was no longer the bottleneck it had been a year earlier. The hard part moved to correctness and volume: a science diagram can be beautiful and still teach a child something false, and a hundred assets a book all have to clear print QA — 300 DPI, a real alpha channel, no muddy darks, no white halo on a cut-out — before a designer can place them."
 ---
 
 A full Grade-3 science textbook, illustrated end to end — chapter by chapter,
