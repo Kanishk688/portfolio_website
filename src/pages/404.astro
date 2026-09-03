@@ -1,0 +1,56 @@
+---
+// 404 — iske bina Cloudflare Pages har anjaan URL pe home page 200 ke saath
+// serve kar deta tha, jo dekhne wale ko bhi confuse karta hai aur search
+// engines ko bhi.
+import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const recent = (await getCollection('projects'))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 4);
+---
+
+<Layout title="Page not found — Kanishk Verma" description="That page does not exist.">
+  <main class="wrap" style="padding-block: 5rem 3rem;">
+    <p class="reveal label label-mag">Error 404</p>
+
+    <h1 class="reveal d1 display" style="font-size: clamp(2.8rem, 7vw, 5rem); margin-top:1rem; max-width:16ch;">
+      No plate at this address.
+    </h1>
+
+    <p class="reveal d2 lede" style="margin-top:1.3rem;">
+      The page you asked for is not here — it may have been renamed, or the
+      link may be mistyped.
+    </p>
+
+    <div class="reveal d3" style="display:flex; flex-wrap:wrap; gap:0.75rem; margin-top:2rem;">
+      <a class="btn" href="/work/">Browse the work</a>
+      <a class="btn btn-ghost" href="/">Back to the index</a>
+    </div>
+
+    <div style="margin-top:4rem;">
+      <p class="reveal label" style="padding-bottom:0.8rem; border-bottom:1px solid var(--ink);">
+        Most recent projects
+      </p>
+      <div class="grid404" style="margin-top:1.75rem;">
+        {recent.map((p) => (
+          <a class="reveal card" href={`/work/${p.id}/`}>
+            <img src={p.data.cover} alt={p.data.title} loading="lazy" style="aspect-ratio: 4/3; object-fit: cover;" />
+            <div class="card-body">
+              <p class="label mono">{p.data.date.getFullYear()}</p>
+              <h2 class="display" style="font-size:1.15rem; margin-top:0.45rem; line-height:1.15;">{p.data.title}</h2>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .grid404 {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    gap: 1.25rem;
+  }
+</style>

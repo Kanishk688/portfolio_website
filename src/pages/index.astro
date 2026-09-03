@@ -1,18 +1,28 @@
 ---
-// HOME = press docket. Hero me ek asli specimen (reject bनाम printed),
-// phir numbers, phir kaam.
+// HOME — pehle kaam dikhta hai, phir batata hai ki kaise bana.
+// (Pehle yahan reject-vs-printed specimen sabse upar tha. Concept accha tha
+//  par portfolio ka pehla kaam hai "ye banda accha banata hai" dikhana, aur
+//  do skeleton diagram us kaam ke liye galat pehli image thi. Specimen ab
+//  neeche docket ke saath hai, jahan woh numbers ko sahi thehraata hai.)
 import Layout from '../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
 
 const all = await getCollection('projects');
+const byId = (id: string) => all.find((p) => p.id === id)!;
+
 const featured = all
   .filter((p) => p.data.featured)
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
   .slice(0, 6);
 
+// ---- HERO SHOWCASE: teen sabse achhi images, teen alag mood ----
+const showcase = [
+  { src: '/work/g5-c6-pond-story-scene.webp', p: byId('jaipuria-science-grade5') },
+  { src: '/work/comic-mermaid-v1-p01.webp',   p: byId('comic-mermaid') },
+  { src: '/work/g4-c9-opening.webp',          p: byId('jaipuria-science-textbook') },
+];
+
 // ---- GINTI (gallery se, haath se nahi) ----
-// Medium hi asli axis hai: har medium apni bhasha me ginta hai — textbook
-// chapters me, comic volumes me, aur aage video shots me.
 let imgCount = 0;
 const chapterSet = new Set<string>();
 const volumeSet = new Set<string>();
@@ -33,18 +43,13 @@ const comicCount = all.filter((p) => p.data.medium === 'comics').length;
 
 // har medium kitna hai — range ek nazar me
 const media = [...new Set(all.map((p) => p.data.medium))].map((m) => ({
-  slug: m,
   label: m.charAt(0).toUpperCase() + m.slice(1),
   n: all.filter((p) => p.data.medium === m).length,
 }));
 
-// marquee ke liye ~40 ka spread
 const step = Math.max(1, Math.floor(marqueeAll.length / 40));
 const strip = marqueeAll.filter((_, i) => i % step === 0).slice(0, 40);
 
-// ---- DOCKET ----
-// Grade-5 wahi ek book hai jisne rejects archive kiye, isliye numbers
-// sirf usi ke honestly claim kiye ja sakte hain.
 const docket = [
   { k: 'Textbooks illustrated', v: String(bookCount) },
   { k: 'Comic titles', v: `${comicCount} across ${volumeSet.size} volumes` },
@@ -54,56 +59,44 @@ const docket = [
   { k: 'Measured run — generations', v: '165', hi: true },
   { k: 'Measured run — discarded', v: '107', hi: true },
 ];
+
+const mediumLabel = (m: string) => m.charAt(0).toUpperCase() + m.slice(1);
 ---
 
 <Layout title="Kanishk Verma — Generative Media Engineer">
   <!-- ========================= HERO ========================= -->
-  <section class="wrap" style="padding-block: 4rem 3rem;">
-    <div class="hero-grid">
-      <!-- pitch -->
-      <div>
-        <p class="reveal label label-mag">Generative Media Engineer</p>
+  <section class="wrap" style="padding-block: 4rem 2.5rem;">
+    <p class="reveal label label-mag">Generative Media Engineer · Delhi NCR</p>
 
-        <h1 class="reveal d1 display" style="font-size: clamp(2.9rem, 7vw, 5.4rem); margin-top: 1.1rem;">
-          I build the<br />pipeline, and<br />the archive that<br />proves its cost.
-        </h1>
+    <h1 class="reveal d1 display" style="font-size: clamp(2.8rem, 6.4vw, 5.2rem); margin-top: 1.1rem; max-width: 20ch;">
+      Illustration and comics, built by pipeline and finished for print.
+    </h1>
 
-        <p class="reveal d2 lede" style="margin-top: 1.6rem;">
-          Manuscript in, 300&nbsp;DPI print files out. Style locked across
-          hundreds of assets, every rejected attempt kept and named with the
-          reason it failed — so the run can report what it actually cost
-          instead of only what shipped.
-        </p>
-
-        <div class="reveal d3" style="display:flex; flex-wrap:wrap; gap:0.75rem; margin-top:2rem;">
-          <a class="btn" href="/work/">See the work</a>
-          <a class="btn btn-ghost" href="/work/jaipuria-science-grade5/">Read the measured run</a>
-        </div>
+    <div class="hero-foot">
+      <p class="reveal d2 lede" style="margin:0;">
+        Five textbooks and five comic titles — 480 pages delivered at
+        300&nbsp;DPI. I build the generation pipeline, the review gates and the
+        print QA, and I own how the final artwork looks.
+      </p>
+      <div class="reveal d3" style="display:flex; flex-wrap:wrap; gap:0.75rem;">
+        <a class="btn" href="/work/">See the work</a>
+        <a class="btn btn-ghost" href="/work/jaipuria-science-grade5/">How it’s made</a>
       </div>
+    </div>
+  </section>
 
-      <!-- specimen: site ka signature -->
-      <figure class="reveal d2 specimen" style="margin:0;">
-        <div class="specimen-grid">
-          <div class="specimen-cell">
-            <div class="specimen-head">
-              <span class="stamp stamp-rej">Rejected</span>
-              <span class="label">Att. 1</span>
-            </div>
-            <img src="/work/rej-skull-noeyes.webp" alt="A rejected attempt: the skull has no eye sockets." loading="eager" />
-          </div>
-          <div class="specimen-cell">
-            <div class="specimen-head">
-              <span class="stamp stamp-ok">Printed</span>
-              <span class="label">Att. 9</span>
-            </div>
-            <img src="/work/fin-skull.webp" alt="The delivered illustration: the skull has correct eye sockets and teeth." loading="eager" />
-          </div>
-        </div>
-        <figcaption class="specimen-foot">
-          <span>c1_04_v1_no_eyesockets_WRONG.png</span>
-          <span>8 attempts archived · Grade-5 Science</span>
-        </figcaption>
-      </figure>
+  <!-- ===================== SHOWCASE ===================== -->
+  <section class="wrap" style="padding-bottom: 3rem;">
+    <div class="showcase">
+      {showcase.map(({ src, p }, i) => (
+        <a class={`reveal ${i ? 'd' + i : ''} showcase-item`} href={`/work/${p.id}/`}>
+          <img src={src} alt={p.data.title} loading={i === 0 ? 'eager' : 'lazy'} />
+          <span class="showcase-cap">
+            <span class="label label-mag">{mediumLabel(p.data.medium)}</span>
+            <span class="showcase-title">{p.data.title}</span>
+          </span>
+        </a>
+      ))}
     </div>
   </section>
 
@@ -132,37 +125,8 @@ const docket = [
     </div>
   </div>
 
-  <!-- ========================= DOCKET ========================= -->
-  <section class="wrap" style="padding-block: 4.5rem;">
-    <div class="docket-grid">
-      <div>
-        <p class="reveal label">Job docket</p>
-        <h2 class="reveal d1 display" style="font-size: clamp(1.9rem, 3.4vw, 2.8rem); margin-top: 0.8rem;">
-          Counted from<br />the files on disk.
-        </h2>
-        <p class="reveal d2" style="color: var(--ink-2); margin-top: 1.1rem; max-width: 34ch;">
-          One book kept every reject instead of overwriting it. That book is the
-          only one here whose cost is a measurement rather than a memory — and
-          the earlier ones are left without numbers rather than given
-          flattering ones.
-        </p>
-      </div>
-
-      <table class="reveal d1 spec">
-        <tbody>
-          {docket.map((row) => (
-            <tr>
-              <td>{row.k}</td>
-              <td>{row.hi ? <strong>{row.v}</strong> : row.v}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  </section>
-
   <!-- ========================= WORK ========================= -->
-  <section class="wrap" style="padding-block: 1rem 4rem;">
+  <section class="wrap" style="padding-block: 4rem;">
     <div style="display:flex; align-items:baseline; justify-content:space-between; gap:1rem; padding-bottom:0.9rem; border-bottom:1px solid var(--ink);">
       <h2 class="reveal label" style="color: var(--ink);">Selected work</h2>
       <a class="reveal label label-mag" href="/work/">All projects →</a>
@@ -174,7 +138,7 @@ const docket = [
           <img src={p.data.cover} alt={p.data.title} loading="lazy" style="aspect-ratio: 16/10; object-fit: cover;" />
           <div class="card-body">
             <p class="label" style="display:flex; justify-content:space-between; gap:0.75rem;">
-              <span class="label-mag">{p.data.medium.charAt(0).toUpperCase() + p.data.medium.slice(1)}</span>
+              <span class="label-mag">{mediumLabel(p.data.medium)}</span>
               <span class="mono">{p.data.date.getFullYear()}</span>
             </p>
             <h3 class="display" style="font-size:1.35rem; margin-top:0.5rem; line-height:1.1;">{p.data.title}</h3>
@@ -182,6 +146,60 @@ const docket = [
           </div>
         </a>
       ))}
+    </div>
+  </section>
+
+  <!-- ================= DOCKET + SPECIMEN =================
+       Numbers, aur unke saath woh ek image jo unko sach saabit karti hai. -->
+  <section class="wrap" style="padding-block: 3rem 4.5rem; border-top: 1px solid var(--rule);">
+    <p class="reveal label">Job docket</p>
+    <h2 class="reveal d1 display" style="font-size: clamp(1.9rem, 3.4vw, 2.8rem); margin-top: 0.8rem; max-width: 22ch;">
+      Counted from the files on disk.
+    </h2>
+
+    <div class="docket-grid" style="margin-top:2.5rem;">
+      <table class="reveal spec">
+        <tbody>
+          {docket.map((row) => (
+            <tr>
+              <td>{row.k}</td>
+              <td>{row.hi ? <strong>{row.v}</strong> : row.v}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <div class="reveal d1">
+        <p style="color: var(--ink-2); margin:0 0 1.4rem; max-width: 46ch;">
+          One book kept every rejected attempt instead of overwriting it, which
+          is why it is the only one here whose cost is a measurement rather
+          than a memory. This is what one of those rejects looks like — the
+          skull has no eye sockets.
+        </p>
+
+        <figure class="specimen" style="margin:0;">
+          <div class="specimen-grid">
+            <div class="specimen-cell">
+              <div class="specimen-head">
+                <span class="stamp stamp-rej">Rejected</span>
+                <span class="label">Att. 1</span>
+              </div>
+              <img src="/work/rej-skull-noeyes.webp" alt="A rejected attempt: the skull has no eye sockets." loading="lazy" />
+            </div>
+            <div class="specimen-cell">
+              <div class="specimen-head">
+                <span class="stamp stamp-ok">Printed</span>
+                <span class="label">Att. 9</span>
+              </div>
+              <img src="/work/fin-skull.webp" alt="The delivered illustration: the skull has correct eye sockets and teeth." loading="lazy" />
+            </div>
+          </div>
+          <figcaption class="specimen-foot">
+            <span>c1_04_v1_no_eyesockets_WRONG.png</span>
+            <span>8 attempts archived</span>
+          </figcaption>
+        </figure>
+      </div>
     </div>
   </section>
 
@@ -207,10 +225,6 @@ const docket = [
           archive named with the reason they failed, and an automated QA script
           checks resolution, alpha, print density and edge halos before
           anything is delivered.
-        </p>
-        <p style="margin-top:1.05rem;">
-          That last part is the difference. A pipeline that deletes its failures
-          can only ever report good news.
         </p>
 
         <table class="spec" style="margin-top:2rem;">
@@ -238,12 +252,49 @@ const docket = [
 </Layout>
 
 <style>
-  .hero-grid {
+  .hero-foot {
     display: grid;
-    grid-template-columns: 1.05fr 0.95fr;
-    gap: 3.5rem;
-    align-items: start;
+    grid-template-columns: 1fr auto;
+    gap: 2.5rem;
+    align-items: end;
+    margin-top: 2rem;
   }
+
+  /* SHOWCASE — pehla impression. Teen bade plates, alag mood. */
+  .showcase {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+  }
+  .showcase-item {
+    display: block;
+    border: 1px solid var(--rule);
+    background: var(--paper-hi);
+    transition: border-color .18s ease, transform .18s ease;
+  }
+  .showcase-item:hover { border-color: var(--ink); transform: translateY(-3px); }
+  .showcase-item img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
+  .showcase-cap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 0.85rem 1rem 1rem;
+    border-top: 1px solid var(--rule);
+  }
+  .showcase-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.05rem;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+
   .docket-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -281,7 +332,10 @@ const docket = [
     font-size: 1.05rem;
     letter-spacing: -0.01em;
   }
+
   @media (max-width: 900px) {
-    .hero-grid, .docket-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+    .hero-foot { grid-template-columns: 1fr; gap: 1.5rem; align-items: start; }
+    .showcase { grid-template-columns: 1fr; }
+    .docket-grid { grid-template-columns: 1fr; gap: 2.5rem; }
   }
 </style>
