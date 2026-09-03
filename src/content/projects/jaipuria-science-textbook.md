@@ -2,6 +2,7 @@
 title: "Grade-4 Science — Textbook Illustrations"
 summary: "A complete set of clean, bright, print-ready illustrations for a full Grade-4 science textbook — chapter openers, classroom scenes, science diagrams and two recurring hero characters, across all 13 chapters."
 cover: "/work/g4-c9-opening.webp"
+medium: "illustration"
 gallery:
   # Chapter 1 — How Are We Changing Our Planet?
   - { src: "/work/g4-c12-opening.webp", chapter: "Chapter 1 — How Are We Changing Our Planet?", caption: "Chapter opener: a child standing between a polluted world and a green, healthy one." }

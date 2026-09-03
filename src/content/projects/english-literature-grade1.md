@@ -2,6 +2,7 @@
 title: "English Literature — Grade 1"
 summary: "A full-book illustration set for a Grade-1 English reader — a seaside day out, phonics word-play, a night-sky adventure, gentle village animal tales and Meena's magical cherry tree, all in warm, friendly storybook art."
 cover: "/work/eng1-u5-cherry-fairy.webp"
+medium: "illustration"
 gallery:
   # Unit 1 — A Day Out
   - { src: "/work/eng1-u1-winding-path.webp", chapter: "Unit 1 — A Day Out", caption: "A winding path with signboards — First, Next, Last — leads the story on." }

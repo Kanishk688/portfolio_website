@@ -2,6 +2,7 @@
 title: "English Literature — Grade 2"
 summary: "A full-book illustration set for a Grade-2 English literature reader — folktales, a moonlit fantasy, a bird field-guide, travel writing across India and lively classroom scenes, with the recurring friends Mona & Mustafa."
 cover: "/work/eng2-u5-lake-pichola.webp"
+medium: "illustration"
 gallery:
   # Unit 1 — Tales of Friendship & Tricks
   - { src: "/work/eng2-u1-ducks-escape.webp", chapter: "Unit 1 — Tales of Friendship & Tricks", caption: "Iktomi's trick unravels as the ducks burst free and take to the sky." }

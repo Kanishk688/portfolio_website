@@ -27,6 +27,21 @@ const projects = defineCollection({
     date: z.date(),                             // kab banaya
     featured: z.boolean().default(false),       // home page pe dikhana hai?
 
+    // ---- MEDIUM: site ka sabse upar wala axis ----
+    // "Grade 3 / Grade 4" textbook ki bhasha hai — us se video, animation ya
+    // game characters kabhi fit nahi honge. Medium se hote hain: naya kaam
+    // aata hai to bas naya medium add hota hai, site todni nahi padti.
+    // Abhi maujood: illustration, comics. Aage: video, animation,
+    // characters, interactive.
+    medium: z.enum([
+      'illustration',
+      'comics',
+      'video',
+      'animation',
+      'characters',
+      'interactive',
+    ]).default('illustration'),
+
     // ---- KAB AUR KIN HAALAAT ME BANA ----
     // AI tooling har chhe mahine me badalta hai. Bina date aur bina
     // "us waqt kya mushkil tha" ke, purana achha kaam aaj kamzor lagta hai —
