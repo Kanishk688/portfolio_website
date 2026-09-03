@@ -65,6 +65,10 @@ gallery:
 tags: ["Textbook", "Grade 5", "Science", "Pipeline", "Measured"]
 date: 2026-08-26
 featured: true
+company: "Possibility Edutech — Jaipuria Group"
+role: "Assistant Manager, AI Initiatives"
+tools: ["Claude Code + MCP", "Gemini / Nano-Banana", "GPT Image", "Magnific", "Photoshop", "Python"]
+eraNote: "By 2026 the models could hold a character and a style across a long run, so consistency was no longer the bottleneck it had been a year earlier. The hard part moved to correctness and volume: a science diagram can be beautiful and still teach a child something false, and a hundred assets a book all have to clear print QA — 300 DPI, a real alpha channel, no muddy darks, no white halo on a cut-out — before a designer can place them."
 ---
 
 Seven chapters, **58 print-ready illustrations at 300&nbsp;DPI**, 52 of them

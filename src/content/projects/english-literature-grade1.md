@@ -39,6 +39,10 @@ gallery:
 tags: ["Textbook", "Grade 1", "English", "Storybook", "Character Design"]
 date: 2026-06-25
 featured: true
+company: "Possibility Edutech — Jaipuria Group"
+role: "Assistant Manager, AI Initiatives"
+tools: ["Claude Code + MCP", "Gemini / Nano-Banana", "GPT Image", "Magnific", "Photoshop", "Python"]
+eraNote: "By 2026 the models could hold a character and a style across a long run, so consistency was no longer the bottleneck it had been a year earlier. The hard part moved to correctness and volume: a science diagram can be beautiful and still teach a child something false, and a hundred assets a book all have to clear print QA — 300 DPI, a real alpha channel, no muddy darks, no white halo on a cut-out — before a designer can place them."
 ---
 
 A full-book illustration project for a school English reader — created unit by unit as complete story art: chapter openers, character-driven scenes, folktales, informational spreads and gentle spot illustrations, all in one warm, consistent storybook style with recurring characters running through the book.

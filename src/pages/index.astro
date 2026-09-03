@@ -9,19 +9,30 @@ const featured = all
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 
 // ---- STATS (asli ginti gallery se) ----
-const bookCount = all.length;
+// Textbook aur comics alag-alag gine jaate hain — comic koi textbook nahi hai,
+// aur dono ko ek hi "books" number me daalna jhooth ho jaata.
+const isComic = (p: (typeof all)[number]) =>
+  p.data.tags.some((t) => /comic/i.test(t));
+
 let imgCount = 0;
 const chapterSet = new Set<string>();
+const comicTitles = new Set<string>();
 const marqueeAll: string[] = [];
 for (const p of all) {
   for (const it of p.data.gallery) {
     imgCount++;
     const src = typeof it === 'string' ? it : it.src;
     marqueeAll.push(src);
-    if (typeof it !== 'string' && it.chapter) chapterSet.add(p.id + '::' + it.chapter);
+    if (typeof it !== 'string' && it.chapter) {
+      // comics me "chapter" ka matlab title hai, textbook me chapter.
+      if (isComic(p)) comicTitles.add(it.chapter);
+      else chapterSet.add(p.id + '::' + it.chapter);
+    }
   }
 }
+const bookCount = all.filter((p) => !isComic(p)).length;
 const chapterCount = chapterSet.size;
+const comicCount = comicTitles.size;
 // round-down thoda "+" ke saath dikhane ke liye
 const imgRounded = Math.floor(imgCount / 10) * 10;
 
@@ -32,9 +43,10 @@ const rowA = picks.filter((_, i) => i % 2 === 0);
 const rowB = picks.filter((_, i) => i % 2 === 1);
 
 const stats = [
-  { n: bookCount, label: 'Books illustrated' },
+  { n: bookCount, label: 'Textbooks illustrated' },
+  { n: comicCount, label: 'Comic titles' },
   { n: chapterCount, label: 'Chapters & units' },
-  { n: imgRounded + '+', label: 'Illustrations' },
+  { n: imgRounded + '+', label: 'Pieces published' },
 ];
 
 // ---- MEASURED (Grade-5 book — disk se gini hui asli ginti) ----

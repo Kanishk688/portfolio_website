@@ -26,6 +26,18 @@ const projects = defineCollection({
     tags: z.array(z.string()).default([]),      // Textbook, Grade 4, Science...
     date: z.date(),                             // kab banaya
     featured: z.boolean().default(false),       // home page pe dikhana hai?
+
+    // ---- KAB AUR KIN HAALAAT ME BANA ----
+    // AI tooling har chhe mahine me badalta hai. Bina date aur bina
+    // "us waqt kya mushkil tha" ke, purana achha kaam aaj kamzor lagta hai —
+    // dekhne wala aaj ke standard se tolta hai. Isliye har project apne
+    // waqt ki capability apne saath leke chalta hai.
+    company: z.string().optional(),             // "Wippi (Gen Alpha Kids First Media Tech)"
+    role: z.string().optional(),                // wahan kya kiya
+    tools: z.array(z.string()).default([]),     // us waqt ke actual tools
+    eraNote: z.string().optional(),             // us waqt ki asli rukawat — bahana nahi, spec
+    externalUrl: z.string().optional(),         // poora kaam kahin aur pada hai (e.g. Drive)
+    externalLabel: z.string().optional(),       // us link pe kya likha ho
   }),
 });
 
