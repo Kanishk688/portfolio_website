@@ -7,15 +7,15 @@ import { getCollection } from 'astro:content';
 const all = await getCollection('projects');
 const featured = all
   .filter((p) => p.data.featured)
-  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 6);
 
 // ---- GINTI (gallery se, haath se nahi) ----
-const isComic = (p: (typeof all)[number]) =>
-  p.data.tags.some((t) => /comic/i.test(t));
-
+// Medium hi asli axis hai: har medium apni bhasha me ginta hai — textbook
+// chapters me, comic volumes me, aur aage video shots me.
 let imgCount = 0;
 const chapterSet = new Set<string>();
-const comicTitles = new Set<string>();
+const volumeSet = new Set<string>();
 const marqueeAll: string[] = [];
 for (const p of all) {
   for (const it of p.data.gallery) {
@@ -23,12 +23,20 @@ for (const p of all) {
     const src = typeof it === 'string' ? it : it.src;
     marqueeAll.push(src);
     if (typeof it !== 'string' && it.chapter) {
-      if (isComic(p)) comicTitles.add(it.chapter);
+      if (p.data.medium === 'comics') volumeSet.add(p.id + '::' + it.chapter);
       else chapterSet.add(p.id + '::' + it.chapter);
     }
   }
 }
-const bookCount = all.filter((p) => !isComic(p)).length;
+const bookCount = all.filter((p) => p.data.medium === 'illustration').length;
+const comicCount = all.filter((p) => p.data.medium === 'comics').length;
+
+// har medium kitna hai — range ek nazar me
+const media = [...new Set(all.map((p) => p.data.medium))].map((m) => ({
+  slug: m,
+  label: m.charAt(0).toUpperCase() + m.slice(1),
+  n: all.filter((p) => p.data.medium === m).length,
+}));
 
 // marquee ke liye ~40 ka spread
 const step = Math.max(1, Math.floor(marqueeAll.length / 40));
@@ -39,7 +47,7 @@ const strip = marqueeAll.filter((_, i) => i % step === 0).slice(0, 40);
 // sirf usi ke honestly claim kiye ja sakte hain.
 const docket = [
   { k: 'Textbooks illustrated', v: String(bookCount) },
-  { k: 'Comic titles / volumes', v: `${comicTitles.size} / 10` },
+  { k: 'Comic titles', v: `${comicCount} across ${volumeSet.size} volumes` },
   { k: 'Chapters & units', v: String(chapterSet.size) },
   { k: 'Pages published here', v: `${Math.floor(imgCount / 10) * 10}+` },
   { k: 'Measured run — delivered', v: '58', hi: true },
@@ -99,6 +107,22 @@ const docket = [
     </div>
   </section>
 
+  <!-- ===================== PRACTICE =====================
+       Kaunse medium me kaam hai, ek nazar me. Ye list schema se aati hai —
+       jis din video ya animation ka pehla project add hoga, woh yahan khud
+       aa jayega, koi edit nahi karna padega. -->
+  <section class="wrap" style="padding-bottom: 2.5rem;">
+    <div class="practice">
+      <span class="label" style="align-self:center;">Practice</span>
+      {media.map((m) => (
+        <a class="practice-item" href="/work/">
+          <span class="practice-label">{m.label}</span>
+          <span class="label mono">{m.n}</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
   <!-- artwork band -->
   <div class="marquee" style="border-block: 1px solid var(--ink); padding-block: 0.75rem; background: var(--paper-hi);">
     <div class="marquee-track marquee-l">
@@ -149,7 +173,10 @@ const docket = [
         <a class="reveal card" href={`/work/${p.id}/`}>
           <img src={p.data.cover} alt={p.data.title} loading="lazy" style="aspect-ratio: 16/10; object-fit: cover;" />
           <div class="card-body">
-            <p class="label mono">{p.data.date.getFullYear()}{p.data.company ? ` · ${p.data.company}` : ''}</p>
+            <p class="label" style="display:flex; justify-content:space-between; gap:0.75rem;">
+              <span class="label-mag">{p.data.medium.charAt(0).toUpperCase() + p.data.medium.slice(1)}</span>
+              <span class="mono">{p.data.date.getFullYear()}</span>
+            </p>
             <h3 class="display" style="font-size:1.35rem; margin-top:0.5rem; line-height:1.1;">{p.data.title}</h3>
             <p style="color: var(--ink-2); font-size:0.95rem; margin-top:0.6rem;">{p.data.summary.slice(0, 128)}…</p>
           </div>
@@ -227,6 +254,32 @@ const docket = [
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr));
     gap: 1.5rem;
+  }
+  .practice {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    padding-left: 1rem;
+    gap: 0;
+  }
+  .practice > .label { padding-right: 1.5rem; }
+  .practice-item {
+    display: flex;
+    align-items: baseline;
+    gap: 0.55rem;
+    padding: 0.85rem 1.25rem;
+    border-left: 1px solid var(--rule);
+    color: var(--ink);
+    transition: background .15s ease;
+  }
+  .practice-item:hover { background: var(--paper-hi); }
+  .practice-label {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: -0.01em;
   }
   @media (max-width: 900px) {
     .hero-grid, .docket-grid { grid-template-columns: 1fr; gap: 2.5rem; }

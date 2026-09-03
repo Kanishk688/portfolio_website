@@ -5,36 +5,28 @@ import { getCollection } from 'astro:content';
 const projects = await getCollection('projects');
 projects.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 
-// har project ke tags se filter-categories nikaalo (slugs).
-function catsFor(tags: string[]): string[] {
-  const cats: string[] = [];
-  if (tags.some((t) => /science/i.test(t))) cats.push('science');
-  if (tags.some((t) => /english/i.test(t))) cats.push('english');
-  if (tags.some((t) => /comic/i.test(t))) cats.push('comics');
-  for (const t of tags) {
-    const m = t.match(/grade\s*(\d+)/i);
-    if (m) cats.push('grade-' + m[1]);
-  }
-  return cats;
-}
+// ---- MEDIUM = pehla axis ----
+// Pehle filters "Grade 1 / Grade 2" the, jo sirf textbook ki bhasha hai —
+// us me video ya animation kabhi fit nahi hoti. Medium se filter karne par
+// naya kaam bas ek nayi tab ban jaata hai.
+const MEDIA: { slug: string; label: string }[] = [
+  { slug: 'illustration', label: 'Illustration' },
+  { slug: 'comics',       label: 'Comics' },
+  { slug: 'video',        label: 'Video' },
+  { slug: 'animation',    label: 'Animation' },
+  { slug: 'characters',   label: 'Characters' },
+  { slug: 'interactive',  label: 'Interactive' },
+];
 
-const withCats = projects.map((p) => ({ p, cats: catsFor(p.data.tags) }));
-const has = (c: string) => withCats.some((x) => x.cats.includes(c));
-const chips = [
-  { slug: 'all', label: 'All' },
-  { slug: 'science', label: 'Science' },
-  { slug: 'english', label: 'English' },
-  { slug: 'comics', label: 'Comics' },
-  { slug: 'grade-1', label: 'Gr 1' },
-  { slug: 'grade-2', label: 'Gr 2' },
-  { slug: 'grade-3', label: 'Gr 3' },
-  { slug: 'grade-4', label: 'Gr 4' },
-  { slug: 'grade-5', label: 'Gr 5' },
-].filter((c) => c.slug === 'all' || has(c.slug));
+const countOf = (slug: string) => projects.filter((p) => p.data.medium === slug).length;
 
-// ---- SAAL KE HISAAB SE ----
-// AI tooling har saal alag hoti hai. Bina saal ke, purana kaam aaj ke
-// standard se tola jaata hai aur galat nateeja nikalta hai.
+// sirf wahi medium dikhao jisme sach me kaam hai
+const tabs = [
+  { slug: 'all', label: 'All work', n: projects.length },
+  ...MEDIA.filter((m) => countOf(m.slug) > 0).map((m) => ({ ...m, n: countOf(m.slug) })),
+];
+
+// ---- SAAL = doosra axis (capability era) ----
 const ERAS: Record<number, string> = {
   2026:
     'Character and style consistency had largely become something the tools handled. ' +
@@ -44,12 +36,15 @@ const ERAS: Record<number, string> = {
     'recognisable across a whole book was manual work, and every speech bubble was typeset over the art.',
 };
 
-const years = [...new Set(withCats.map((x) => x.p.data.date.getFullYear()))].sort((a, b) => b - a);
+const years = [...new Set(projects.map((p) => p.data.date.getFullYear()))].sort((a, b) => b - a);
 const byYear = years.map((year) => ({
   year,
   era: ERAS[year],
-  items: withCats.filter((x) => x.p.data.date.getFullYear() === year),
+  items: projects.filter((p) => p.data.date.getFullYear() === year),
 }));
+
+const mediumLabel = (slug: string) =>
+  MEDIA.find((m) => m.slug === slug)?.label ?? slug;
 ---
 
 <Layout title="Work — Kanishk Verma">
@@ -59,16 +54,17 @@ const byYear = years.map((year) => ({
       Sorted by what<br />the tools could do.
     </h1>
     <p class="reveal d2 lede" style="margin-top:1.4rem;">
-      Grouped by the year each project was made, because in generative work the
-      year is part of the spec — what took a week in 2025 can take an afternoon
-      now, and the same will be said of 2026.
+      Filter by what it is; read it by the year it was made. In generative work
+      the year is part of the spec — what took a week in 2025 can take an
+      afternoon now, and the same will be said of 2026.
     </p>
 
-    <!-- FILTERS -->
-    <div id="filters" class="reveal d2" style="display:flex; flex-wrap:wrap; gap:1.25rem; margin-top:2.5rem; padding-bottom:0.5rem; border-bottom:1px solid var(--ink);">
-      {chips.map((c, i) => (
-        <button type="button" data-filter={c.slug} class:list={['filter', i === 0 && 'is-active']}>
-          {c.label}
+    <!-- MEDIUM TABS — filter bhi, aur ek nazar me range bhi -->
+    <div id="filters" class="reveal d2 medium-tabs">
+      {tabs.map((t, i) => (
+        <button type="button" data-filter={t.slug} class:list={['medium-tab', i === 0 && 'is-active']}>
+          <span class="medium-tab-label">{t.label}</span>
+          <span class="medium-tab-n mono">{t.n}</span>
         </button>
       ))}
     </div>
@@ -82,17 +78,20 @@ const byYear = years.map((year) => ({
         </div>
 
         <div class="work-grid">
-          {items.map(({ p, cats }) => (
-            <div class="project-card reveal" data-cats={cats.join(' ')}>
+          {items.map((p) => (
+            <div class="project-card reveal" data-medium={p.data.medium}>
               <a class="card" href={`/work/${p.id}/`}>
                 <img src={p.data.cover} alt={p.data.title} loading="lazy" style="aspect-ratio: 4/3; object-fit: cover;" />
                 <div class="card-body">
-                  {p.data.company && <p class="label mono">{p.data.company}</p>}
-                  <h2 class="display" style="font-size:1.3rem; margin-top:0.5rem; line-height:1.1;">{p.data.title}</h2>
-                  <p style="color: var(--ink-2); font-size:0.92rem; margin-top:0.55rem;">{p.data.summary.slice(0, 110)}…</p>
-                  <p style="margin-top:0.9rem;">
-                    {p.data.tags.map((t) => <span class="tag">{t}</span>)}
+                  <p class="label" style="display:flex; justify-content:space-between; gap:0.75rem;">
+                    <span class="label-mag">{mediumLabel(p.data.medium)}</span>
+                    <span>{p.data.gallery.length} pl.</span>
                   </p>
+                  <h2 class="display" style="font-size:1.3rem; margin-top:0.55rem; line-height:1.1;">{p.data.title}</h2>
+                  {p.data.company && (
+                    <p class="label mono" style="margin-top:0.4rem;">{p.data.company}</p>
+                  )}
+                  <p style="color: var(--ink-2); font-size:0.92rem; margin-top:0.6rem;">{p.data.summary.slice(0, 116)}…</p>
                 </div>
               </a>
             </div>
@@ -102,23 +101,22 @@ const byYear = years.map((year) => ({
     ))}
 
     <p id="empty" class="label" style="display:none; text-align:center; padding-block:4rem;">
-      Nothing in this filter yet.
+      Nothing in this medium yet.
     </p>
   </main>
 
   <script>
     function setupFilters() {
-      const chips = document.querySelectorAll<HTMLButtonElement>('.filter');
+      const tabs = document.querySelectorAll<HTMLButtonElement>('.medium-tab');
       const cards = document.querySelectorAll<HTMLElement>('.project-card');
       const blocks = document.querySelectorAll<HTMLElement>('.year-block');
       const empty = document.getElementById('empty');
-      if (!chips.length) return;
+      if (!tabs.length) return;
 
       function apply(slug: string) {
         let shown = 0;
         cards.forEach((card) => {
-          const cats = (card.dataset.cats || '').split(' ');
-          const show = slug === 'all' || cats.includes(slug);
+          const show = slug === 'all' || card.dataset.medium === slug;
           card.style.display = show ? '' : 'none';
           if (show) shown++;
         });
@@ -131,11 +129,11 @@ const byYear = years.map((year) => ({
         if (empty) empty.style.display = shown ? 'none' : 'block';
       }
 
-      chips.forEach((chip) => {
-        chip.addEventListener('click', () => {
-          chips.forEach((c) => c.classList.remove('is-active'));
-          chip.classList.add('is-active');
-          apply(chip.dataset.filter || 'all');
+      tabs.forEach((tab) => {
+        tab.addEventListener('click', () => {
+          tabs.forEach((t) => t.classList.remove('is-active'));
+          tab.classList.add('is-active');
+          apply(tab.dataset.filter || 'all');
         });
       });
     }
@@ -144,6 +142,38 @@ const byYear = years.map((year) => ({
 </Layout>
 
 <style>
+  .medium-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    margin-top: 2.5rem;
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+  }
+  .medium-tab {
+    display: flex;
+    align-items: baseline;
+    gap: 0.55rem;
+    padding: 0.9rem 1.25rem;
+    background: none;
+    border: 0;
+    border-right: 1px solid var(--rule);
+    cursor: pointer;
+    color: var(--ink-2);
+    transition: background .15s ease, color .15s ease;
+  }
+  .medium-tab:last-child { border-right: 0; }
+  .medium-tab-label {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: -0.01em;
+  }
+  .medium-tab-n { font-size: 0.72rem; color: var(--ink-3); }
+  .medium-tab:hover { color: var(--ink); background: var(--paper-hi); }
+  .medium-tab.is-active { color: var(--paper); background: var(--ink); }
+  .medium-tab.is-active .medium-tab-n { color: var(--paper); opacity: 0.6; }
+
   .year-head {
     display: flex;
     align-items: baseline;
@@ -159,5 +189,6 @@ const byYear = years.map((year) => ({
   }
   @media (max-width: 640px) {
     .year-head { flex-direction: column; gap: 0.6rem; }
+    .medium-tab { flex: 1 1 auto; }
   }
 </style>

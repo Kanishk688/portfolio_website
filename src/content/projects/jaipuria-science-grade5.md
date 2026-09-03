@@ -2,6 +2,7 @@
 title: "Grade-5 Science — Textbook Illustrations"
 summary: "A full Grade-5 science book — the skeleton and muscles, the nervous system, food and health, safety and first aid, how plants reproduce and how animals live. The first book on this site produced with every rejected attempt kept on record, so the real cost of the work is measured rather than estimated."
 cover: "/work/g5-c6-pond-story-scene.webp"
+medium: "illustration"
 gallery:
   # What the archive caught
   - { src: "/work/rej-skull-noeyes.webp", chapter: "What the archive caught", caption: "c1_04_v1_no_eyesockets_WRONG.png — a skull with no eye sockets. Handsome, and wrong. It took eight more attempts to get this one right." }

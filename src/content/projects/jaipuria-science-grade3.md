@@ -2,6 +2,7 @@
 title: "Grade-3 Science — Textbook Illustrations"
 summary: "A complete, chapter-by-chapter illustration set for a Grade-3 science textbook — hero openers, clear teaching diagrams and warm everyday scenes, spanning the human body, food, plants, animals, weather, soil, birds and the night sky."
 cover: "/work/g3-c8-forest.webp"
+medium: "illustration"
 gallery:
   # Chapter 1 — How Are Birds Built?
   - { src: "/work/g3-c11-hero.webp", chapter: "Chapter 1 — How Are Birds Built?", caption: "A gathering of birds — each built for its own way of life." }
