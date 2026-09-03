@@ -89,9 +89,18 @@ all pick it up automatically. No new page, no template edit.
 
 ## Deployment
 
-`main` → Cloudflare Pages, automatically. `netlify.toml` deliberately skips
-Netlify builds (`ignore = "exit 0"`) — the site moved to Cloudflare and the
-config stays only to stop the old Netlify project burning build minutes.
+The Cloudflare Pages project (`kannisshk`) is **direct-upload, not
+git-connected** — pushing to `main` does not deploy anything. Publish
+explicitly:
+
+```bash
+npm run build
+npx wrangler pages deploy dist --project-name=kannisshk
+```
+
+`netlify.toml` deliberately skips Netlify builds (`ignore = "exit 0"`) — the
+site moved to Cloudflare and the config stays only to stop the old Netlify
+project burning build minutes.
 
 ---
 

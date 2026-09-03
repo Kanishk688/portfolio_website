@@ -1,8 +1,14 @@
 {
-  // Cloudflare Workers static-assets config (Astro ka `dist` folder serve karega).
+  // Cloudflare PAGES config (project: kannisshk -> kannisshk.pages.dev).
+  //
+  // Pehle yahan Workers static-assets ka config tha ("assets.directory"), jo
+  // galat product ka tha — us se deploy karne pe ek alag Worker banta, aur
+  // asli site jaisi ki waisi rehti. Pages ko "pages_build_output_dir" chahiye.
+  //
+  // Deploy karne ka tarika:
+  //   npm run build
+  //   npx wrangler pages deploy dist --project-name=kannisshk
   "name": "kannisshk",
   "compatibility_date": "2026-06-01",
-  "assets": {
-    "directory": "./dist"
-  }
+  "pages_build_output_dir": "./dist"
 }
