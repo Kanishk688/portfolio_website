@@ -1,0 +1,43 @@
+# Har push pe site live — GitHub Actions se, dashboard ke Git integration ke bina.
+#
+# Cloudflare Pages project `kannisshk` direct-upload hai (Git Provider: No),
+# isliye push apne aap deploy nahi karta tha. Ye workflow wahi kaam karta hai:
+# build karo, phir wrangler se dist upload kar do.
+#
+# Isko chalne ke liye repo me do secrets chahiye —
+#   Settings -> Secrets and variables -> Actions -> New repository secret
+#     CLOUDFLARE_API_TOKEN   (dash.cloudflare.com/profile/api-tokens,
+#                             template "Edit Cloudflare Workers")
+#     CLOUDFLARE_ACCOUNT_ID  ca3ce4ffab5a5baeb3f80a36a0dbcc5b
+
+name: Deploy to Cloudflare Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:        # dashboard se haath se bhi chala sakte ho
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
+
+      - name: Publish
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=kannisshk
