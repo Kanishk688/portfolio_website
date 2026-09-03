@@ -29,13 +29,17 @@ const chips = [
   { slug: 'grade-2', label: 'Grade 2' },
   { slug: 'grade-3', label: 'Grade 3' },
   { slug: 'grade-4', label: 'Grade 4' },
+  { slug: 'grade-5', label: 'Grade 5' },
 ].filter((c) => c.slug === 'all' || has(c.slug));
 ---
 
 <Layout title="Work — Kanishk Verma">
   <main class="max-w-6xl mx-auto px-6 py-16">
     <h1 class="reveal text-5xl font-black mb-2">Work</h1>
-    <p class="reveal text-neutral-400 mb-8">Selected illustration projects.</p>
+    <p class="reveal text-neutral-400 mb-8 max-w-2xl">
+      Five complete textbooks, each produced end to end through the same
+      pipeline — manuscript in, 300&nbsp;DPI print files out.
+    </p>
 
     <!-- FILTER CHIPS -->
     <div id="filters" class="reveal flex flex-wrap gap-2 mb-10">
@@ -59,7 +63,7 @@ const chips = [
     <div id="grid" class="columns-1 sm:columns-2 lg:columns-3 gap-6">
       {withCats.map(({ p, cats }) => (
         <div class="project-card reveal mb-6 break-inside-avoid" data-cats={cats.join(' ')}>
-          <a href={`/work/${p.id}`} class="group block rounded-2xl overflow-hidden border border-neutral-800 bg-neutral-900 hover:border-neutral-600 hover:-translate-y-1 transition">
+          <a href={`/work/${p.id}/`} class="group block rounded-2xl overflow-hidden border border-neutral-800 bg-neutral-900 hover:border-neutral-600 hover:-translate-y-1 transition">
             <div class="overflow-hidden">
               <img
                 src={p.data.cover}

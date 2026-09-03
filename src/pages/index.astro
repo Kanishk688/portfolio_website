@@ -36,9 +36,19 @@ const stats = [
   { n: chapterCount, label: 'Chapters & units' },
   { n: imgRounded + '+', label: 'Illustrations' },
 ];
+
+// ---- MEASURED (Grade-5 book — disk se gini hui asli ginti) ----
+// Ye hardcoded hai kyunki source of truth production tree hai, site nahi.
+// Grade 5 akeli book hai jisne apne rejects archive kiye, isliye sirf
+// isi ke numbers honestly claim kiye ja sakte hain.
+const measured = [
+  { n: '58', label: 'illustrations delivered' },
+  { n: '165', label: 'generations it took' },
+  { n: '2.8', label: 'generations per delivered asset' },
+];
 ---
 
-<Layout title="Kanishk Verma — Illustrator">
+<Layout title="Kanishk Verma — Generative Media Engineer">
   <!-- ================= HERO ================= -->
   <section class="relative overflow-hidden">
     <!-- soft glow background -->
@@ -49,17 +59,18 @@ const stats = [
 
     <div class="max-w-6xl mx-auto px-6 pt-24 pb-14 text-center">
       <p class="reveal text-sm font-semibold tracking-[0.3em] uppercase text-teal-400">
-        Illustrator · Educational &amp; Editorial
+        Generative Media Engineer
       </p>
       <h1 class="reveal d1 text-6xl md:text-8xl font-black leading-none mt-5">
         <span class="shimmer bg-gradient-to-r from-teal-300 via-fuchsia-400 to-amber-300 bg-clip-text text-transparent">
           Kanishk Verma
         </span>
       </h1>
-      <p class="reveal d2 max-w-xl mx-auto text-lg text-neutral-300 mt-6">
-        I create clean, bright, print-ready illustrations for children’s
-        textbooks and educational publishing — openers, diagrams, scenes and
-        recurring characters.
+      <p class="reveal d2 max-w-2xl mx-auto text-lg text-neutral-300 mt-6">
+        I build the pipelines that turn a manuscript into print-ready artwork at
+        book scale — style locked across hundreds of assets, every rejected
+        attempt kept, and the cost per delivered image measured rather than
+        guessed.
       </p>
       <div class="reveal d3 flex items-center justify-center gap-3 mt-8">
         <a href="/work" class="rounded-full bg-white text-neutral-950 font-semibold px-6 py-3 text-sm hover:opacity-90 hover:-translate-y-0.5 transition">
@@ -79,6 +90,33 @@ const stats = [
           </div>
         ))}
       </div>
+
+      <!-- MEASURED BAND — yahi cheez portfolio ko baaki sab se alag karti hai.
+           Numbers disk se gine gaye hain, yaad se nahi likhe. -->
+      <a href="/work/jaipuria-science-grade5/"
+         class="reveal d3 group block mt-12 max-w-2xl mx-auto rounded-2xl border border-neutral-800 bg-neutral-900/40 hover:border-teal-500/50 hover:bg-neutral-900/70 transition text-left">
+        <div class="px-6 pt-5 pb-1 flex items-center gap-2">
+          <span class="h-1.5 w-1.5 rounded-full bg-teal-400"></span>
+          <span class="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-teal-400">
+            Measured, not estimated
+          </span>
+        </div>
+        <div class="px-6 pb-5">
+          <div class="grid grid-cols-3 gap-4 mt-3">
+            {measured.map((m) => (
+              <div>
+                <div class="font-mono text-2xl md:text-3xl font-bold text-white tabular-nums">{m.n}</div>
+                <div class="text-xs text-neutral-500 mt-1 leading-snug">{m.label}</div>
+              </div>
+            ))}
+          </div>
+          <p class="text-sm text-neutral-400 mt-5 leading-relaxed">
+            The Grade-5 book kept every rejected attempt on disk, so its real
+            cost could be counted instead of estimated.
+            <span class="text-neutral-200 group-hover:text-teal-300 transition whitespace-nowrap">Read the case study →</span>
+          </p>
+        </div>
+      </a>
     </div>
 
     <!-- ARTWORK MARQUEE (do rows) -->
@@ -109,7 +147,7 @@ const stats = [
 
     <div class="grid gap-6 sm:grid-cols-2">
       {featured.map((p, i) => (
-        <a href={`/work/${p.id}`} class={`reveal ${i % 2 ? 'd1' : ''} group rounded-2xl overflow-hidden border border-neutral-800 bg-neutral-900 hover:border-neutral-600 hover:-translate-y-1 transition block`}>
+        <a href={`/work/${p.id}/`} class={`reveal ${i % 2 ? 'd1' : ''} group rounded-2xl overflow-hidden border border-neutral-800 bg-neutral-900 hover:border-neutral-600 hover:-translate-y-1 transition block`}>
           <div class="overflow-hidden">
             <img
               src={p.data.cover}
@@ -130,17 +168,33 @@ const stats = [
   <section class="max-w-6xl mx-auto px-6 py-16 border-t border-neutral-900">
     <h2 class="reveal text-3xl font-black mb-6">About</h2>
     <div class="grid md:grid-cols-3 gap-8">
-      <p class="reveal md:col-span-2 text-lg text-neutral-300 leading-relaxed">
-        I’m Kanishk — an illustrator working at the intersection of hand-crafted
-        editorial style and modern AI tools. I specialise in bright, clean,
-        curriculum-ready artwork: chapter openers, science diagrams, scenes and
-        recurring characters. I’ve illustrated complete science and English
-        readers end to end — among the first AI-illustrated textbooks in the region.
-      </p>
+      <div class="reveal md:col-span-2 space-y-5 text-lg text-neutral-300 leading-relaxed">
+        <p>
+          I’m Kanishk. I build generative image pipelines and own what comes out
+          of them — the prompts, the agent loops, the review gates, and the
+          visual quality of the final asset.
+        </p>
+        <p>
+          The work on this site is five complete textbooks. Each one starts as a
+          manuscript and ends as 300&nbsp;DPI print files: the chapter is read
+          into a shot list, every illustration is generated against a locked
+          style bible and fixed palette, rejects are archived with the reason
+          they failed, and an automated QA script checks resolution, alpha,
+          print density and edge halos before anything is delivered.
+        </p>
+        <p>
+          That last part is the difference. A pipeline that throws away its
+          failures can only ever report good news. The Grade-5 book kept
+          all&nbsp;107 of its rejected attempts, which is why it can tell you
+          exactly what it cost.
+        </p>
+      </div>
       <ul class="reveal d1 text-sm text-neutral-400 space-y-3">
-        <li><span class="text-neutral-200 font-semibold block">Focus</span> Educational &amp; editorial illustration</li>
-        <li><span class="text-neutral-200 font-semibold block">Tools</span> AI generation, upscaling, print-prep</li>
-        <li><span class="text-neutral-200 font-semibold block">Available for</span> Textbook &amp; publishing projects</li>
+        <li><span class="text-neutral-200 font-semibold block">Focus</span> Generative image &amp; video pipelines for production</li>
+        <li><span class="text-neutral-200 font-semibold block">Build with</span> Claude Code + MCP, agent loops, Python, n8n</li>
+        <li><span class="text-neutral-200 font-semibold block">Generate with</span> Gemini, GPT Image, Magnific, Veo, Runway, ElevenLabs</li>
+        <li><span class="text-neutral-200 font-semibold block">Ship as</span> 300&nbsp;DPI print files, QA-gated</li>
+        <li><span class="text-neutral-200 font-semibold block">Open source</span> <a href="https://github.com/Kanishk688/genai-illustration-pipeline" class="text-teal-400 hover:text-teal-300 underline underline-offset-2">genai-illustration-pipeline</a></li>
       </ul>
     </div>
   </section>
@@ -148,7 +202,11 @@ const stats = [
   <!-- ================= CONTACT ================= -->
   <section id="contact" class="max-w-6xl mx-auto px-6 py-24 border-t border-neutral-900 text-center">
     <h2 class="reveal text-3xl md:text-4xl font-black">Let’s work together</h2>
-    <p class="reveal d1 text-neutral-300 mt-3">Have a book or a project in mind? I’d love to hear about it.</p>
+    <p class="reveal d1 text-neutral-300 mt-3 max-w-xl mx-auto">
+      If you need a generative pipeline built — or the one you have to stop
+      drifting, start passing QA and report its own numbers — I’d like to hear
+      about it.
+    </p>
     <a href="mailto:kanishkverma688@gmail.com"
        class="reveal d2 inline-block mt-6 rounded-full bg-gradient-to-r from-teal-400 to-fuchsia-500 text-neutral-950 font-bold px-8 py-3 hover:opacity-90 hover:-translate-y-0.5 transition">
       kanishkverma688@gmail.com
