@@ -4,9 +4,10 @@
 
 ### 🌐 **[kannisshk.pages.dev](https://kannisshk.pages.dev)**
 
-Illustrator working at the intersection of hand-crafted editorial style and
-modern AI tooling — bright, clean, curriculum-ready artwork for children's
-textbooks and educational publishing.
+Generative media engineer. I build the pipelines that turn a manuscript into
+print-ready artwork at book scale — style locked across hundreds of assets,
+rejects archived with the reason they failed, and cost measured per delivered
+image.
 
 `Astro 5` · `Tailwind CSS 4` · `Cloudflare Pages`
 
@@ -19,10 +20,11 @@ textbooks and educational publishing.
 
 ## What's on the site
 
-**4 books · 37 chapters & units · 230+ illustrations**, presented as case studies:
+**5 books · 44 chapters & units · 280+ illustrations**, presented as case studies:
 
 | Case study | |
 |---|---|
+| [Grade-5 Science](https://kannisshk.pages.dev/work/jaipuria-science-grade5/) | The book with numbers — 58 delivered illustrations from 165 generations, every reject archived and counted |
 | [Grade-4 Science](https://kannisshk.pages.dev/work/jaipuria-science-textbook/) | Full textbook set across all 13 chapters — openers, classroom scenes, science diagrams, two recurring hero characters |
 | [Grade-3 Science](https://kannisshk.pages.dev/work/jaipuria-science-grade3/) | Chapter-by-chapter set — human body, food, plants, animals, weather, soil, birds, the night sky |
 | [English Literature, Grade 1](https://kannisshk.pages.dev/work/english-literature-grade1/) | Full-book set — seaside day out, phonics word-play, a night-sky adventure, village animal tales |
@@ -32,7 +34,14 @@ textbooks and educational publishing.
 
 The illustrations on this site were produced with an agent-orchestrated
 pipeline — manuscript in, print-ready artwork out, with enforced style and
-character consistency across hundreds of assets.
+character consistency across hundreds of assets, and an automated print-QA gate
+that fails the run on wrong DPI, a missing alpha channel, muddy print density
+or a white halo on a cut-out.
+
+The Grade-5 book is the one that can prove its own cost: it kept all 107
+rejected attempts instead of deleting them, so its 58 delivered illustrations
+can be reported honestly at 2.8 generations per asset. The earlier books
+overwrote their rejects and cannot be measured the same way.
 
 **That system is open source →
 [genai-illustration-pipeline](https://github.com/Kanishk688/genai-illustration-pipeline)**

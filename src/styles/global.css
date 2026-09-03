@@ -15,6 +15,83 @@ html { scroll-behavior: smooth; }
   .reveal.d3 { transition-delay: .24s; }
 }
 
+/* ===== CASE STUDY KA BODY =====
+   Markdown se aane wala text. Tailwind ka typography plugin install nahi hai
+   (aur chahiye bhi nahi) — numbers table is site ka main dawa hai, use ek
+   generic document table jaisa nahi, ek spec-sheet jaisa dikhna chahiye. */
+.case-body { color: #d4d4d4; font-size: 1.0625rem; line-height: 1.75; }
+
+.case-body > * + * { margin-top: 1.15rem; }
+
+.case-body h2 {
+  margin-top: 3rem;
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: #fff;
+}
+.case-body h2 + * { margin-top: 1rem; }
+
+.case-body strong { color: #fff; font-weight: 700; }
+.case-body em { color: #e5e5e5; }
+
+.case-body a { color: #2dd4bf; text-decoration: underline; text-underline-offset: 3px; }
+.case-body a:hover { color: #5eead4; }
+
+/* --- NUMBERS TABLE ---
+   do column: naam baayen, number daayen. Number mono me, taaki digits
+   line-up karein aur ye "measured" lage, likha hua nahi. */
+.case-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1.5rem;
+  font-size: 0.95rem;
+}
+.case-body thead { display: none; }        /* header khaali hai, chhupa do */
+.case-body tbody tr { border-top: 1px solid #262626; }
+.case-body tbody tr:first-child { border-top: 1px solid #404040; }
+.case-body tbody tr:last-child { border-bottom: 1px solid #404040; }
+.case-body td { padding: 0.7rem 0; vertical-align: baseline; }
+.case-body td:first-child { color: #a3a3a3; }
+.case-body td:last-child {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.case-body td:last-child strong {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 1.05rem;
+  color: #2dd4bf;
+}
+
+/* --- PIPELINE DIAGRAM ---
+   ASCII diagram. Chhoti screen pe wrap nahi hona chahiye, isliye scroll. */
+.case-body pre {
+  margin-top: 1.5rem;
+  padding: 1.25rem 1.35rem;
+  border: 1px solid #262626;
+  border-radius: 0.85rem;
+  background: #0a0a0a;
+  overflow-x: auto;
+  line-height: 1.55;
+}
+.case-body pre code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.8rem;
+  color: #a3a3a3;
+  white-space: pre;
+}
+
+.case-body :not(pre) > code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.875em;
+  background: #1c1c1c;
+  border: 1px solid #2a2a2a;
+  border-radius: 0.35rem;
+  padding: 0.1em 0.4em;
+  color: #e5e5e5;
+}
+
 /* ===== HERO NAAM KA SHIMMER ===== */
 @keyframes shimmer { to { background-position: 200% center; } }
 .shimmer {
