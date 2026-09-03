@@ -1,34 +1,28 @@
 ---
-// HEADER = site ka top menu bar. Har page pe dikhega (Layout me lagega).
-
-// Astro.url.pathname = abhi kaunse page pe ho, e.g. "/" ya "/work".
-// Isse hum active link ko highlight karenge.
+// HEADER = press docket ka top strip. Naam, registration dots, aur do links.
 const path = Astro.url.pathname;
-
-// Menu ke links ki list. Naya page banao to yahan ek line add karna.
 const links = [
-  { href: '/', label: 'Home' },
-  { href: '/work', label: 'Work' },
+  { href: '/', label: 'Index' },
+  { href: '/work/', label: 'Work' },
 ];
+const isOn = (href: string) =>
+  href === '/' ? path === '/' : path.startsWith(href.replace(/\/$/, ''));
 ---
 
-<header class="sticky top-0 z-50 backdrop-blur bg-neutral-950/70 border-b border-neutral-800">
-  <nav class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-    <!-- Baayein: naam/logo. Click karo to Home. -->
-    <a href="/" class="font-black tracking-tight text-lg hover:opacity-80 transition">
-      Kanishk<span class="text-teal-400">.</span>
+<header style="border-bottom: 1px solid var(--ink); background: var(--paper);">
+  <nav class="wrap" style="display:flex; align-items:center; justify-content:space-between; height:3.5rem; gap:1.5rem;">
+    <a href="/" style="display:flex; align-items:center; gap:0.7rem;">
+      <span class="regmark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      <span class="label" style="color: var(--ink); letter-spacing:0.14em;">Kanishk Verma</span>
     </a>
 
-    <!-- Daayein: menu links -->
-    <ul class="flex items-center gap-6 text-sm">
+    <ul style="display:flex; align-items:center; gap:1.5rem; list-style:none; margin:0; padding:0;">
       {links.map((l) => (
         <li>
           <a
             href={l.href}
-            class:list={[
-              'transition hover:text-white',
-              path === l.href ? 'text-white font-semibold' : 'text-neutral-400',
-            ]}
+            class:list={['label', isOn(l.href) && 'label-mag']}
+            style={isOn(l.href) ? '' : 'color: var(--ink-2);'}
           >
             {l.label}
           </a>

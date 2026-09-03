@@ -1,5 +1,6 @@
 ---
-// HOME = asli landing page. Hero (+marquee+stats), Featured, About, Contact.
+// HOME = press docket. Hero me ek asli specimen (reject bनाम printed),
+// phir numbers, phir kaam.
 import Layout from '../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
 
@@ -8,9 +9,7 @@ const featured = all
   .filter((p) => p.data.featured)
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 
-// ---- STATS (asli ginti gallery se) ----
-// Textbook aur comics alag-alag gine jaate hain — comic koi textbook nahi hai,
-// aur dono ko ek hi "books" number me daalna jhooth ho jaata.
+// ---- GINTI (gallery se, haath se nahi) ----
 const isComic = (p: (typeof all)[number]) =>
   p.data.tags.some((t) => /comic/i.test(t));
 
@@ -24,204 +23,212 @@ for (const p of all) {
     const src = typeof it === 'string' ? it : it.src;
     marqueeAll.push(src);
     if (typeof it !== 'string' && it.chapter) {
-      // comics me "chapter" ka matlab title hai, textbook me chapter.
       if (isComic(p)) comicTitles.add(it.chapter);
       else chapterSet.add(p.id + '::' + it.chapter);
     }
   }
 }
 const bookCount = all.filter((p) => !isComic(p)).length;
-const chapterCount = chapterSet.size;
-const comicCount = comicTitles.size;
-// round-down thoda "+" ke saath dikhane ke liye
-const imgRounded = Math.floor(imgCount / 10) * 10;
 
-// ---- MARQUEE ke liye ~28 images ka spread (har jagah se) ----
-const step = Math.max(1, Math.floor(marqueeAll.length / 28));
-const picks = marqueeAll.filter((_, i) => i % step === 0).slice(0, 28);
-const rowA = picks.filter((_, i) => i % 2 === 0);
-const rowB = picks.filter((_, i) => i % 2 === 1);
+// marquee ke liye ~40 ka spread
+const step = Math.max(1, Math.floor(marqueeAll.length / 40));
+const strip = marqueeAll.filter((_, i) => i % step === 0).slice(0, 40);
 
-const stats = [
-  { n: bookCount, label: 'Textbooks illustrated' },
-  { n: comicCount, label: 'Comic titles' },
-  { n: chapterCount, label: 'Chapters & units' },
-  { n: imgRounded + '+', label: 'Pieces published' },
-];
-
-// ---- MEASURED (Grade-5 book — disk se gini hui asli ginti) ----
-// Ye hardcoded hai kyunki source of truth production tree hai, site nahi.
-// Grade 5 akeli book hai jisne apne rejects archive kiye, isliye sirf
-// isi ke numbers honestly claim kiye ja sakte hain.
-const measured = [
-  { n: '58', label: 'illustrations delivered' },
-  { n: '165', label: 'generations it took' },
-  { n: '2.8', label: 'generations per delivered asset' },
+// ---- DOCKET ----
+// Grade-5 wahi ek book hai jisne rejects archive kiye, isliye numbers
+// sirf usi ke honestly claim kiye ja sakte hain.
+const docket = [
+  { k: 'Textbooks illustrated', v: String(bookCount) },
+  { k: 'Comic titles / volumes', v: `${comicTitles.size} / 10` },
+  { k: 'Chapters & units', v: String(chapterSet.size) },
+  { k: 'Pages published here', v: `${Math.floor(imgCount / 10) * 10}+` },
+  { k: 'Measured run — delivered', v: '58', hi: true },
+  { k: 'Measured run — generations', v: '165', hi: true },
+  { k: 'Measured run — discarded', v: '107', hi: true },
 ];
 ---
 
 <Layout title="Kanishk Verma — Generative Media Engineer">
-  <!-- ================= HERO ================= -->
-  <section class="relative overflow-hidden">
-    <!-- soft glow background -->
-    <div class="pointer-events-none absolute inset-0 -z-10">
-      <div class="absolute -top-32 left-1/2 -translate-x-1/2 h-[42rem] w-[42rem] rounded-full bg-fuchsia-600/20 blur-[120px]"></div>
-      <div class="absolute top-24 -right-24 h-[28rem] w-[28rem] rounded-full bg-teal-500/20 blur-[120px]"></div>
-    </div>
+  <!-- ========================= HERO ========================= -->
+  <section class="wrap" style="padding-block: 4rem 3rem;">
+    <div class="hero-grid">
+      <!-- pitch -->
+      <div>
+        <p class="reveal label label-mag">Generative Media Engineer</p>
 
-    <div class="max-w-6xl mx-auto px-6 pt-24 pb-14 text-center">
-      <p class="reveal text-sm font-semibold tracking-[0.3em] uppercase text-teal-400">
-        Generative Media Engineer
-      </p>
-      <h1 class="reveal d1 text-6xl md:text-8xl font-black leading-none mt-5">
-        <span class="shimmer bg-gradient-to-r from-teal-300 via-fuchsia-400 to-amber-300 bg-clip-text text-transparent">
-          Kanishk Verma
-        </span>
-      </h1>
-      <p class="reveal d2 max-w-2xl mx-auto text-lg text-neutral-300 mt-6">
-        I build the pipelines that turn a manuscript into print-ready artwork at
-        book scale — style locked across hundreds of assets, every rejected
-        attempt kept, and the cost per delivered image measured rather than
-        guessed.
-      </p>
-      <div class="reveal d3 flex items-center justify-center gap-3 mt-8">
-        <a href="/work" class="rounded-full bg-white text-neutral-950 font-semibold px-6 py-3 text-sm hover:opacity-90 hover:-translate-y-0.5 transition">
-          View my work →
-        </a>
-        <a href="#contact" class="rounded-full border border-neutral-700 px-6 py-3 text-sm text-neutral-200 hover:border-neutral-400 hover:-translate-y-0.5 transition">
-          Get in touch
-        </a>
+        <h1 class="reveal d1 display" style="font-size: clamp(2.9rem, 7vw, 5.4rem); margin-top: 1.1rem;">
+          I build the<br />pipeline, and<br />the archive that<br />proves its cost.
+        </h1>
+
+        <p class="reveal d2 lede" style="margin-top: 1.6rem;">
+          Manuscript in, 300&nbsp;DPI print files out. Style locked across
+          hundreds of assets, every rejected attempt kept and named with the
+          reason it failed — so the run can report what it actually cost
+          instead of only what shipped.
+        </p>
+
+        <div class="reveal d3" style="display:flex; flex-wrap:wrap; gap:0.75rem; margin-top:2rem;">
+          <a class="btn" href="/work/">See the work</a>
+          <a class="btn btn-ghost" href="/work/jaipuria-science-grade5/">Read the measured run</a>
+        </div>
       </div>
 
-      <!-- STATS -->
-      <div class="reveal d3 mt-14 flex flex-wrap items-center justify-center gap-x-12 gap-y-6">
-        {stats.map((s) => (
-          <div>
-            <div class="text-4xl md:text-5xl font-black bg-gradient-to-b from-white to-neutral-400 bg-clip-text text-transparent">{s.n}</div>
-            <div class="text-xs uppercase tracking-widest text-neutral-500 mt-1">{s.label}</div>
+      <!-- specimen: site ka signature -->
+      <figure class="reveal d2 specimen" style="margin:0;">
+        <div class="specimen-grid">
+          <div class="specimen-cell">
+            <div class="specimen-head">
+              <span class="stamp stamp-rej">Rejected</span>
+              <span class="label">Att. 1</span>
+            </div>
+            <img src="/work/rej-skull-noeyes.webp" alt="A rejected attempt: the skull has no eye sockets." loading="eager" />
           </div>
-        ))}
-      </div>
-
-      <!-- MEASURED BAND — yahi cheez portfolio ko baaki sab se alag karti hai.
-           Numbers disk se gine gaye hain, yaad se nahi likhe. -->
-      <a href="/work/jaipuria-science-grade5/"
-         class="reveal d3 group block mt-12 max-w-2xl mx-auto rounded-2xl border border-neutral-800 bg-neutral-900/40 hover:border-teal-500/50 hover:bg-neutral-900/70 transition text-left">
-        <div class="px-6 pt-5 pb-1 flex items-center gap-2">
-          <span class="h-1.5 w-1.5 rounded-full bg-teal-400"></span>
-          <span class="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-teal-400">
-            Measured, not estimated
-          </span>
-        </div>
-        <div class="px-6 pb-5">
-          <div class="grid grid-cols-3 gap-4 mt-3">
-            {measured.map((m) => (
-              <div>
-                <div class="font-mono text-2xl md:text-3xl font-bold text-white tabular-nums">{m.n}</div>
-                <div class="text-xs text-neutral-500 mt-1 leading-snug">{m.label}</div>
-              </div>
-            ))}
+          <div class="specimen-cell">
+            <div class="specimen-head">
+              <span class="stamp stamp-ok">Printed</span>
+              <span class="label">Att. 9</span>
+            </div>
+            <img src="/work/fin-skull.webp" alt="The delivered illustration: the skull has correct eye sockets and teeth." loading="eager" />
           </div>
-          <p class="text-sm text-neutral-400 mt-5 leading-relaxed">
-            The Grade-5 book kept every rejected attempt on disk, so its real
-            cost could be counted instead of estimated.
-            <span class="text-neutral-200 group-hover:text-teal-300 transition whitespace-nowrap">Read the case study →</span>
-          </p>
         </div>
-      </a>
-    </div>
-
-    <!-- ARTWORK MARQUEE (do rows) -->
-    <div class="space-y-4 py-6">
-      <div class="marquee">
-        <div class="marquee-track marquee-l">
-          {[...rowA, ...rowA].map((src) => (
-            <img src={src} alt="" loading="lazy" class="h-28 md:h-36 w-auto rounded-xl border border-neutral-800 object-cover" />
-          ))}
-        </div>
-      </div>
-      <div class="marquee">
-        <div class="marquee-track marquee-r">
-          {[...rowB, ...rowB].map((src) => (
-            <img src={src} alt="" loading="lazy" class="h-28 md:h-36 w-auto rounded-xl border border-neutral-800 object-cover" />
-          ))}
-        </div>
-      </div>
+        <figcaption class="specimen-foot">
+          <span>c1_04_v1_no_eyesockets_WRONG.png</span>
+          <span>8 attempts archived · Grade-5 Science</span>
+        </figcaption>
+      </figure>
     </div>
   </section>
 
-  <!-- ================= FEATURED WORK ================= -->
-  <section class="max-w-6xl mx-auto px-6 py-16 border-t border-neutral-900">
-    <div class="flex items-end justify-between mb-8">
-      <h2 class="reveal text-3xl font-black">Featured work</h2>
-      <a href="/work" class="reveal text-sm text-neutral-400 hover:text-white transition">See all →</a>
+  <!-- artwork band -->
+  <div class="marquee" style="border-block: 1px solid var(--ink); padding-block: 0.75rem; background: var(--paper-hi);">
+    <div class="marquee-track marquee-l">
+      {[...strip, ...strip].map((src) => (
+        <img src={src} alt="" loading="lazy" style="height:5.5rem; width:auto; display:block;" />
+      ))}
+    </div>
+  </div>
+
+  <!-- ========================= DOCKET ========================= -->
+  <section class="wrap" style="padding-block: 4.5rem;">
+    <div class="docket-grid">
+      <div>
+        <p class="reveal label">Job docket</p>
+        <h2 class="reveal d1 display" style="font-size: clamp(1.9rem, 3.4vw, 2.8rem); margin-top: 0.8rem;">
+          Counted from<br />the files on disk.
+        </h2>
+        <p class="reveal d2" style="color: var(--ink-2); margin-top: 1.1rem; max-width: 34ch;">
+          One book kept every reject instead of overwriting it. That book is the
+          only one here whose cost is a measurement rather than a memory — and
+          the earlier ones are left without numbers rather than given
+          flattering ones.
+        </p>
+      </div>
+
+      <table class="reveal d1 spec">
+        <tbody>
+          {docket.map((row) => (
+            <tr>
+              <td>{row.k}</td>
+              <td>{row.hi ? <strong>{row.v}</strong> : row.v}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ========================= WORK ========================= -->
+  <section class="wrap" style="padding-block: 1rem 4rem;">
+    <div style="display:flex; align-items:baseline; justify-content:space-between; gap:1rem; padding-bottom:0.9rem; border-bottom:1px solid var(--ink);">
+      <h2 class="reveal label" style="color: var(--ink);">Selected work</h2>
+      <a class="reveal label label-mag" href="/work/">All projects →</a>
     </div>
 
-    <div class="grid gap-6 sm:grid-cols-2">
-      {featured.map((p, i) => (
-        <a href={`/work/${p.id}/`} class={`reveal ${i % 2 ? 'd1' : ''} group rounded-2xl overflow-hidden border border-neutral-800 bg-neutral-900 hover:border-neutral-600 hover:-translate-y-1 transition block`}>
-          <div class="overflow-hidden">
-            <img
-              src={p.data.cover}
-              alt={p.data.title}
-              class="aspect-[16/10] w-full object-cover group-hover:scale-105 transition duration-500"
-            />
-          </div>
-          <div class="p-5">
-            <h3 class="font-bold text-lg">{p.data.title}</h3>
-            <p class="text-sm text-neutral-400 mt-2 line-clamp-2">{p.data.summary}</p>
+    <div class="work-grid" style="margin-top:2rem;">
+      {featured.map((p) => (
+        <a class="reveal card" href={`/work/${p.id}/`}>
+          <img src={p.data.cover} alt={p.data.title} loading="lazy" style="aspect-ratio: 16/10; object-fit: cover;" />
+          <div class="card-body">
+            <p class="label mono">{p.data.date.getFullYear()}{p.data.company ? ` · ${p.data.company}` : ''}</p>
+            <h3 class="display" style="font-size:1.35rem; margin-top:0.5rem; line-height:1.1;">{p.data.title}</h3>
+            <p style="color: var(--ink-2); font-size:0.95rem; margin-top:0.6rem;">{p.data.summary.slice(0, 128)}…</p>
           </div>
         </a>
       ))}
     </div>
   </section>
 
-  <!-- ================= ABOUT ================= -->
-  <section class="max-w-6xl mx-auto px-6 py-16 border-t border-neutral-900">
-    <h2 class="reveal text-3xl font-black mb-6">About</h2>
-    <div class="grid md:grid-cols-3 gap-8">
-      <div class="reveal md:col-span-2 space-y-5 text-lg text-neutral-300 leading-relaxed">
+  <!-- ========================= ABOUT ========================= -->
+  <section class="wrap" style="padding-block: 3rem 4rem; border-top: 1px solid var(--rule);">
+    <div class="docket-grid">
+      <div>
+        <p class="reveal label">Colophon</p>
+        <h2 class="reveal d1 display" style="font-size: clamp(1.9rem, 3.4vw, 2.8rem); margin-top:0.8rem;">
+          How the work<br />gets made.
+        </h2>
+      </div>
+
+      <div class="reveal d1" style="max-width: var(--measure);">
         <p>
           I’m Kanishk. I build generative image pipelines and own what comes out
-          of them — the prompts, the agent loops, the review gates, and the
+          of them — the prompts, the agent loops, the review gates and the
           visual quality of the final asset.
         </p>
-        <p>
-          The work on this site is five complete textbooks. Each one starts as a
-          manuscript and ends as 300&nbsp;DPI print files: the chapter is read
-          into a shot list, every illustration is generated against a locked
-          style bible and fixed palette, rejects are archived with the reason
-          they failed, and an automated QA script checks resolution, alpha,
-          print density and edge halos before anything is delivered.
+        <p style="margin-top:1.05rem;">
+          A chapter is read into a shot list, every illustration is generated
+          against a locked style bible and a fixed palette, rejects go to an
+          archive named with the reason they failed, and an automated QA script
+          checks resolution, alpha, print density and edge halos before
+          anything is delivered.
         </p>
-        <p>
-          That last part is the difference. A pipeline that throws away its
-          failures can only ever report good news. The Grade-5 book kept
-          all&nbsp;107 of its rejected attempts, which is why it can tell you
-          exactly what it cost.
+        <p style="margin-top:1.05rem;">
+          That last part is the difference. A pipeline that deletes its failures
+          can only ever report good news.
         </p>
+
+        <table class="spec" style="margin-top:2rem;">
+          <tbody>
+            <tr><td>Build with</td><td>Claude Code + MCP, agent loops, Python, n8n</td></tr>
+            <tr><td>Generate with</td><td>Gemini, GPT Image, Magnific, Veo, ElevenLabs</td></tr>
+            <tr><td>Ship as</td><td>300 DPI print files, QA-gated</td></tr>
+            <tr><td>Open source</td><td><a href="https://github.com/Kanishk688/genai-illustration-pipeline" style="color:var(--magenta); text-decoration:underline; text-underline-offset:3px;">genai-illustration-pipeline</a></td></tr>
+          </tbody>
+        </table>
       </div>
-      <ul class="reveal d1 text-sm text-neutral-400 space-y-3">
-        <li><span class="text-neutral-200 font-semibold block">Focus</span> Generative image &amp; video pipelines for production</li>
-        <li><span class="text-neutral-200 font-semibold block">Build with</span> Claude Code + MCP, agent loops, Python, n8n</li>
-        <li><span class="text-neutral-200 font-semibold block">Generate with</span> Gemini, GPT Image, Magnific, Veo, Runway, ElevenLabs</li>
-        <li><span class="text-neutral-200 font-semibold block">Ship as</span> 300&nbsp;DPI print files, QA-gated</li>
-        <li><span class="text-neutral-200 font-semibold block">Open source</span> <a href="https://github.com/Kanishk688/genai-illustration-pipeline" class="text-teal-400 hover:text-teal-300 underline underline-offset-2">genai-illustration-pipeline</a></li>
-      </ul>
     </div>
   </section>
 
-  <!-- ================= CONTACT ================= -->
-  <section id="contact" class="max-w-6xl mx-auto px-6 py-24 border-t border-neutral-900 text-center">
-    <h2 class="reveal text-3xl md:text-4xl font-black">Let’s work together</h2>
-    <p class="reveal d1 text-neutral-300 mt-3 max-w-xl mx-auto">
-      If you need a generative pipeline built — or the one you have to stop
-      drifting, start passing QA and report its own numbers — I’d like to hear
-      about it.
-    </p>
-    <a href="mailto:kanishkverma688@gmail.com"
-       class="reveal d2 inline-block mt-6 rounded-full bg-gradient-to-r from-teal-400 to-fuchsia-500 text-neutral-950 font-bold px-8 py-3 hover:opacity-90 hover:-translate-y-0.5 transition">
+  <!-- ========================= CONTACT ========================= -->
+  <section class="wrap" style="padding-block: 3rem 1rem;">
+    <p class="reveal label">Contact</p>
+    <h2 class="reveal d1 display" style="font-size: clamp(2.2rem, 5vw, 3.6rem); margin-top:0.8rem; max-width:18ch;">
+      Need a pipeline built, or one that stopped behaving?
+    </h2>
+    <a class="reveal d2 btn" style="margin-top:1.8rem;" href="mailto:kanishkverma688@gmail.com">
       kanishkverma688@gmail.com
     </a>
   </section>
 </Layout>
+
+<style>
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 3.5rem;
+    align-items: start;
+  }
+  .docket-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3.5rem;
+    align-items: start;
+  }
+  .work-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr));
+    gap: 1.5rem;
+  }
+  @media (max-width: 900px) {
+    .hero-grid, .docket-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+  }
+</style>

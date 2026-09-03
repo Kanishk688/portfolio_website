@@ -4,10 +4,7 @@ import { getCollection, render } from 'astro:content';
 
 export async function getStaticPaths() {
   const projects = await getCollection('projects');
-  return projects.map((p) => ({
-    params: { slug: p.id },
-    props: { project: p },
-  }));
+  return projects.map((p) => ({ params: { slug: p.id }, props: { project: p } }));
 }
 
 const { project } = Astro.props;
@@ -26,102 +23,83 @@ for (const it of items) {
   g.images.push(it);
 }
 
-// har image ko ek flat index do (lightbox next/prev ke liye).
 let idx = 0;
 
 // ---- KAB BANA ----
-// Sirf saal likhna kaafi nahi. Dekhne wale ko ye bhi pata hona chahiye ki
-// us waqt tooling kahan thi, warna woh aaj ke standard se purana kaam tolega.
+// Saal akela kaafi nahi; us waqt tooling kahan thi ye bhi spec ka hissa hai.
 const made = project.data.date;
 const madeOn = made.toLocaleString('en-GB', { month: 'long', year: 'numeric' });
 const madeYear = made.getFullYear();
-const hasEra = Boolean(
-  project.data.company || project.data.eraNote || project.data.tools.length
-);
 ---
 
 <Layout title={`${project.data.title} — Kanishk Verma`} description={project.data.summary}>
-  <main class="max-w-5xl mx-auto px-6 py-16">
-    <a href="/work" class="reveal text-sm text-neutral-400 hover:text-white transition">← Back to Work</a>
+  <main class="wrap" style="padding-block: 2.5rem 2rem;">
+    <a class="label" href="/work/" style="color: var(--ink-2);">← Index</a>
 
-    <h1 class="reveal text-4xl md:text-5xl font-black mt-6">{project.data.title}</h1>
-    <p class="reveal d1 text-lg text-neutral-300 mt-3 max-w-2xl">{project.data.summary}</p>
+    <!-- ---------------- HEAD ---------------- -->
+    <header style="margin-top:2rem; padding-bottom:2rem; border-bottom:1px solid var(--ink);">
+      <p class="reveal label label-mag">
+        {madeYear}{project.data.company ? ` · ${project.data.company}` : ''}
+      </p>
+      <h1 class="reveal d1 display" style="font-size: clamp(2.4rem, 5.5vw, 4rem); margin-top:0.8rem;">
+        {project.data.title}
+      </h1>
+      <p class="reveal d2 lede" style="margin-top:1.2rem;">{project.data.summary}</p>
+    </header>
 
-    <div class="reveal d1 flex flex-wrap gap-2 mt-4">
-      {project.data.tags.map((t) => (
-        <span class="text-xs rounded-full bg-neutral-800 text-neutral-300 px-2.5 py-1">{t}</span>
-      ))}
+    <!-- ---------------- SPEC ---------------- -->
+    <div class="spec-grid" style="margin-top:2.5rem;">
+      <div class="reveal">
+        <p class="label">Built with the tools of {madeYear}</p>
+        {project.data.eraNote && (
+          <p style="margin-top:0.9rem; color: var(--ink-2); max-width: 58ch;">{project.data.eraNote}</p>
+        )}
+        {project.data.externalUrl && (
+          <a class="btn btn-ghost" href={project.data.externalUrl} target="_blank" rel="noopener" style="margin-top:1.4rem;">
+            {project.data.externalLabel ?? 'View the full work'} ↗
+          </a>
+        )}
+      </div>
+
+      <table class="reveal d1 spec">
+        <tbody>
+          <tr><td>Produced</td><td>{madeOn}</td></tr>
+          {project.data.company && <tr><td>Client</td><td>{project.data.company}</td></tr>}
+          {project.data.role && <tr><td>Role</td><td>{project.data.role}</td></tr>}
+          {project.data.tools.length > 0 && (
+            <tr><td>Tools</td><td>{project.data.tools.join(', ')}</td></tr>
+          )}
+          <tr><td>Plates</td><td>{items.length}</td></tr>
+        </tbody>
+      </table>
     </div>
 
-    {hasEra && (
-      <aside class="reveal d1 mt-8 max-w-3xl rounded-2xl border border-neutral-800 bg-neutral-900/40 overflow-hidden">
-        <div class="flex flex-col sm:flex-row">
-          <!-- kab bana -->
-          <div class="sm:w-40 shrink-0 px-6 py-5 border-b sm:border-b-0 sm:border-r border-neutral-800 bg-neutral-900/60">
-            <div class="font-mono text-3xl font-bold text-white tabular-nums leading-none">{madeYear}</div>
-            <div class="text-xs text-neutral-500 mt-1.5">{madeOn}</div>
-            {project.data.company && (
-              <div class="text-xs text-neutral-400 mt-3 leading-snug">{project.data.company}</div>
-            )}
-            {project.data.role && (
-              <div class="text-xs text-neutral-500 mt-1 leading-snug">{project.data.role}</div>
-            )}
-          </div>
-
-          <!-- us waqt kya mushkil tha -->
-          <div class="px-6 py-5 flex-1">
-            <div class="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-teal-400">
-              Built with the tools of {madeYear}
-            </div>
-            {project.data.eraNote && (
-              <p class="text-sm text-neutral-300 mt-2.5 leading-relaxed">{project.data.eraNote}</p>
-            )}
-            {project.data.tools.length > 0 && (
-              <div class="flex flex-wrap gap-1.5 mt-4">
-                {project.data.tools.map((t) => (
-                  <span class="text-[0.7rem] font-mono rounded bg-neutral-800/80 text-neutral-400 px-2 py-1">{t}</span>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      </aside>
-    )}
-
-    {project.data.externalUrl && (
-      <a href={project.data.externalUrl} target="_blank" rel="noopener"
-         class="reveal d1 group inline-flex items-center gap-2 mt-5 rounded-full border border-neutral-700 hover:border-teal-500/60 px-5 py-2.5 text-sm text-neutral-200 transition">
-        {project.data.externalLabel ?? 'View the full work'}
-        <span class="text-neutral-500 group-hover:text-teal-400 transition">↗</span>
-      </a>
-    )}
-
-    <div class="reveal d2 case-body mt-10 max-w-3xl">
+    <!-- ---------------- BODY ---------------- -->
+    <div class="reveal case-body" style="margin-top:3.5rem;">
       <Content />
     </div>
 
-    <!-- GALLERY = chapter-wise masonry. Image pe click = pro lightbox. -->
+    <!-- ---------------- PLATES ---------------- -->
     {groups.map((group) => (
-      <section class="mt-14">
+      <section style="margin-top:4rem;">
         {group.chapter && (
-          <h2 class="reveal text-xl md:text-2xl font-bold border-l-4 border-teal-400 pl-3 mb-6">
-            {group.chapter}
-          </h2>
+          <div class="reveal" style="display:flex; align-items:baseline; justify-content:space-between; gap:1rem; padding-bottom:0.75rem; margin-bottom:1.5rem; border-bottom:1px solid var(--ink);">
+            <h2 class="display" style="font-size:1.4rem; line-height:1.1;">{group.chapter}</h2>
+            <span class="label mono">{group.images.length} pl.</span>
+          </div>
         )}
-        <div class="columns-1 sm:columns-2 gap-6">
+        <div class="plate-grid">
           {group.images.map((img) => (
-            <figure class="reveal mb-6 break-inside-avoid group">
+            <figure class="reveal plate" style="margin:0;">
               <img
                 src={img.src}
                 alt={img.caption ?? project.data.title}
                 data-idx={idx++}
                 data-caption={img.caption ?? ''}
-                class="lightbox-img w-full rounded-xl border border-neutral-800 cursor-zoom-in group-hover:brightness-110 group-hover:-translate-y-0.5 transition"
+                class="lightbox-img"
                 loading="lazy"
               />
-              {img.caption && (
-                <figcaption class="text-sm text-neutral-400 mt-2 leading-snug">{img.caption}</figcaption>
-              )}
+              {img.caption && <figcaption>{img.caption}</figcaption>}
             </figure>
           ))}
         </div>
@@ -129,22 +107,18 @@ const hasEra = Boolean(
     ))}
   </main>
 
-  <!-- ===== PRO LIGHTBOX ===== -->
-  <div id="lightbox" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/92 backdrop-blur-sm select-none">
-    <!-- band karne ka cross -->
-    <button id="lb-close" aria-label="Close" class="absolute top-4 right-5 text-white/70 hover:text-white text-3xl leading-none">×</button>
-    <!-- prev -->
-    <button id="lb-prev" aria-label="Previous" class="absolute left-3 md:left-6 top-1/2 -translate-y-1/2 h-11 w-11 rounded-full bg-white/10 hover:bg-white/20 text-white text-2xl grid place-items-center">‹</button>
-    <!-- image + caption -->
-    <figure class="max-h-[90vh] max-w-[92vw] flex flex-col items-center gap-3">
-      <img id="lb-img" src="" alt="" class="max-h-[80vh] max-w-[92vw] rounded-lg object-contain" />
-      <figcaption class="text-center text-sm text-neutral-300 max-w-2xl px-4">
+  <!-- ===== LIGHTBOX ===== -->
+  <div id="lightbox" style="position:fixed; inset:0; z-index:100; display:none; align-items:center; justify-content:center; background:rgba(20,20,23,.94); backdrop-filter:blur(2px); user-select:none;">
+    <button id="lb-close" aria-label="Close" class="label" style="position:absolute; top:1rem; right:1.25rem; color:#e8e9ec; background:none; border:0; font-size:1.5rem; cursor:pointer;">×</button>
+    <button id="lb-prev" aria-label="Previous" class="label" style="position:absolute; left:1rem; top:50%; transform:translateY(-50%); color:#e8e9ec; background:none; border:1px solid #55585f; width:2.75rem; height:2.75rem; cursor:pointer;">‹</button>
+    <figure style="max-height:92vh; max-width:92vw; display:flex; flex-direction:column; align-items:center; gap:0.9rem; margin:0;">
+      <img id="lb-img" src="" alt="" style="max-height:82vh; max-width:92vw; object-fit:contain; background:#fff;" />
+      <figcaption style="text-align:center; color:#c5c8ce; font-size:0.9rem; max-width:60ch; padding-inline:1rem;">
         <span id="lb-cap"></span>
-        <span id="lb-count" class="block text-xs text-neutral-500 mt-1"></span>
+        <span id="lb-count" class="label" style="display:block; margin-top:0.4rem;"></span>
       </figcaption>
     </figure>
-    <!-- next -->
-    <button id="lb-next" aria-label="Next" class="absolute right-3 md:right-6 top-1/2 -translate-y-1/2 h-11 w-11 rounded-full bg-white/10 hover:bg-white/20 text-white text-2xl grid place-items-center">›</button>
+    <button id="lb-next" aria-label="Next" class="label" style="position:absolute; right:1rem; top:50%; transform:translateY(-50%); color:#e8e9ec; background:none; border:1px solid #55585f; width:2.75rem; height:2.75rem; cursor:pointer;">›</button>
   </div>
 
   <script>
@@ -155,26 +129,23 @@ const hasEra = Boolean(
       const count = document.getElementById('lb-count');
       if (!box || !img || !cap || !count) return;
 
-      // saari gallery images ek array me (DOM order = data-idx order).
       const els = Array.from(document.querySelectorAll<HTMLImageElement>('.lightbox-img'));
       const list = els.map((el) => ({ src: el.src, caption: el.dataset.caption || '' }));
       let cur = 0;
 
       function show(i: number) {
-        cur = (i + list.length) % list.length; // wrap-around
+        cur = (i + list.length) % list.length;
         img!.src = list[cur].src;
         cap!.textContent = list[cur].caption;
         count!.textContent = `${cur + 1} / ${list.length}`;
       }
       function open(i: number) {
         show(i);
-        box!.classList.remove('hidden');
-        box!.classList.add('flex');
+        box!.style.display = 'flex';
         document.body.style.overflow = 'hidden';
       }
       function close() {
-        box!.classList.add('hidden');
-        box!.classList.remove('flex');
+        box!.style.display = 'none';
         document.body.style.overflow = '';
       }
 
@@ -182,18 +153,15 @@ const hasEra = Boolean(
       document.getElementById('lb-close')?.addEventListener('click', close);
       document.getElementById('lb-prev')?.addEventListener('click', (e) => { e.stopPropagation(); show(cur - 1); });
       document.getElementById('lb-next')?.addEventListener('click', (e) => { e.stopPropagation(); show(cur + 1); });
-      // overlay (image ke bahar) click = band
       box.addEventListener('click', (e) => { if (e.target === box) close(); });
 
-      // keyboard
       document.addEventListener('keydown', (e) => {
-        if (box.classList.contains('hidden')) return;
+        if (box.style.display !== 'flex') return;
         if (e.key === 'Escape') close();
         else if (e.key === 'ArrowLeft') show(cur - 1);
         else if (e.key === 'ArrowRight') show(cur + 1);
       });
 
-      // mobile swipe
       let sx = 0;
       box.addEventListener('touchstart', (e) => { sx = e.changedTouches[0].clientX; }, { passive: true });
       box.addEventListener('touchend', (e) => {
@@ -204,3 +172,19 @@ const hasEra = Boolean(
     document.addEventListener('astro:page-load', setupLightbox);
   </script>
 </Layout>
+
+<style>
+  .spec-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: start;
+  }
+  /* CSS columns = masonry. Plates ki height alag-alag hoti hai (portrait
+     comic page, landscape diagram), grid me us se badi khaali jagah bachti. */
+  .plate-grid { columns: 3 17rem; column-gap: 1.25rem; }
+  .plate-grid > * { break-inside: avoid; margin-bottom: 1.25rem; }
+  @media (max-width: 900px) {
+    .spec-grid { grid-template-columns: 1fr; gap: 2rem; }
+  }
+</style>

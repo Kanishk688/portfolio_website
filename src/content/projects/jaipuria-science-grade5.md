@@ -3,6 +3,13 @@ title: "Grade-5 Science — Textbook Illustrations"
 summary: "A full Grade-5 science book — the skeleton and muscles, the nervous system, food and health, safety and first aid, how plants reproduce and how animals live. The first book on this site produced with every rejected attempt kept on record, so the real cost of the work is measured rather than estimated."
 cover: "/work/g5-c6-pond-story-scene.webp"
 gallery:
+  # What the archive caught
+  - { src: "/work/rej-skull-noeyes.webp", chapter: "What the archive caught", caption: "c1_04_v1_no_eyesockets_WRONG.png — a skull with no eye sockets. Handsome, and wrong. It took eight more attempts to get this one right." }
+  - { src: "/work/rej-skull-smiling.webp", chapter: "What the archive caught", caption: "c1_03_v1_smiling_skull_WRONG.png — a skull rendered smiling. The failure mode that matters: a picture a child would enjoy, teaching something false." }
+  - { src: "/work/rej-render3d.webp", chapter: "What the archive caught", caption: "c2_03_v1_render3d.png — style drift. Asked for something difficult, the model quietly answered with a 3D render." }
+  - { src: "/work/rej-gouache.webp", chapter: "What the archive caught", caption: "c2_01_v3_gouache_rejected.png — style drift again, this time into gouache, in a book set entirely in flat editorial illustration." }
+  - { src: "/work/rej-arm-cropped.webp", chapter: "What the archive caught", caption: "c2_01_v1_croppedarm.png — a composition fault: the arm leaves the frame. Cheap to catch, cheap to fix, only if somebody checks." }
+  - { src: "/work/rej-choreography.webp", chapter: "What the archive caught", caption: "c2_02_v2_choreography_wrong.png — the badminton stroke is played wrong. Right style, right characters, wrong action." }
   # Chapter 0 — How Do Scientists Find Out?
   - { src: "/work/g5-c0-arjun-paper-bridge.webp", chapter: "Chapter 0 — How Do Scientists Find Out?", caption: "Arjun predicts that a folded paper strip and a flat one will hold the same weight." }
   - { src: "/work/g5-c0-meera-thinking.webp", chapter: "Chapter 0 — How Do Scientists Find Out?", caption: "Meera is not convinced — the doubt that starts a real investigation." }
