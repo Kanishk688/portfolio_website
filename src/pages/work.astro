@@ -19,105 +19,80 @@ function catsFor(tags: string[]): string[] {
 }
 
 const withCats = projects.map((p) => ({ p, cats: catsFor(p.data.tags) }));
-
-// ---- SAAL KE HISAAB SE GROUP ----
-// AI tooling har saal alag hoti hai. Agar 2025 aur 2026 ka kaam bina
-// alag kiye ek saath dikhega, to dekhne wala purane kaam ko aaj ke
-// standard se tolega aur galat nateeja nikalega. Isliye har saal apni
-// capability ke saath aata hai.
-const ERAS: Record<number, string> = {
-  2026:
-    'Character and style consistency had largely become something the tools ' +
-    'handled. The difficulty moved to correctness, print QA and knowing what ' +
-    'each delivered asset actually cost.',
-  2025:
-    'No character reference, no style lock, no printable generated text. ' +
-    'Keeping a cast recognisable across a whole book was manual work, and ' +
-    'every speech bubble was typeset over the art afterwards.',
-};
-
-const years = [...new Set(withCats.map((x) => x.p.data.date.getFullYear()))]
-  .sort((a, b) => b - a);
-const byYear = years.map((year) => ({
-  year,
-  era: ERAS[year],
-  items: withCats.filter((x) => x.p.data.date.getFullYear() === year),
-}));
-
-// kaunse filter-chips dikhane hain (sirf jo maujood hain).
 const has = (c: string) => withCats.some((x) => x.cats.includes(c));
 const chips = [
   { slug: 'all', label: 'All' },
   { slug: 'science', label: 'Science' },
   { slug: 'english', label: 'English' },
   { slug: 'comics', label: 'Comics' },
-  { slug: 'grade-1', label: 'Grade 1' },
-  { slug: 'grade-2', label: 'Grade 2' },
-  { slug: 'grade-3', label: 'Grade 3' },
-  { slug: 'grade-4', label: 'Grade 4' },
-  { slug: 'grade-5', label: 'Grade 5' },
+  { slug: 'grade-1', label: 'Gr 1' },
+  { slug: 'grade-2', label: 'Gr 2' },
+  { slug: 'grade-3', label: 'Gr 3' },
+  { slug: 'grade-4', label: 'Gr 4' },
+  { slug: 'grade-5', label: 'Gr 5' },
 ].filter((c) => c.slug === 'all' || has(c.slug));
+
+// ---- SAAL KE HISAAB SE ----
+// AI tooling har saal alag hoti hai. Bina saal ke, purana kaam aaj ke
+// standard se tola jaata hai aur galat nateeja nikalta hai.
+const ERAS: Record<number, string> = {
+  2026:
+    'Character and style consistency had largely become something the tools handled. ' +
+    'The difficulty moved to correctness, print QA, and knowing what each delivered asset cost.',
+  2025:
+    'No character reference, no style lock, no printable generated text. Keeping a cast ' +
+    'recognisable across a whole book was manual work, and every speech bubble was typeset over the art.',
+};
+
+const years = [...new Set(withCats.map((x) => x.p.data.date.getFullYear()))].sort((a, b) => b - a);
+const byYear = years.map((year) => ({
+  year,
+  era: ERAS[year],
+  items: withCats.filter((x) => x.p.data.date.getFullYear() === year),
+}));
 ---
 
 <Layout title="Work — Kanishk Verma">
-  <main class="max-w-6xl mx-auto px-6 py-16">
-    <h1 class="reveal text-5xl font-black mb-2">Work</h1>
-    <p class="reveal text-neutral-400 mb-8 max-w-2xl">
-      Grouped by the year each project was made, because what the tools could
-      do that year is part of reading the work — what was hard in 2025 is
-      routine now, and the reverse will be true of 2026.
+  <main class="wrap" style="padding-block: 3.5rem 2rem;">
+    <p class="reveal label label-mag">Index of work</p>
+    <h1 class="reveal d1 display" style="font-size: clamp(2.6rem, 6vw, 4.4rem); margin-top:0.9rem;">
+      Sorted by what<br />the tools could do.
+    </h1>
+    <p class="reveal d2 lede" style="margin-top:1.4rem;">
+      Grouped by the year each project was made, because in generative work the
+      year is part of the spec — what took a week in 2025 can take an afternoon
+      now, and the same will be said of 2026.
     </p>
 
-    <!-- FILTER CHIPS -->
-    <div id="filters" class="reveal flex flex-wrap gap-2 mb-10">
+    <!-- FILTERS -->
+    <div id="filters" class="reveal d2" style="display:flex; flex-wrap:wrap; gap:1.25rem; margin-top:2.5rem; padding-bottom:0.5rem; border-bottom:1px solid var(--ink);">
       {chips.map((c, i) => (
-        <button
-          type="button"
-          data-filter={c.slug}
-          class:list={[
-            'filter-chip text-sm rounded-full px-4 py-1.5 border transition',
-            i === 0
-              ? 'is-active bg-white text-neutral-950 border-white font-semibold'
-              : 'bg-neutral-900 text-neutral-300 border-neutral-700 hover:border-neutral-500',
-          ]}
-        >
+        <button type="button" data-filter={c.slug} class:list={['filter', i === 0 && 'is-active']}>
           {c.label}
         </button>
       ))}
     </div>
 
-    <!-- HAR SAAL KA APNA BLOCK, upar us saal ki capability. -->
+    <!-- HAR SAAL KA BLOCK -->
     {byYear.map(({ year, era, items }) => (
-      <section class="year-block mb-4" data-year={year}>
-        <div class="reveal flex flex-col md:flex-row md:items-baseline gap-2 md:gap-6 pb-4 mb-8 border-b border-neutral-800">
-          <h2 class="font-mono text-3xl font-bold text-white tabular-nums shrink-0">{year}</h2>
-          {era && <p class="text-sm text-neutral-500 leading-relaxed max-w-2xl">{era}</p>}
+      <section class="year-block" data-year={year} style="margin-top:3.5rem;">
+        <div class="year-head reveal">
+          <span class="display mono" style="font-size:2.6rem; line-height:1;">{year}</span>
+          {era && <p style="color: var(--ink-2); font-size:0.95rem; max-width:56ch; margin:0;">{era}</p>}
         </div>
 
-        <!-- MASONRY: CSS columns; har card break-inside-avoid taaki toote na. -->
-        <div class="columns-1 sm:columns-2 lg:columns-3 gap-6 mb-10">
+        <div class="work-grid">
           {items.map(({ p, cats }) => (
-            <div class="project-card reveal mb-6 break-inside-avoid" data-cats={cats.join(' ')}>
-              <a href={`/work/${p.id}/`} class="group block rounded-2xl overflow-hidden border border-neutral-800 bg-neutral-900 hover:border-neutral-600 hover:-translate-y-1 transition">
-                <div class="overflow-hidden">
-                  <img
-                    src={p.data.cover}
-                    alt={p.data.title}
-                    loading="lazy"
-                    class="w-full object-cover group-hover:scale-105 transition duration-500"
-                  />
-                </div>
-                <div class="p-5">
-                  <h3 class="font-bold text-lg leading-snug">{p.data.title}</h3>
-                  {p.data.company && (
-                    <p class="text-xs text-neutral-500 mt-1.5">{p.data.company}</p>
-                  )}
-                  <p class="text-sm text-neutral-400 mt-2 line-clamp-2">{p.data.summary}</p>
-                  <div class="flex flex-wrap gap-2 mt-3">
-                    {p.data.tags.map((t) => (
-                      <span class="text-xs rounded-full bg-neutral-800 text-neutral-300 px-2.5 py-1">{t}</span>
-                    ))}
-                  </div>
+            <div class="project-card reveal" data-cats={cats.join(' ')}>
+              <a class="card" href={`/work/${p.id}/`}>
+                <img src={p.data.cover} alt={p.data.title} loading="lazy" style="aspect-ratio: 4/3; object-fit: cover;" />
+                <div class="card-body">
+                  {p.data.company && <p class="label mono">{p.data.company}</p>}
+                  <h2 class="display" style="font-size:1.3rem; margin-top:0.5rem; line-height:1.1;">{p.data.title}</h2>
+                  <p style="color: var(--ink-2); font-size:0.92rem; margin-top:0.55rem;">{p.data.summary.slice(0, 110)}…</p>
+                  <p style="margin-top:0.9rem;">
+                    {p.data.tags.map((t) => <span class="tag">{t}</span>)}
+                  </p>
                 </div>
               </a>
             </div>
@@ -126,17 +101,18 @@ const chips = [
       </section>
     ))}
 
-    <p id="empty" class="hidden text-neutral-500 text-center py-16">No projects in this filter yet.</p>
+    <p id="empty" class="label" style="display:none; text-align:center; padding-block:4rem;">
+      Nothing in this filter yet.
+    </p>
   </main>
 
   <script>
     function setupFilters() {
-      const chips = document.querySelectorAll<HTMLButtonElement>('.filter-chip');
+      const chips = document.querySelectorAll<HTMLButtonElement>('.filter');
       const cards = document.querySelectorAll<HTMLElement>('.project-card');
+      const blocks = document.querySelectorAll<HTMLElement>('.year-block');
       const empty = document.getElementById('empty');
       if (!chips.length) return;
-
-      const yearBlocks = document.querySelectorAll<HTMLElement>('.year-block');
 
       function apply(slug: string) {
         let shown = 0;
@@ -146,26 +122,19 @@ const chips = [
           card.style.display = show ? '' : 'none';
           if (show) shown++;
         });
-        // Jis saal ka koi card nahi bacha, us saal ka heading bhi chhupa do —
-        // warna khaali saal ka header latka reh jaata hai.
-        yearBlocks.forEach((block) => {
-          const alive = block.querySelectorAll<HTMLElement>('.project-card')
-            .length > 0 &&
-            [...block.querySelectorAll<HTMLElement>('.project-card')]
-              .some((c) => c.style.display !== 'none');
-          block.style.display = alive ? '' : 'none';
+        // khaali saal ka heading bhi hata do
+        blocks.forEach((b) => {
+          const alive = [...b.querySelectorAll<HTMLElement>('.project-card')]
+            .some((c) => c.style.display !== 'none');
+          b.style.display = alive ? '' : 'none';
         });
-        if (empty) empty.classList.toggle('hidden', shown > 0);
+        if (empty) empty.style.display = shown ? 'none' : 'block';
       }
 
       chips.forEach((chip) => {
         chip.addEventListener('click', () => {
-          chips.forEach((c) => {
-            c.classList.remove('is-active', 'bg-white', 'text-neutral-950', 'border-white', 'font-semibold');
-            c.classList.add('bg-neutral-900', 'text-neutral-300', 'border-neutral-700');
-          });
-          chip.classList.add('is-active', 'bg-white', 'text-neutral-950', 'border-white', 'font-semibold');
-          chip.classList.remove('bg-neutral-900', 'text-neutral-300', 'border-neutral-700');
+          chips.forEach((c) => c.classList.remove('is-active'));
+          chip.classList.add('is-active');
           apply(chip.dataset.filter || 'all');
         });
       });
@@ -173,3 +142,22 @@ const chips = [
     document.addEventListener('astro:page-load', setupFilters);
   </script>
 </Layout>
+
+<style>
+  .year-head {
+    display: flex;
+    align-items: baseline;
+    gap: 2rem;
+    padding-bottom: 0.9rem;
+    margin-bottom: 1.75rem;
+    border-bottom: 1px solid var(--ink);
+  }
+  .work-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+    gap: 1.5rem;
+  }
+  @media (max-width: 640px) {
+    .year-head { flex-direction: column; gap: 0.6rem; }
+  }
+</style>

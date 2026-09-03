@@ -2,13 +2,12 @@
 // COMMON DHAANCHA — har page isko use karega.
 import '../styles/global.css';
 import Header from '../components/Header.astro';
-// ClientRouter = Astro ka View-Transitions. Isse ek page se doosre pe jaate
-// waqt smooth fade/slide hota hai (full reload nahi dikhta).
 import { ClientRouter } from 'astro:transitions';
 
 const {
   title = 'Kanishk Verma — Generative Media Engineer',
-  description = 'Generative media engineer. I build the pipelines that turn a manuscript into print-ready artwork at book scale — style locked, rejects archived, cost measured per delivered asset.',
+  description =
+    'Generative media engineer. I build the pipelines that turn a manuscript into print-ready artwork at book scale — style locked, every reject archived, cost measured per delivered asset.',
 } = Astro.props;
 ---
 
@@ -19,17 +18,34 @@ const {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <!-- share/preview -->
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
-    <!-- emoji favicon (no file needed) -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎨</text></svg>" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..500&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    />
+
+    <!-- favicon: CMYK registration dots, kyunki kaam print ka hai -->
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23e8e9ec'/%3E%3Ccircle cx='9' cy='9' r='6' fill='%230090cf'/%3E%3Ccircle cx='23' cy='9' r='6' fill='%23d1006b'/%3E%3Ccircle cx='9' cy='23' r='6' fill='%23f2c200'/%3E%3Ccircle cx='23' cy='23' r='6' fill='%23141417'/%3E%3C/svg%3E"
+    />
     <ClientRouter />
   </head>
-  <body class="bg-neutral-950 text-white antialiased">
+  <body>
     <Header />
     <slot />
+
+    <footer class="wrap" style="padding-block: 3.5rem 4rem; border-top: 1px solid var(--rule); margin-top: 5rem;">
+      <div style="display:flex; flex-wrap:wrap; gap:1.5rem; justify-content:space-between; align-items:baseline;">
+        <span class="label">Kanishk Kumar Verma — Delhi NCR</span>
+        <a class="label label-mag" href="mailto:kanishkverma688@gmail.com">kanishkverma688@gmail.com</a>
+      </div>
+    </footer>
 
     <!-- SCROLL REVEAL: jaise hi koi .reveal element screen me aata hai, use dikhao. -->
     <script>
@@ -48,11 +64,10 @@ const {
               }
             });
           },
-          { threshold: 0.12, rootMargin: '0px 0px -8% 0px' }
+          { threshold: 0.08, rootMargin: '0px 0px -6% 0px' }
         );
         els.forEach((el) => io.observe(el));
       }
-      // pehli load pe bhi chale, aur har page-transition ke baad bhi.
       document.addEventListener('astro:page-load', setupReveal);
     </script>
   </body>
