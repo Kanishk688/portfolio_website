@@ -1,66 +1,29 @@
 ---
-// HERO WALL — kaam ki chalti hui deewar. Kitaabein, comics aur reels
-// dheere-dheere upar-neeche sarakti hain (phone pe daayein-baayein).
-// Kisi bhi tile pe click: kitaab/comic ka page khulta hai, ya video player.
-// Mouse upar le jaao to deewar ruk jaati hai, taaki click aasaan ho.
-// Images: public/wall/ (chhote 480px copies). Nayi chahiye to
-// scratchpad ka make_wall.py dobara chalao.
+// HERO WALL — sirf reels ki chalti hui deewar (web aur phone dono pe).
+// Desktop: 4 patti upar-neeche. Phone: 2 patti daayein-baayein
+// (patti 1 aur 4 — dono milke saari 12 reels dikhati hain).
+// Kisi bhi reel pe click = video player (awaaz ke saath).
+// Mouse upar le jaao to deewar ruk jaati hai.
+// Poster: public/wall/<id>.webp (480px). Video: public/video/<id>-loop.mp4.
+// Sirf wahi video chalti hai jo screen pe dikh rahi ho (phone ki battery bachane ke liye).
 
-type Tile =
-  | { kind: 'img'; name: string; w: number; h: number }
-  | { kind: 'reel'; id: string };
-
-const W: Record<string, [number, number]> = {
-  'm4-c8-music-festival': [480, 480], 'm3-c3-sargam-staircase': [480, 480], 'g5-c6-pond-story-scene': [480, 320],
-  'g4-c9-opening': [480, 268], 'eng1-u5-cherry-fairy': [480, 360], 'eng2-u5-lake-pichola': [480, 360],
-  'g3-c8-forest': [480, 320], 'g5-c8-market-story-scene': [480, 320], 'g5-c1-kabaddi-story-scene': [480, 320],
-  'eng2-u5-night-train': [480, 358], 'g4-c4-opening': [480, 240], 'g5-c10-eclipse-courtyard-story': [480, 320],
-  'eng2-u3-spirit-night': [480, 320], 'g4-c11-opening': [480, 240],
-  'comic-alice-v1-p01': [480, 682], 'comic-velveteen-v1-p01': [480, 682], 'comic-mahavir-v1-p01': [480, 682],
-  'comic-mermaid-v1-p01': [480, 682], 'comic-dolittle-v1-p01': [480, 682],
-  brahmos: [480, 853], helmet: [480, 853], laser: [480, 853], machhar: [480, 853], doodh: [480, 853],
-  cable: [480, 853], yamuna: [480, 853], aankh: [480, 853], saans: [480, 853],
-};
-const img = (name: string): Tile => ({ kind: 'img', name, w: W[name][0], h: W[name][1] });
-const reel = (id: string): Tile => ({ kind: 'reel', id });
-
-const lanes: Tile[][] = [
-  [img('comic-alice-v1-p01'), img('g5-c6-pond-story-scene'), reel('ev'), img('eng1-u5-cherry-fairy'), img('brahmos'), img('g4-c4-opening'), img('comic-mermaid-v1-p01')],
-  [img('m4-c8-music-festival'), img('helmet'), img('g5-c8-market-story-scene'), img('comic-velveteen-v1-p01'), img('eng2-u5-lake-pichola'), img('machhar'), img('g4-c11-opening')],
-  [reel('gangajal'), img('g3-c8-forest'), img('comic-mahavir-v1-p01'), img('laser'), img('m3-c3-sargam-staircase'), img('g5-c1-kabaddi-story-scene'), img('eng2-u5-night-train')],
-  [img('g4-c9-opening'), img('doodh'), img('comic-dolittle-v1-p01'), img('g5-c10-eclipse-courtyard-story'), reel('agni5'), img('eng2-u3-spirit-night'), img('cable')],
+const lanes: string[][] = [
+  ['agni5', 'doodh', 'laser', 'yamuna', 'ev', 'aankh'],          // phone pe dikhti hai
+  ['saans', 'ev', 'machhar', 'doodh', 'brahmos', 'laser'],
+  ['yamuna', 'helmet', 'agni5', 'cable', 'aankh', 'gangajal'],
+  ['gangajal', 'brahmos', 'saans', 'cable', 'helmet', 'machhar'], // phone pe dikhti hai
 ];
-
-const VIDS = new Set(['brahmos', 'helmet', 'laser', 'machhar', 'doodh', 'cable', 'yamuna', 'aankh', 'saans']);
-const slugFor = (name: string) => {
-  if (name.startsWith('comic-')) return name.replace(/-v1-p01$/, '');
-  const pre: Record<string, string> = {
-    m4: 'music-grade4', m3: 'music-grade3', g5: 'jaipuria-science-grade5', g4: 'jaipuria-science-textbook',
-    g3: 'jaipuria-science-grade3', eng1: 'english-literature-grade1', eng2: 'english-literature-grade2',
-  };
-  return pre[name.split('-')[0]];
-};
 ---
 
 <div class="wall" aria-hidden="true">
   {lanes.map((lane, li) => (
     <div class={`lane l${li}`}>
       <div class="track">
-        {[0, 1].map(() => lane.map((t) =>
-          t.kind === 'reel' ? (
-            <button type="button" class="tile tile-reel" data-vid={t.id} tabindex="-1">
-              <video muted loop playsinline preload="none" poster={`/video/${t.id}.webp`} data-loop={`/video/${t.id}-loop.mp4`} width="9" height="16"></video>
-            </button>
-          ) : VIDS.has(t.name) ? (
-            <button type="button" class="tile" data-vid={t.name} tabindex="-1">
-              <img src={`/wall/${t.name}.webp`} width={t.w} height={t.h} alt="" />
-            </button>
-          ) : (
-            <a class="tile" href={`/work/${slugFor(t.name)}/`} tabindex="-1">
-              <img src={`/wall/${t.name}.webp`} width={t.w} height={t.h} alt="" />
-            </a>
-          )
-        ))}
+        {[0, 1].map(() => lane.map((id) => (
+          <button type="button" class="tile" data-vid={id} tabindex="-1">
+            <video muted loop playsinline preload="none" poster={`/wall/${id}.webp`} data-loop={`/video/${id}-loop.mp4`} width="9" height="16"></video>
+          </button>
+        )))}
       </div>
     </div>
   ))}
@@ -71,19 +34,28 @@ const slugFor = (name: string) => {
     const wall = document.querySelector<HTMLElement>('.wall');
     if (!wall || wall.dataset.ready) return;
     wall.dataset.ready = '1';
-    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (!reduce) {
-      wall.querySelectorAll<HTMLVideoElement>('video').forEach((v) => {
-        if (!v.offsetParent) return; // phone pe chhupi patti ki video load mat karo
-        v.src = v.dataset.loop!;
-        v.play().catch(() => {});
-      });
-    }
+
     wall.addEventListener('click', (e) => {
       const b = (e.target as HTMLElement).closest<HTMLElement>('[data-vid]');
       if (!b) return;
       (document.querySelector(`.vcard[data-vid="${b.dataset.vid}"]`) as HTMLElement | null)?.click();
     });
+
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    // Jo reel screen pe aaye wo chale, jo bahar jaaye wo ruk jaaye.
+    const io = new IntersectionObserver((entries) => {
+      for (const en of entries) {
+        const v = en.target as HTMLVideoElement;
+        if (en.isIntersecting) {
+          if (!v.src) v.src = v.dataset.loop!;
+          v.play().catch(() => {});
+        } else {
+          v.pause();
+        }
+      }
+    }, { rootMargin: '80px' });
+    wall.querySelectorAll('video').forEach((v) => io.observe(v));
+    document.addEventListener('astro:before-swap', () => io.disconnect(), { once: true });
   }
   document.addEventListener('astro:page-load', setupWall);
 </script>
@@ -103,11 +75,11 @@ const slugFor = (name: string) => {
     display: flex;
     flex-direction: column;
     gap: 0.9rem;
-    animation: drift-y 70s linear infinite;
+    animation: drift-y 80s linear infinite;
   }
-  .l1 .track { animation-duration: 85s; animation-direction: reverse; }
-  .l2 .track { animation-duration: 64s; }
-  .l3 .track { animation-duration: 92s; animation-direction: reverse; }
+  .l1 .track { animation-duration: 95s; animation-direction: reverse; }
+  .l2 .track { animation-duration: 72s; }
+  .l3 .track { animation-duration: 104s; animation-direction: reverse; }
   .wall:hover .track { animation-play-state: paused; }
 
   /* gap ko bhi shamil karna hai, warna loop pe jhatka lagta hai */
@@ -116,18 +88,18 @@ const slugFor = (name: string) => {
 
   .tile {
     display: block;
+    flex: none;
     padding: 0;
     border: 0;
     background: var(--raised);
-    border-radius: 10px;
+    border-radius: 12px;
     overflow: hidden;
     cursor: pointer;
     box-shadow: 0 0 0 1px rgba(255,255,255,.07), 0 14px 30px rgba(0,0,0,.35);
     transition: transform .3s ease, box-shadow .3s ease;
   }
   .tile:hover { transform: scale(1.03); box-shadow: 0 0 0 2px var(--sun), 0 18px 40px rgba(0,0,0,.5); }
-  .tile img, .tile video { width: 100%; height: auto; display: block; }
-  .tile-reel video { aspect-ratio: 9 / 16; object-fit: cover; }
+  .tile video { display: block; width: 100%; height: auto; aspect-ratio: 9 / 16; object-fit: cover; }
 
   /* ---- phone / tablet: 2 patti, daayein-baayein chalti ---- */
   @media (max-width: 900px) {
@@ -139,17 +111,16 @@ const slugFor = (name: string) => {
       -webkit-mask-image: linear-gradient(to right, transparent 0, #000 6%, #000 94%, transparent 100%);
               mask-image: linear-gradient(to right, transparent 0, #000 6%, #000 94%, transparent 100%);
     }
-    .l2, .l3 { display: none; }
+    .l1, .l2 { display: none; }
     .track {
       flex-direction: row;
       gap: 0.7rem;
       width: max-content;
       animation-name: drift-x;
-      animation-duration: 60s;
+      animation-duration: 55s;
     }
-    .l1 .track { animation-duration: 72s; }
-    .tile { flex: none; height: 9.5rem; }
-    .tile img, .tile video { height: 100%; width: auto; }
-    .tile-reel video { width: auto; }
+    .l3 .track { animation-duration: 66s; }
+    .tile { height: 13rem; }
+    .tile video { height: 100%; width: auto; }
   }
 </style>
