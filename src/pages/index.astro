@@ -1,15 +1,17 @@
 ---
 // HOME — recruiter ka pura raasta ek page pe:
-//   hero (kaun hoon + 3 chalti videos) → videos → kitaabein → comics → about.
+//   hero (kaun hoon + kaam ki chalti deewar) → videos → kitaabein → comics
+//   → experience → about → contact.
 // Har hissa header ke link se seedha khulta hai.
 import Layout from '../layouts/Layout.astro';
 import VideoCard from '../components/VideoCard.astro';
 import VideoPlayer from '../components/VideoPlayer.astro';
 import ProjectCard from '../components/ProjectCard.astro';
+import ExpCard from '../components/ExpCard.astro';
+import HeroWall from '../components/HeroWall.astro';
 import { getCollection } from 'astro:content';
 import { videos } from '../data/videos';
 import { experience } from '../data/experience';
-import ExpCard from '../components/ExpCard.astro';
 
 const all = await getCollection('projects');
 const newest = (a: any, b: any) => b.data.date.getTime() - a.data.date.getTime();
@@ -19,35 +21,51 @@ const comics = all.filter((p) => p.data.medium === 'comics').sort(newest);
 const explainers = videos.filter((v) => v.group === 'explainer');
 const otherMotion = videos.filter((v) => v.group !== 'explainer');
 
-const hero = ['ev', 'gangajal', 'agni5'].map((id) => videos.find((v) => v.id === id)!);
+// Kitni images / pages — "Rejected attempts" ko chhod ke
+const count = (list: typeof all) => list.reduce((n, p) =>
+  n + p.data.gallery.filter((g) => typeof g === 'string' || !g.chapter?.startsWith('Rejected attempts')).length, 0);
+const bookImages = count(books);
+const comicPages = count(comics);
 
+// Bento: pehla card bada (2x2). Desktop pe 4 khaane: bada + 4 chhote se 2 lines bharti hain;
+// uske baad aakhri line me jitne card bache, unhe chauda kar do taaki khaali jagah na rahe.
+function sizes(n: number) {
+  const out = Array<string>(n).fill('');
+  out[0] = 'is-feature';
+  const rest = n - 5;
+  if (rest > 0) {
+    const k = rest % 4;
+    if (k === 1) out[n - 1] = 'is-full';
+    if (k === 2) { out[n - 1] = 'is-wide'; out[n - 2] = 'is-wide'; }
+    if (k === 3) out[n - 1] = 'is-wide';
+  }
+  // phone (2 khaane): bade card ke baad agar odd card bache to aakhri poora chauda
+  if ((n - 1) % 2 === 1) out[n - 1] += ' is-wide-sm';
+  return out;
+}
+const bookSizes = sizes(books.length);
+const comicSizes = sizes(comics.length);
 ---
 
 <Layout>
   <!-- ====================== HERO ====================== -->
   <section class="night hero">
-    <div class="wrap hero-in">
-      <div class="hero-text">
-        <p class="hello">Kanishk Kumar Verma, creative technologist</p>
-        <h1 class="h-hero hero-h1">I build the systems behind generative media, not one&#8209;off outputs.</h1>
-        <p class="lede">
-          An agent pipeline that turns textbook manuscripts into print-ready art, and 3D video
-          rendered entirely in code with Three.js, Blender and HyperFrames.
-        </p>
-        <div class="hero-cta">
-          <a class="btn" href="#videos">Watch the videos</a>
-          <a class="btn btn-line" href="#illustration">See the books</a>
+    <div class="hero-main">
+      <div class="wrap">
+        <div class="hero-text">
+          <p class="hello">Kanishk Kumar Verma, creative technologist</p>
+          <h1 class="h-hero hero-h1">I build the systems behind generative media, not one&#8209;off outputs.</h1>
+          <p class="lede">
+            An agent pipeline that turns textbook manuscripts into print-ready art, and 3D video
+            rendered entirely in code with Three.js, Blender and HyperFrames.
+          </p>
+          <div class="hero-cta">
+            <a class="btn" href="#videos">Watch the videos</a>
+            <a class="btn btn-line" href="#illustration">See the books</a>
+          </div>
         </div>
       </div>
-
-      <div class="hero-reels" aria-label="Three of the videos, playing without sound">
-        {hero.map((v, i) => (
-          <button type="button" class={`hero-reel r${i}`} data-vid={v.id} aria-label={`Play: ${v.title}`}>
-            <video muted loop playsinline preload="none" poster={`/video/${v.id}.webp`} data-loop={`/video/${v.id}-loop.mp4`}></video>
-            <span class="hero-reel-cap">{v.title}</span>
-          </button>
-        ))}
-      </div>
+      <div class="hero-wall"><HeroWall /></div>
     </div>
     <div class="wrap">
       <dl class="stats">
@@ -61,13 +79,13 @@ const hero = ['ev', 'gangajal', 'agni5'].map((id) => videos.find((v) => v.id ===
   </section>
 
   <!-- ====================== VIDEOS ====================== -->
-  <section id="videos" class="night sec">
+  <section id="videos" class="night sec glow-videos">
     <div class="wrap">
       <div class="sec-head">
         <div>
           <h2 class="h-section">3D explainer videos</h2>
           <p class="muted">
-            3D science and defence explainers for my Instagram channel <a class="inline-link" href="https://www.instagram.com/unseen.3d/" target="_blank" rel="noopener">@unseen.3d</a>, rendered entirely in code. Best reel: 1.5M+ views. Tap any video to watch it with sound.
+            {explainers.length} science and defence explainers for my Instagram channel <a class="inline-link" href="https://www.instagram.com/unseen.3d/" target="_blank" rel="noopener">@unseen.3d</a>, rendered entirely in code. Best reel: 1.5M+ views. Tap any video to watch it with sound.
           </p>
         </div>
       </div>
@@ -83,40 +101,40 @@ const hero = ['ev', 'gangajal', 'agni5'].map((id) => videos.find((v) => v.id ===
   </section>
 
   <!-- ====================== BOOKS ====================== -->
-  <section id="illustration" class="sec">
+  <section id="illustration" class="sec glow-books">
     <div class="wrap">
       <div class="sec-head">
         <div>
           <h2 class="h-section">Textbook illustration</h2>
           <p class="muted">
-            Made with my AI pipeline at Possibility Edutech (Jaipuria Group), printed for 60+ schools. Tap a book to see every illustration.
+            {books.length} books and {bookImages} illustrations, made with my AI pipeline at Possibility Edutech (Jaipuria Group) and printed for 60+ schools. Tap a book to see every illustration.
           </p>
         </div>
       </div>
-      <div class="proj-grid">
-        {books.map((p) => <ProjectCard p={p} />)}
+      <div class="bento">
+        {books.map((p, i) => <ProjectCard p={p} size={bookSizes[i]} />)}
       </div>
     </div>
   </section>
 
   <!-- ====================== COMICS ====================== -->
-  <section id="comics" class="sec">
+  <section id="comics" class="sec glow-comics">
     <div class="wrap">
       <div class="sec-head">
         <div>
           <h2 class="h-section">Comics</h2>
           <p class="muted">
-            Made at Wippi in 2025, before AI could keep a character the same across pages. Tap a comic to read it.
+            {comics.length} comics and {comicPages} pages, made at Wippi in 2025, before AI could keep a character the same across pages. Tap a comic to read it.
           </p>
         </div>
       </div>
-      <div class="proj-grid">
-        {comics.map((p) => <ProjectCard p={p} />)}
+      <div class="bento">
+        {comics.map((p, i) => <ProjectCard p={p} size={comicSizes[i]} />)}
       </div>
     </div>
   </section>
 
-  <!-- ====================== EXPERIENCE (resume se) ====================== -->
+  <!-- ====================== EXPERIENCE ====================== -->
   <section id="experience" class="sec">
     <div class="wrap">
       <div class="sec-head">
@@ -131,7 +149,7 @@ const hero = ['ev', 'gangajal', 'agni5'].map((id) => videos.find((v) => v.id ===
   </section>
 
   <!-- ====================== ABOUT ====================== -->
-  <section id="about" class="sec about-sec">
+  <section id="about" class="sec">
     <div class="wrap about">
       <div>
         <h2 class="h-section">About me</h2>
@@ -141,9 +159,7 @@ const hero = ['ev', 'gangajal', 'agni5'].map((id) => videos.find((v) => v.id ===
           B.Tech in Computer Science, Chandigarh University, 2025.
         </p>
         <div class="hero-cta">
-          <a class="btn" href="mailto:kanishkverma688@gmail.com">Email me</a>
-          <a class="btn btn-line" href="https://www.linkedin.com/in/kanishk-verma" target="_blank" rel="noopener">LinkedIn</a>
-          <a class="btn btn-line" href="https://github.com/Kanishk688/genai-illustration-pipeline" target="_blank" rel="noopener">My pipeline on GitHub</a>
+          <a class="btn btn-line" href="https://github.com/Kanishk688/genai-illustration-pipeline" target="_blank" rel="noopener">See my pipeline on GitHub</a>
         </div>
       </div>
 
@@ -158,73 +174,74 @@ const hero = ['ev', 'gangajal', 'agni5'].map((id) => videos.find((v) => v.id ===
     </div>
   </section>
 
-  <VideoPlayer />
+  <!-- ====================== CONTACT ====================== -->
+  <section id="contact" class="night contact">
+    <div class="wrap">
+      <h2 class="contact-h">Hiring for generative media, or have a project in mind?</h2>
+      <a class="contact-mail" href="mailto:kanishkverma688@gmail.com">kanishkverma688@gmail.com</a>
+      <div class="hero-cta">
+        <a class="btn" href="mailto:kanishkverma688@gmail.com">Email me</a>
+        <a class="btn btn-line" href="https://www.linkedin.com/in/kanishk-verma" target="_blank" rel="noopener">LinkedIn</a>
+        <a class="btn btn-line" href="https://www.instagram.com/unseen.3d/" target="_blank" rel="noopener">Instagram @unseen.3d</a>
+      </div>
+    </div>
+  </section>
 
-  <script>
-    // Hero ki 3 videos: sirf tab chalein jab user ne "reduce motion" na lagaya ho.
-    function setupHero() {
-      const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-      document.querySelectorAll<HTMLButtonElement>('.hero-reel').forEach((b) => {
-        const v = b.querySelector('video')!;
-        if (!reduce) { v.src = v.dataset.loop!; v.play().catch(() => {}); }
-        b.addEventListener('click', () => {
-          (document.querySelector(`.vcard[data-vid="${b.dataset.vid}"]`) as HTMLElement | null)?.click();
-        });
-      });
-    }
-    document.addEventListener('astro:page-load', setupHero);
-  </script>
+  <VideoPlayer />
 </Layout>
 
 <style>
   /* ---------- hero ---------- */
-  .hero { padding-block: clamp(3rem, 7vw, 5.5rem) clamp(2.5rem, 5vw, 4rem); overflow: hidden; }
-  .hero-in {
-    display: grid;
-    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-    gap: 3rem;
+  .hero {
+    overflow: hidden;
+    background-image:
+      radial-gradient(52rem 38rem at 78% 28%, rgba(122, 92, 255, 0.22), transparent 62%),
+      radial-gradient(36rem 26rem at 8% 100%, rgba(255, 197, 49, 0.10), transparent 60%);
+  }
+  .hero-main {
+    position: relative;
+    min-height: clamp(36rem, 80vh, 50rem);
+    display: flex;
     align-items: center;
+  }
+  .hero-main > .wrap { width: 100%; position: relative; z-index: 2; padding-block: 4rem; pointer-events: none; }
+  .hero-text { max-width: min(36rem, 40vw); pointer-events: auto; }
+  @media (max-width: 900px) { .hero-text { max-width: 36rem; } }
+  .hero-wall {
+    position: absolute;
+    top: 0; bottom: 0; right: 0;
+    width: 56%;
+    padding-right: clamp(1rem, 2.5vw, 2.5rem);
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 20%);
+            mask-image: linear-gradient(to right, transparent 0, #000 20%);
   }
   .hero-h1 { font-size: clamp(2.3rem, 4.4vw, 3.9rem); hyphens: manual; }
   .hello { color: var(--sun); font-weight: 600; margin: 0 0 1rem; font-size: 1.1rem; }
   .hero .lede { margin-top: 1.5rem; }
   .hero-cta { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2rem; }
 
-  .hero-reels {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
-    align-items: center;
+  .stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem 2rem;
+    justify-content: space-between;
+    margin: 0;
+    padding-block: 1.75rem 2.25rem;
+    border-top: 1px solid rgba(255,255,255,.12);
   }
-  .hero-reel {
-    position: relative;
-    padding: 0;
-    border: 0;
-    background: var(--night-2);
-    border-radius: var(--r-lg);
-    overflow: hidden;
-    aspect-ratio: 9 / 16;
-    cursor: pointer;
-    box-shadow: 0 20px 50px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.08);
-  }
-  .hero-reel.r1 { transform: translateY(-1.5rem); }
-  .hero-reel video { width: 100%; height: 100%; object-fit: cover; }
-  .hero-reel-cap {
-    position: absolute; left: 0; right: 0; bottom: 0;
-    padding: 2.5rem 0.75rem 0.75rem;
-    background: linear-gradient(transparent, rgba(0,0,0,.78));
-    color: #fff;
-    font-size: 0.85rem;
-    font-weight: 600;
-    line-height: 1.25;
-    text-align: left;
-  }
+  .stats div { display: flex; flex-direction: column-reverse; }
+  .stats dd { margin: 0; font-weight: 750; font-size: 1.6rem; letter-spacing: -0.02em; color: var(--night-ink); line-height: 1.1; }
+  .stats dt { font-size: 0.85rem; color: var(--night-dim); }
 
   /* ---------- sections ---------- */
   .sec { padding-block: clamp(3.5rem, 7vw, 5.5rem); }
-  #videos { padding-top: 1.5rem; }
-  #comics { padding-top: 0; }
   .inline-link { color: var(--sun); text-decoration: underline; text-underline-offset: 3px; }
+  #experience, #about { border-top: 1px solid var(--line); }
+
+  /* har section ke peeche halki roshni, usi ke kaam ke rang se */
+  .glow-videos { background-image: radial-gradient(48rem 30rem at 92% 0%, rgba(40, 200, 220, 0.10), transparent 60%); }
+  .glow-books  { background-image: radial-gradient(50rem 32rem at 0% 0%, rgba(255, 150, 60, 0.13), transparent 62%); }
+  .glow-comics { background-image: radial-gradient(46rem 30rem at 100% 8%, rgba(236, 72, 153, 0.13), transparent 62%); }
 
   .vgrid {
     display: grid;
@@ -234,50 +251,63 @@ const hero = ['ev', 'gangajal', 'agni5'].map((id) => videos.find((v) => v.id ===
   .vgrid-mixed { grid-template-columns: minmax(0, 40rem); }
   .sub-head { font-weight: 680; font-size: 1.35rem; letter-spacing: -0.015em; margin: 3.5rem 0 1.25rem; }
 
-  /* ---------- about ---------- */
-  #experience { border-top: 1px solid var(--line); }
+  /* ---------- experience + about ---------- */
   .exp-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 21rem), 1fr));
     gap: 1.5rem;
   }
+  .about { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; }
+  .about-text { max-width: 52ch; margin-top: 1.25rem; color: var(--ink-2); font-size: 1.1rem; }
+  .col-head { font-weight: 680; font-size: 1.15rem; margin: 0 0 1rem; }
   .chips-list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.5rem; }
   .chips-list li {
-    padding: 0.4rem 0.8rem;
+    padding: 0.4rem 0.85rem;
     border-radius: 999px;
     background: var(--raised);
     box-shadow: inset 0 0 0 1px var(--line);
     font-size: 0.92rem;
     font-weight: 550;
   }
-  .about-text strong { color: var(--ink); font-weight: 650; }
-  .about { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; }
-  .about-text { max-width: 52ch; margin-top: 1.25rem; color: var(--ink-2); font-size: 1.1rem; }
-  .about-text p + p { margin-top: 1rem; }
-  .col-head { font-weight: 680; font-size: 1.15rem; margin: 0 0 1rem; }
-  .col-head + * { margin-bottom: 2.5rem; }
 
-  /* resume ke numbers — hero ke neeche */
-  .stats {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.25rem 2rem;
-    justify-content: space-between;
-    margin: 3rem 0 0;
-    padding-top: 1.75rem;
-    border-top: 1px solid rgba(255,255,255,.12);
+  /* ---------- contact ---------- */
+  .contact {
+    padding-block: clamp(4rem, 9vw, 7rem);
+    background-image: radial-gradient(50rem 30rem at 50% 125%, rgba(255, 197, 49, 0.16), transparent 65%);
+    border-top: 1px solid var(--line);
   }
-  .stats div { display: flex; flex-direction: column-reverse; }
-  .stats dd { margin: 0; font-weight: 750; font-size: 1.6rem; letter-spacing: -0.02em; color: var(--night-ink); line-height: 1.1; }
-  .stats dt { font-size: 0.85rem; color: var(--night-dim); }
+  .contact-h {
+    font-weight: 720;
+    font-size: clamp(1.6rem, 3.4vw, 2.6rem);
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    max-width: 24ch;
+    text-wrap: balance;
+  }
+  .contact-mail {
+    display: inline-block;
+    margin-top: 1.25rem;
+    color: var(--sun);
+    font-weight: 700;
+    font-size: clamp(1.3rem, 4.6vw, 3.6rem);
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    overflow-wrap: anywhere;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.18em;
+    text-decoration-color: rgba(255, 197, 49, 0.35);
+  }
+  .contact-mail:hover { text-decoration-color: var(--sun); }
 
   @media (max-width: 900px) {
-    .hero-in { grid-template-columns: 1fr; gap: 2.5rem; }
-    .hero-reels { max-width: 34rem; }
+    .hero-main { display: block; min-height: 0; }
+    .hero-main > .wrap { padding-block: 3rem 2.25rem; }
+    .hero-wall { position: static; width: auto; padding: 0 0 2.5rem; -webkit-mask-image: none; mask-image: none; }
     .about { grid-template-columns: 1fr; gap: 3rem; }
+    .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem 1rem; }
+    .stats div:first-child { grid-column: 1 / -1; }
+    .stats div:first-child dd { font-size: 2.4rem; }
     .vgrid-mixed { grid-template-columns: 1fr; }
-  }
-  @media (max-width: 520px) {
-    .hero-reel-cap { display: none; }
   }
 </style>

@@ -1,36 +1,36 @@
 @import "tailwindcss";
 
 /* ============================================================
-   DESIGN — "screening room + light table"
+   DESIGN — "gallery at night"
 
    Recruiter ke liye: kaam pehle, shabd baad me.
-   - Video wala hissa dark hai (3D reels dark pe chamakti hain,
-     jaise screening room me).
-   - Kitaabon wala hissa light hai (illustrations print ke liye
-     bani hain, safed page pe sahi dikhti hain).
+   - Poori site gehri indigo raat jaisi; illustrations aur reels
+     is pe gallery ki lights ki tarah chamakti hain.
+   - Har section ke peeche halki rangeen roshni (glow), jo usi
+     section ke kaam ke rang se li gayi hai.
    - Accent = peela, wahi jo reels ke captions me highlight hota hai.
-   - Ek hi font (Bricolage Grotesque) — saaf aur padhne me aasaan.
+   - Ek hi font (Bricolage Grotesque).
    ============================================================ */
 
 :root {
-  --ground:   #f4f5f9;   /* light page */
-  --raised:   #ffffff;   /* card surface */
-  --ink:      #17183a;   /* main text — indigo, night-sky jaisa */
-  --ink-2:    #545878;   /* secondary text */
-  --ink-3:    #8a8da8;   /* small meta */
-  --line:     #dcdee8;   /* borders */
+  --ground:   #101129;   /* page */
+  --raised:   #1c1e44;   /* card surface */
+  --ink:      #f2f3fc;   /* main text */
+  --ink-2:    #b6b9da;   /* secondary text */
+  --ink-3:    #8689b3;   /* small meta */
+  --line:     #2b2d5c;   /* borders */
 
-  --night:    #17183a;   /* dark section */
-  --night-2:  #23254d;   /* card on dark */
-  --night-ink:#eef0fa;
-  --night-dim:#a9acd0;
+  --night:    #0c0d22;   /* sabse gehra hissa (hero, videos) */
+  --night-2:  #1c1e44;
+  --night-ink:#f2f3fc;
+  --night-dim:#b6b9da;
 
   --sun:      #ffc531;   /* accent */
   --sun-ink:  #17183a;
 
   --font: "Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", sans-serif;
   --measure: 64ch;
-  --r-sm: 6px;
+  --r-sm: 8px;
   --r-lg: 14px;
 }
 
@@ -124,7 +124,7 @@ img, video { display: block; max-width: 100%; }
 
 /* ---------- dark zone ---------- */
 .night {
-  background: var(--night);
+  background-color: var(--night);
   color: var(--night-ink);
 }
 .night .lede, .night .muted { color: var(--night-dim); }
@@ -134,24 +134,57 @@ img, video { display: block; max-width: 100%; }
 .proj-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 17.5rem), 1fr));
-  gap: 2rem 1.5rem;
+  gap: 1.1rem;
 }
-.proj-card { display: block; color: inherit; }
-.proj-card .thumb {
+/* Card: poori image, naam image ke upar neeche likha */
+.proj-card {
+  position: relative;
+  display: block;
+  color: #fff;
   aspect-ratio: 4 / 3;
-  border-radius: var(--r-sm);
+  border-radius: var(--r-lg);
   overflow: hidden;
   background: var(--raised);
-  box-shadow: 0 0 0 1px var(--line);
+  box-shadow: 0 0 0 1px rgba(255,255,255,.07), 0 18px 40px rgba(0,0,0,.3);
+  isolation: isolate;
 }
-.proj-card .thumb img {
-  width: 100%; height: 100%; object-fit: cover;
-  transition: transform .4s ease;
+.proj-card .thumb, .proj-card .thumb img { position: absolute; inset: 0; width: 100%; height: 100%; }
+.proj-card .thumb img { object-fit: cover; transition: transform .6s cubic-bezier(.2,.7,.2,1); }
+.proj-card::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(8,9,26,.92) 0%, rgba(8,9,26,.5) 28%, transparent 55%);
+  z-index: 1;
 }
-.proj-card:hover .thumb img { transform: scale(1.035); }
-.proj-card .h-card { margin-top: 0.85rem; }
-.proj-card:hover .h-card { text-decoration: underline; text-decoration-color: var(--sun); text-decoration-thickness: 3px; text-underline-offset: 4px; }
-.proj-card .meta { margin-top: 0.3rem; }
+.proj-card .cap { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; padding: 1rem 1.1rem 1.05rem; }
+.proj-card .h-card { color: #fff; }
+.proj-card .meta { margin-top: 0.2rem; color: rgba(255,255,255,.72); }
+.proj-card:hover .thumb img { transform: scale(1.05); }
+.proj-card:hover { box-shadow: 0 0 0 2px var(--sun), 0 22px 50px rgba(0,0,0,.45); }
+
+/* Home page ka "bento": pehli kitaab badi, baaki chhoti, koi khaali jagah nahi */
+.bento {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-rows: clamp(11rem, 15vw, 14.5rem);
+  grid-auto-flow: dense;
+  gap: 1.1rem;
+}
+.bento .proj-card { aspect-ratio: auto; }
+.bento .is-feature { grid-column: span 2; grid-row: span 2; }
+.bento .is-feature .h-card { font-size: clamp(1.4rem, 2.2vw, 1.9rem); letter-spacing: -0.02em; }
+.bento .is-feature .cap { padding: 1.4rem 1.5rem 1.5rem; }
+.bento .is-wide { grid-column: span 2; }
+.bento .is-full { grid-column: 1 / -1; }
+@media (max-width: 900px) {
+  .bento { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: clamp(9.5rem, 30vw, 13rem); gap: 0.75rem; }
+  .bento .is-feature { grid-row: span 2; }
+  .bento .is-wide { grid-column: span 1; }
+  .bento .is-wide-sm { grid-column: span 2; }
+  .proj-card .cap { padding: 0.75rem 0.8rem 0.8rem; }
+  .bento .proj-card:not(.is-feature) .h-card { font-size: 0.98rem; }
+  .bento .proj-card:not(.is-feature) .meta { font-size: 0.8rem; }
+}
 
 /* ---------- markdown body on project pages ---------- */
 .prose { max-width: var(--measure); color: var(--ink-2); }
