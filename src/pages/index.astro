@@ -50,23 +50,23 @@ const comicSizes = sizes(comics.length);
 <Layout>
   <!-- ====================== HERO ====================== -->
   <section class="night hero">
-    <div class="hero-main">
-      <div class="wrap">
-        <div class="hero-text">
-          <p class="hello">Kanishk Kumar Verma, creative technologist</p>
-          <h1 class="h-hero hero-h1">I build the systems behind generative media, not one&#8209;off outputs.</h1>
-          <p class="lede">
-            An agent pipeline that turns textbook manuscripts into print-ready art, and 3D video
-            rendered entirely in code with Three.js, Blender and HyperFrames.
-          </p>
-          <div class="hero-cta">
-            <a class="btn" href="#videos">Watch the videos</a>
-            <a class="btn btn-line" href="#illustration">See the books</a>
-          </div>
+    <div class="wrap hero-top">
+      <div>
+        <p class="hello">Kanishk Kumar Verma, creative technologist</p>
+        <h1 class="h-hero hero-h1">I build the systems behind generative media, not one&#8209;off outputs.</h1>
+      </div>
+      <div class="hero-side">
+        <p class="lede">
+          An agent pipeline that turns textbook manuscripts into print-ready art, and 3D video
+          rendered entirely in code with Three.js, Blender and HyperFrames.
+        </p>
+        <div class="hero-cta">
+          <a class="btn" href="#videos">Watch the videos</a>
+          <a class="btn btn-line" href="#illustration">See the books</a>
         </div>
       </div>
-      <div class="hero-wall"><HeroWall /></div>
     </div>
+    <HeroWall />
     <div class="wrap">
       <dl class="stats">
         <div><dt>print-ready illustrations</dt><dd>1,500+</dd></div>
@@ -198,27 +198,18 @@ const comicSizes = sizes(comics.length);
       radial-gradient(52rem 38rem at 78% 28%, rgba(122, 92, 255, 0.22), transparent 62%),
       radial-gradient(36rem 26rem at 8% 100%, rgba(255, 197, 49, 0.10), transparent 60%);
   }
-  .hero-main {
-    position: relative;
-    min-height: clamp(36rem, 80vh, 50rem);
-    display: flex;
-    align-items: center;
+  .hero-top {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    gap: 1.5rem 4rem;
+    align-items: end;
+    padding-block: clamp(2.25rem, 4vw, 3rem) clamp(0.75rem, 1.5vw, 1.25rem);
   }
-  .hero-main > .wrap { width: 100%; position: relative; z-index: 2; padding-block: 4rem; pointer-events: none; }
-  .hero-text { max-width: min(36rem, 37vw); pointer-events: auto; }
-  @media (max-width: 900px) { .hero-text { max-width: 36rem; } }
-  .hero-wall {
-    position: absolute;
-    top: 0; bottom: 0; right: 0;
-    width: 56%;
-    padding-right: clamp(1rem, 2.5vw, 2.5rem);
-    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 20%);
-            mask-image: linear-gradient(to right, transparent 0, #000 20%);
-  }
-  .hero-h1 { font-size: clamp(2.3rem, 4.4vw, 3.9rem); hyphens: manual; }
+  .hero-h1 { font-size: clamp(2.3rem, 3.9vw, 3.5rem); hyphens: manual; max-width: 16ch; }
   .hello { color: var(--sun); font-weight: 600; margin: 0 0 1rem; font-size: 1.1rem; }
-  .hero .lede { margin-top: 1.5rem; }
-  .hero-cta { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2rem; }
+  .hero-side .lede { margin: 0; }
+  .hero-cta { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.75rem; }
+  .hero .stats { margin-top: 2rem; }
 
   .stats {
     display: flex;
@@ -301,9 +292,7 @@ const comicSizes = sizes(comics.length);
   .contact-mail:hover { text-decoration-color: var(--sun); }
 
   @media (max-width: 900px) {
-    .hero-main { display: block; min-height: 0; }
-    .hero-main > .wrap { padding-block: 3rem 2.25rem; }
-    .hero-wall { position: static; width: auto; padding: 0 0 2.5rem; -webkit-mask-image: none; mask-image: none; }
+    .hero-top { grid-template-columns: 1fr; }
     .about { grid-template-columns: 1fr; gap: 3rem; }
     .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem 1rem; }
     .stats div:first-child { grid-column: 1 / -1; }

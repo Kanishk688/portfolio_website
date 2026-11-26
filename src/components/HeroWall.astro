@@ -1,48 +1,52 @@
 ---
-// HERO WALL — sirf reels ki chalti hui deewar (web aur phone dono pe).
-// Desktop: 4 patti upar-neeche. Phone: 2 patti daayein-baayein
-// (patti 1 aur 4 — dono milke saari 12 reels dikhati hain).
-// Kisi bhi reel pe click = video player (awaaz ke saath).
-// Mouse upar le jaao to deewar ruk jaati hai.
-// Poster: public/wall/<id>.webp (480px). Video: public/video/<id>-loop.mp4.
-// Sirf wahi video chalti hai jo screen pe dikh rahi ho (phone ki battery bachane ke liye).
+// HERO REELS — beech me Agni-5 aur BrahMos (sabse badi), dono taraf
+// baaki reels thodi chhoti hoti hui. Saari reels poori dikhti hain
+// (na crop, na dhundhle kinaare) aur bina awaaz chalti rehti hain.
+// Desktop: 6 reels. Tablet: 4. Phone: sirf beech ki 2.
+// Click = video player (awaaz ke saath).
+// Video: public/video/<id>-hero.mp4 (480px, 6 sec). Poster: public/wall/<id>.webp
+import { videos } from '../data/videos';
 
-const lanes: string[][] = [
-  ['agni5', 'doodh', 'laser', 'yamuna', 'ev', 'aankh'],          // phone pe dikhti hai
-  ['saans', 'ev', 'machhar', 'doodh', 'brahmos', 'laser'],
-  ['yamuna', 'helmet', 'agni5', 'cable', 'aankh', 'gangajal'],
-  ['gangajal', 'brahmos', 'saans', 'cable', 'helmet', 'machhar'], // phone pe dikhti hai
+// level 0 = beech (sabse badi), 1 = uske bagal, 2 = sabse bahar
+const row: { id: string; level: number }[] = [
+  { id: 'gangajal', level: 2 },
+  { id: 'ev', level: 1 },
+  { id: 'agni5', level: 0 },
+  { id: 'brahmos', level: 0 },
+  { id: 'laser', level: 1 },
+  { id: 'helmet', level: 2 },
 ];
+const reels = row.map((r) => ({ ...r, v: videos.find((v) => v.id === r.id)! }));
 ---
 
-<div class="wall" aria-hidden="true">
-  {lanes.map((lane, li) => (
-    <div class={`lane l${li}`}>
-      <div class="track">
-        {[0, 1].map(() => lane.map((id) => (
-          <button type="button" class="tile" data-vid={id} tabindex="-1">
-            <video muted loop playsinline preload="none" poster={`/wall/${id}.webp`} data-loop={`/video/${id}-loop.mp4`} width="9" height="16"></video>
-          </button>
-        )))}
-      </div>
-    </div>
+<div class="stage" aria-label="Six of the reels, playing without sound. Tap one to watch it with sound.">
+  {reels.map(({ v, level }) => (
+    <button type="button" class={`reel lv${level}`} data-vid={v.id} aria-label={`Play: ${v.title}`}>
+      <span class="reel-frame">
+        <video muted loop playsinline preload="none" poster={`/wall/${v.id}.webp`} data-loop={`/video/${v.id}-hero.mp4`} width="480" height="854"></video>
+        <span class="reel-play" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="20" height="20"><path d="M8 5.5v13l11-6.5z" fill="currentColor" /></svg>
+        </span>
+      </span>
+      <span class="reel-title">{v.title}</span>
+    </button>
   ))}
 </div>
 
 <script>
-  function setupWall() {
-    const wall = document.querySelector<HTMLElement>('.wall');
-    if (!wall || wall.dataset.ready) return;
-    wall.dataset.ready = '1';
+  function setupStage() {
+    const stage = document.querySelector<HTMLElement>('.stage');
+    if (!stage || stage.dataset.ready) return;
+    stage.dataset.ready = '1';
 
-    wall.addEventListener('click', (e) => {
+    stage.addEventListener('click', (e) => {
       const b = (e.target as HTMLElement).closest<HTMLElement>('[data-vid]');
       if (!b) return;
       (document.querySelector(`.vcard[data-vid="${b.dataset.vid}"]`) as HTMLElement | null)?.click();
     });
 
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    // Jo reel screen pe aaye wo chale, jo bahar jaaye wo ruk jaaye.
+    // Jo reel screen pe ho wo chale; scroll karke neeche chale jao to ruk jaaye.
     const io = new IntersectionObserver((entries) => {
       for (const en of entries) {
         const v = en.target as HTMLVideoElement;
@@ -53,74 +57,88 @@ const lanes: string[][] = [
           v.pause();
         }
       }
-    }, { rootMargin: '80px' });
-    wall.querySelectorAll('video').forEach((v) => io.observe(v));
+    });
+    stage.querySelectorAll('video').forEach((v) => {
+      if (v.offsetParent) io.observe(v); // chhupi reel (phone pe) load hi mat karo
+    });
     document.addEventListener('astro:before-swap', () => io.disconnect(), { once: true });
   }
-  document.addEventListener('astro:page-load', setupWall);
+  document.addEventListener('astro:page-load', setupStage);
 </script>
 
 <style>
-  .wall {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 0.9rem;
-    height: 100%;
-    overflow: hidden;
-    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 12%, #000 88%, transparent 100%);
-            mask-image: linear-gradient(to bottom, transparent 0, #000 12%, #000 88%, transparent 100%);
+  .stage {
+    --w: min(13.5rem, 16vw);   /* beech wali reel ki chaudai */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: clamp(0.75rem, 1.4vw, 1.25rem);
+    padding: 1.5rem clamp(1rem, 3vw, 2.5rem) 0.5rem;
   }
-  .lane { position: relative; min-width: 0; }
-  .track {
+  .reel {
+    flex: none;
     display: flex;
     flex-direction: column;
-    gap: 0.9rem;
-    animation: drift-y 80s linear infinite;
-  }
-  .l1 .track { animation-duration: 95s; animation-direction: reverse; }
-  .l2 .track { animation-duration: 72s; }
-  .l3 .track { animation-duration: 104s; animation-direction: reverse; }
-  .wall:hover .track { animation-play-state: paused; }
-
-  /* gap ko bhi shamil karna hai, warna loop pe jhatka lagta hai */
-  @keyframes drift-y { to { transform: translateY(calc(-50% - 0.45rem)); } }
-  @keyframes drift-x { to { transform: translateX(calc(-50% - 0.35rem)); } }
-
-  .tile {
-    display: block;
-    flex: none;
+    gap: 0.6rem;
     padding: 0;
     border: 0;
-    background: var(--raised);
-    border-radius: 12px;
-    overflow: hidden;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
     cursor: pointer;
-    box-shadow: 0 0 0 1px rgba(255,255,255,.07), 0 14px 30px rgba(0,0,0,.35);
-    transition: transform .3s ease, box-shadow .3s ease;
   }
-  .tile:hover { transform: scale(1.03); box-shadow: 0 0 0 2px var(--sun), 0 18px 40px rgba(0,0,0,.5); }
-  .tile video { display: block; width: 100%; height: auto; aspect-ratio: 9 / 16; object-fit: cover; }
+  .lv0 { width: var(--w); }
+  .lv1 { width: calc(var(--w) * 0.84); }
+  .lv2 { width: calc(var(--w) * 0.7); }
+  /* neeche wala title bhi upar-neeche barabar rahe, isliye title ki jagah fix */
+  .reel-title { min-height: 2.5em; }
 
-  /* ---- phone / tablet: 2 patti, daayein-baayein chalti ---- */
+  .reel-frame {
+    position: relative;
+    display: block;
+    aspect-ratio: 9 / 16;
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--raised);
+    box-shadow: 0 0 0 1px rgba(255,255,255,.1), 0 22px 48px rgba(0,0,0,.5);
+    transition: transform .35s cubic-bezier(.2,.7,.2,1), box-shadow .35s ease;
+  }
+  .lv0 .reel-frame { box-shadow: 0 0 0 1px rgba(255,197,49,.35), 0 26px 60px rgba(0,0,0,.55), 0 0 80px rgba(255,197,49,.10); }
+  .reel-frame video { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .reel:hover .reel-frame,
+  .reel:focus-visible .reel-frame {
+    transform: translateY(-8px);
+    box-shadow: 0 0 0 3px var(--sun), 0 30px 60px rgba(0,0,0,.55);
+  }
+  .reel-play {
+    position: absolute;
+    left: 0.7rem; bottom: 0.7rem;
+    display: grid; place-items: center;
+    width: 2.5rem; height: 2.5rem;
+    border-radius: 50%;
+    background: var(--sun);
+    color: var(--sun-ink);
+    box-shadow: 0 6px 16px rgba(0,0,0,.35);
+  }
+  .reel-title {
+    font-weight: 620;
+    font-size: 0.95rem;
+    line-height: 1.25;
+    color: var(--night-ink);
+  }
+  .lv0 .reel-title { font-size: 1.02rem; }
+  .lv2 .reel-title { font-size: 0.85rem; color: var(--night-dim); }
+
+  /* tablet: 4 reels */
   @media (max-width: 900px) {
-    .wall {
-      display: flex;
-      flex-direction: column;
-      gap: 0.7rem;
-      height: auto;
-      -webkit-mask-image: linear-gradient(to right, transparent 0, #000 6%, #000 94%, transparent 100%);
-              mask-image: linear-gradient(to right, transparent 0, #000 6%, #000 94%, transparent 100%);
-    }
-    .l1, .l2 { display: none; }
-    .track {
-      flex-direction: row;
-      gap: 0.7rem;
-      width: max-content;
-      animation-name: drift-x;
-      animation-duration: 55s;
-    }
-    .l3 .track { animation-duration: 66s; }
-    .tile { height: 13rem; }
-    .tile video { height: 100%; width: auto; }
+    .stage { --w: min(14rem, 27vw); }
+    .lv2 { display: none; }
+  }
+  /* phone: sirf Agni-5 aur BrahMos, badi */
+  @media (max-width: 560px) {
+    .stage { --w: calc((100vw - 2.75rem) / 2); gap: 0.75rem; padding-inline: 1rem; }
+    .lv1 { display: none; }
+    .reel-title { font-size: 0.9rem; }
   }
 </style>
