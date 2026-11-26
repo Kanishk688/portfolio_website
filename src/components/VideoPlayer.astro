@@ -52,13 +52,53 @@ const data = videos.map(({ id, title, original, summary, made, length, tools, wi
     const order = [...new Set([...document.querySelectorAll<HTMLElement>('.vcard')].map((c) => c.dataset.vid!))];
     let cur = 0;
 
+    // ---- SEEKING FIX ----
+    // Cloudflare Pages "Range" request support nahi karta (hamesha poori file
+    // 200 ke saath bhejta hai), isliye browser video ko aage/peeche nahi kar
+    // paata. Hal: video turant stream se chalu karo, aur saath me poori file
+    // blob ke roop me le aao; aate hi usi jagah se blob pe switch kar do.
+    // Blob memory me hota hai, to seek poori tarah chalta hai.
+    const blobs = new Map<string, string>(); // id -> blob URL (sirf aakhri 3)
+    let token = 0;
+    function remember(id: string, url: string) {
+      blobs.set(id, url);
+      while (blobs.size > 3) {
+        const [oldId, oldUrl] = blobs.entries().next().value!;
+        if (video.src === oldUrl) break;
+        URL.revokeObjectURL(oldUrl);
+        blobs.delete(oldId);
+      }
+    }
+    function load(id: string) {
+      const my = ++token;
+      const have = blobs.get(id);
+      if (have) { video.src = have; return; }
+      const file = `/video/${id}.mp4`;
+      video.src = file;
+      fetch(file)
+        .then((r) => (r.ok ? r.blob() : Promise.reject(r.status)))
+        .then((b) => {
+          const url = URL.createObjectURL(b);
+          remember(id, url);
+          if (my !== token || !dlg!.open) return;
+          const t = video.currentTime;
+          const wasPlaying = !video.paused;
+          video.addEventListener('loadedmetadata', () => {
+            video.currentTime = t;
+            if (wasPlaying) video.play().catch(() => {});
+          }, { once: true });
+          video.src = url;
+        })
+        .catch(() => { /* stream wala src chalta rahega */ });
+    }
+
     function show(id: string) {
       const v = all.find((x) => x.id === id);
       if (!v) return;
       cur = order.indexOf(id);
       dlg!.classList.toggle('is-wide', !!v.wide);
       video.poster = `/video/${v.id}.webp`;
-      video.src = `/video/${v.id}.mp4`;
+      load(v.id);
       $('vp-title').textContent = v.title;
       $('vp-orig').textContent = v.original ? `Original title: ${v.original}` : '';
       $('vp-sum').textContent = v.summary;
