@@ -8,8 +8,8 @@ import VideoPlayer from '../components/VideoPlayer.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import { getCollection } from 'astro:content';
 import { videos } from '../data/videos';
-import { jobs, projects } from '../data/experience';
-import JobBlock from '../components/JobBlock.astro';
+import { experience } from '../data/experience';
+import ExpCard from '../components/ExpCard.astro';
 
 const all = await getCollection('projects');
 const newest = (a: any, b: any) => b.data.date.getTime() - a.data.date.getTime();
@@ -21,10 +21,6 @@ const otherMotion = videos.filter((v) => v.group !== 'explainer');
 
 const hero = ['ev', 'gangajal', 'agni5'].map((id) => videos.find((v) => v.id === id)!);
 
-const illoCount = books.reduce(
-  (n, p) => n + p.data.gallery.filter((g) => typeof g === 'string' || !g.chapter?.startsWith('Rejected attempts')).length,
-  0,
-);
 ---
 
 <Layout>
@@ -71,12 +67,7 @@ const illoCount = books.reduce(
         <div>
           <h2 class="h-section">3D explainer videos</h2>
           <p class="muted">
-            Science and defence stories in Hinglish for my Instagram channel
-            <a class="inline-link" href="https://www.instagram.com/unseen.3d/" target="_blank" rel="noopener">@unseen.3d</a>,
-            where the best reel has passed 1.5M organic views. Each reel is built entirely in code instead of
-            paying per clip for a video model: Three.js and shaders for scenes and lighting, Blender for models,
-            HyperFrames and Remotion for frame-accurate rendering, ElevenLabs for narration. Because every reel is
-            code, it can be re-rendered and edited parameter by parameter. Click any video to watch it with sound.
+            3D science and defence explainers for my Instagram channel <a class="inline-link" href="https://www.instagram.com/unseen.3d/" target="_blank" rel="noopener">@unseen.3d</a>, rendered entirely in code. Best reel: 1.5M+ views. Tap any video to watch it with sound.
           </p>
         </div>
       </div>
@@ -98,10 +89,7 @@ const illoCount = books.reduce(
         <div>
           <h2 class="h-section">Textbook illustration</h2>
           <p class="muted">
-            Made at Possibility Edutech (Jaipuria Group) for a network of 60+ schools. My agent pipeline
-            (Claude Code + MCP) takes a .docx manuscript to 300 DPI print-ready artwork, and has shipped
-            1,500+ illustrations across 10+ textbooks with locked style, consistent characters and an
-            automated print-QA gate. {books.length} of those books are shown here, {illoCount}+ illustrations in all.
+            Made with my AI pipeline at Possibility Edutech (Jaipuria Group), printed for 60+ schools. Tap a book to see every illustration.
           </p>
         </div>
       </div>
@@ -118,10 +106,7 @@ const illoCount = books.reduce(
         <div>
           <h2 class="h-section">Comics</h2>
           <p class="muted">
-            25+ illustrated comics made at Wippi in 2024–25, {comics.length} of them shown here. This was before
-            image models had character-reference features, so characters stayed on-model through reference
-            sheets and careful selection, and all dialogue was typeset in InDesign. Every comic was also voiced
-            with my multi-character ElevenLabs engine, about an hour of audio per title.
+            Made at Wippi in 2025, before AI could keep a character the same across pages. Tap a comic to read it.
           </p>
         </div>
       </div>
@@ -134,14 +119,13 @@ const illoCount = books.reduce(
   <!-- ====================== EXPERIENCE (resume se) ====================== -->
   <section id="experience" class="sec">
     <div class="wrap">
-      <h2 class="h-section">Experience</h2>
-      <div class="jobs-list">
-        {jobs.map((j) => <JobBlock job={j} />)}
+      <div class="sec-head">
+        <div>
+          <h2 class="h-section">Experience</h2>
+        </div>
       </div>
-
-      <h2 class="h-section" style="margin-top:3.5rem;">Projects</h2>
-      <div class="jobs-list">
-        {projects.map((j) => <JobBlock job={j} />)}
+      <div class="exp-grid">
+        {experience.map((e) => <ExpCard e={e} />)}
       </div>
     </div>
   </section>
@@ -151,42 +135,25 @@ const illoCount = books.reduce(
     <div class="wrap about">
       <div>
         <h2 class="h-section">About me</h2>
-        <div class="about-text">
-          <p>
-            Creative technologist who builds the <strong>production systems behind generative media</strong>,
-            not one-off outputs. I designed an <strong>agent-orchestrated pipeline (Claude Code + MCP)</strong> that
-            has shipped <strong>1,500+ print-ready illustrations</strong> across <strong>10+ textbooks</strong> for a
-            60+ school network, with routed image models, locked style and character consistency, and automated
-            print QA.
-          </p>
-          <p>
-            I make <strong>code-rendered 3D video</strong> with Three.js, shaders, Blender, Remotion and HyperFrames;
-            my best reel reached <strong>1.5M+ views</strong>. I treat models as instruments: evaluated, routed by
-            task and measured by cost per delivered asset.
-          </p>
-        </div>
+        <p class="about-text">
+          Creative technologist from Delhi NCR. I build the systems behind generative media, and I treat AI
+          models as tools: tested, picked for each job, and measured by cost per finished asset.
+          B.Tech in Computer Science, Chandigarh University, 2025.
+        </p>
         <div class="hero-cta">
           <a class="btn" href="mailto:kanishkverma688@gmail.com">Email me</a>
           <a class="btn btn-line" href="https://www.linkedin.com/in/kanishk-verma" target="_blank" rel="noopener">LinkedIn</a>
-          <a class="btn btn-line" href="https://github.com/Kanishk688" target="_blank" rel="noopener">GitHub</a>
+          <a class="btn btn-line" href="https://github.com/Kanishk688/genai-illustration-pipeline" target="_blank" rel="noopener">My pipeline on GitHub</a>
         </div>
       </div>
 
       <div>
-        <h3 class="col-head">Skills</h3>
-        <dl class="tools">
-          <div><dt>Generative media</dt><dd>GPT Image, Nano Banana Pro (Gemini), Seedream, Magnific, Veo, ElevenLabs. Evaluated: Midjourney, Flux, SDXL/ComfyUI, Imagen, Runway, Kling</dd></div>
-          <div><dt>Real-time 3D and motion</dt><dd>Three.js, WebGL, shaders, Blender, Remotion, HyperFrames, FFmpeg</dd></div>
-          <div><dt>Agentic systems</dt><dd>Claude Code, MCP servers, skills/CLAUDE.md, n8n, model routing, compiled prompt templates</dd></div>
-          <div><dt>Engineering</dt><dd>Python (Pillow, NumPy, SciPy), pytest, GitHub Actions, HTML/CSS/JS, Astro, Cloudflare Pages, Vercel, AWS S3/IAM</dd></div>
-          <div><dt>Art direction and print</dt><dd>Style bibles, character consistency, Photoshop, InDesign hand-off, 300 DPI / alpha / colour QA</dd></div>
-        </dl>
-
-        <h3 class="col-head">Education</h3>
-        <dl class="tools">
-          <div><dt>2025</dt><dd>B.Tech, Computer Science Engineering, Chandigarh University</dd></div>
-          <div><dt>2021</dt><dd>Senior Secondary (12th, PCM), CBSE</dd></div>
-        </dl>
+        <h3 class="col-head">Tools I work with</h3>
+        <ul class="chips-list">
+          {['Claude Code + MCP', 'GPT Image', 'Nano Banana Pro', 'Seedream', 'Magnific', 'Veo', 'ElevenLabs',
+            'Three.js', 'Shaders', 'Blender', 'HyperFrames', 'Remotion', 'FFmpeg', 'Python', 'Photoshop', 'InDesign'
+          ].map((t) => <li>{t}</li>)}
+        </ul>
       </div>
     </div>
   </section>
@@ -268,8 +235,21 @@ const illoCount = books.reduce(
   .sub-head { font-weight: 680; font-size: 1.35rem; letter-spacing: -0.015em; margin: 3.5rem 0 1.25rem; }
 
   /* ---------- about ---------- */
-  #experience { background: var(--raised); border-top: 1px solid var(--line); }
-  .jobs-list { margin-top: 1.25rem; }
+  #experience { border-top: 1px solid var(--line); }
+  .exp-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 21rem), 1fr));
+    gap: 1.5rem;
+  }
+  .chips-list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .chips-list li {
+    padding: 0.4rem 0.8rem;
+    border-radius: 999px;
+    background: var(--raised);
+    box-shadow: inset 0 0 0 1px var(--line);
+    font-size: 0.92rem;
+    font-weight: 550;
+  }
   .about-text strong { color: var(--ink); font-weight: 650; }
   .about { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; }
   .about-text { max-width: 52ch; margin-top: 1.25rem; color: var(--ink-2); font-size: 1.1rem; }
@@ -290,10 +270,6 @@ const illoCount = books.reduce(
   .stats div { display: flex; flex-direction: column-reverse; }
   .stats dd { margin: 0; font-weight: 750; font-size: 1.6rem; letter-spacing: -0.02em; color: var(--night-ink); line-height: 1.1; }
   .stats dt { font-size: 0.85rem; color: var(--night-dim); }
-  .tools { display: grid; gap: 0.6rem; margin: 0; }
-  .tools div { display: grid; grid-template-columns: 9rem 1fr; gap: 1rem; }
-  .tools dt { color: var(--ink-3); }
-  .tools dd { margin: 0; }
 
   @media (max-width: 900px) {
     .hero-in { grid-template-columns: 1fr; gap: 2.5rem; }
@@ -303,6 +279,5 @@ const illoCount = books.reduce(
   }
   @media (max-width: 520px) {
     .hero-reel-cap { display: none; }
-    .tools div { grid-template-columns: 1fr; gap: 0; }
   }
 </style>

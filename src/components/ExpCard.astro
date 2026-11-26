@@ -1,0 +1,60 @@
+---
+// Ek job ka card: upar us job ka asli kaam (3 images), neeche role, ek line,
+// bade numbers aur kaam dekhne ka button.
+import type { Exp } from '../data/experience';
+interface Props { e: Exp }
+const { e } = Astro.props;
+---
+
+<article class="exp">
+  <a class="exp-pics" href={e.link.href} aria-label={e.link.label}>
+    {e.images.map((src) => <img src={src} alt="" loading="lazy" />)}
+  </a>
+  <div class="exp-body">
+    <p class="exp-when">{e.when}</p>
+    <h3 class="exp-role">{e.role}</h3>
+    <p class="exp-org">{e.org}</p>
+    <p class="exp-line">{e.line}</p>
+    <dl class="exp-nums">
+      {e.numbers.map((x) => <div><dd>{x.n}</dd><dt>{x.label}</dt></div>)}
+    </dl>
+    <a class="btn btn-line exp-btn" href={e.link.href}>{e.link.label}</a>
+  </div>
+</article>
+
+<style>
+  .exp {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    background: var(--raised);
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    box-shadow: 0 0 0 1px var(--line);
+  }
+  .exp-pics {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: minmax(0, 1fr);
+    overflow: hidden;
+    gap: 3px;
+    background: var(--line);
+    aspect-ratio: 16 / 9;
+  }
+  .exp-pics img { width: 100%; height: 100%; object-fit: cover; min-width: 0; min-height: 0; }
+  .exp-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 1.25rem 1.35rem 1.4rem;
+  }
+  .exp-when { margin: 0; font-size: 0.88rem; color: var(--ink-3); }
+  .exp-role { margin-top: 0.3rem; font-weight: 720; font-size: 1.25rem; line-height: 1.2; letter-spacing: -0.015em; }
+  .exp-org { margin: 0.15rem 0 0; font-weight: 550; color: var(--ink-2); }
+  .exp-line { margin: 0.75rem 0 0; color: var(--ink-2); font-size: 0.98rem; line-height: 1.5; }
+  .exp-nums { display: flex; flex-wrap: wrap; gap: 0.75rem 1.5rem; margin: 1.1rem 0 1.25rem; }
+  .exp-nums div { display: flex; flex-direction: column-reverse; }
+  .exp-nums dd { margin: 0; font-weight: 780; font-size: 1.65rem; line-height: 1.05; letter-spacing: -0.03em; color: var(--ink); }
+  .exp-nums dt { font-size: 0.82rem; color: var(--ink-3); }
+  .exp-btn { margin-top: auto; align-self: start; padding: 0.6rem 1.05rem; font-size: 0.95rem; }
+</style>
