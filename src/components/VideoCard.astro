@@ -1,6 +1,7 @@
 ---
-// Ek video ka card. Poster dikhta hai; mouse le jaao to bina-awaaz
-// preview chalta hai; click karo to player khulta hai (awaaz ke saath).
+// Ek video ka card. Screen pe aate hi bina-awaaz chalne lagta hai
+// (phone aur computer dono pe); click karo to player khulta hai (awaaz ke saath).
+// Chalne wali clip: public/video/<id>-hero.mp4 (6 sec).
 import type { Video } from '../data/videos';
 interface Props { v: Video }
 const { v } = Astro.props;
@@ -9,7 +10,7 @@ const { v } = Astro.props;
 <button type="button" class:list={['vcard', v.wide && 'vcard-wide']} data-vid={v.id} aria-label={`Play: ${v.title}`}>
   <span class="vframe">
     <img src={`/video/${v.id}.webp`} alt="" loading="lazy" />
-    <video muted loop playsinline preload="none" data-loop={`/video/${v.id}-loop.mp4`} aria-hidden="true"></video>
+    <video muted loop playsinline preload="none" data-loop={`/video/${v.id}-hero.mp4`} aria-hidden="true"></video>
     <span class="vplay" aria-hidden="true">
       <svg viewBox="0 0 24 24" width="22" height="22"><path d="M8 5.5v13l11-6.5z" fill="currentColor" /></svg>
     </span>
@@ -49,7 +50,8 @@ const { v } = Astro.props;
     object-fit: cover;
   }
   .vframe video { opacity: 0; transition: opacity .25s ease; }
-  .vcard.is-hover .vframe video { opacity: 1; }
+  .vcard.is-live .vframe video { opacity: 1; }
+  .vcard:hover .vframe { box-shadow: 0 0 0 3px var(--sun); }
   .vplay {
     position: absolute;
     left: 0.7rem; bottom: 0.7rem;

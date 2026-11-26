@@ -119,21 +119,30 @@ const data = videos.map(({ id, title, original, summary, made, length, tools, wi
       show(order[(cur + d + order.length) % order.length]);
     }
 
+    // Har card ki video screen pe aate hi bina awaaz chalti hai (phone + computer),
+    // screen se bahar jaate hi rukti hai — taaki phone garam na ho.
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const io = reduce ? null : new IntersectionObserver((entries) => {
+      for (const en of entries) {
+        const loop = en.target as HTMLVideoElement;
+        const card = loop.closest('.vcard')!;
+        if (en.isIntersecting) {
+          if (!loop.src) {
+            loop.src = loop.dataset.loop!;
+            loop.addEventListener('playing', () => card.classList.add('is-live'), { once: true });
+          }
+          loop.play().catch(() => {});
+        } else {
+          loop.pause();
+        }
+      }
+    }, { rootMargin: '100px 0px' });
     document.querySelectorAll<HTMLElement>('.vcard').forEach((card) => {
       card.addEventListener('click', () => open(card.dataset.vid!));
-      // hover preview (sirf mouse wale devices pe)
       const loop = card.querySelector('video');
-      if (!loop || !matchMedia('(hover: hover)').matches) return;
-      card.addEventListener('mouseenter', () => {
-        if (!loop.src) loop.src = loop.dataset.loop!;
-        card.classList.add('is-hover');
-        loop.play().catch(() => {});
-      });
-      card.addEventListener('mouseleave', () => {
-        card.classList.remove('is-hover');
-        loop.pause();
-      });
+      if (loop && io) io.observe(loop);
     });
+    if (io) document.addEventListener('astro:before-swap', () => io.disconnect(), { once: true });
 
     $('vp-close').addEventListener('click', () => dlg.close());
     $('vp-prev').addEventListener('click', () => step(-1));
