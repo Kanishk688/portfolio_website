@@ -1,341 +1,274 @@
 ---
-// HOME — pehle kaam dikhta hai, phir batata hai ki kaise bana.
-// (Pehle yahan reject-vs-printed specimen sabse upar tha. Concept accha tha
-//  par portfolio ka pehla kaam hai "ye banda accha banata hai" dikhana, aur
-//  do skeleton diagram us kaam ke liye galat pehli image thi. Specimen ab
-//  neeche docket ke saath hai, jahan woh numbers ko sahi thehraata hai.)
+// HOME — recruiter ka pura raasta ek page pe:
+//   hero (kaun hoon + 3 chalti videos) → videos → kitaabein → comics → about.
+// Har hissa header ke link se seedha khulta hai.
 import Layout from '../layouts/Layout.astro';
+import VideoCard from '../components/VideoCard.astro';
+import VideoPlayer from '../components/VideoPlayer.astro';
+import ProjectCard from '../components/ProjectCard.astro';
 import { getCollection } from 'astro:content';
+import { videos } from '../data/videos';
 
 const all = await getCollection('projects');
-const byId = (id: string) => all.find((p) => p.id === id)!;
+const newest = (a: any, b: any) => b.data.date.getTime() - a.data.date.getTime();
+const books = all.filter((p) => p.data.medium === 'illustration').sort(newest);
+const comics = all.filter((p) => p.data.medium === 'comics').sort(newest);
 
-const featured = all
-  .filter((p) => p.data.featured)
-  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
-  .slice(0, 6);
+const explainers = videos.filter((v) => v.group === 'explainer');
+const otherMotion = videos.filter((v) => v.group !== 'explainer');
 
-// ---- HERO SHOWCASE: teen sabse achhi images, teen alag mood ----
-const showcase = [
-  { src: '/work/g5-c6-pond-story-scene.webp', p: byId('jaipuria-science-grade5') },
-  { src: '/work/comic-mermaid-v1-p01.webp',   p: byId('comic-mermaid') },
-  { src: '/work/g4-c9-opening.webp',          p: byId('jaipuria-science-textbook') },
-];
+const hero = ['ev', 'gangajal', 'agni5'].map((id) => videos.find((v) => v.id === id)!);
 
-// ---- GINTI (gallery se, haath se nahi) ----
-let imgCount = 0;
-const chapterSet = new Set<string>();
-const volumeSet = new Set<string>();
-const marqueeAll: string[] = [];
-for (const p of all) {
-  for (const it of p.data.gallery) {
-    imgCount++;
-    const src = typeof it === 'string' ? it : it.src;
-    marqueeAll.push(src);
-    if (typeof it !== 'string' && it.chapter) {
-      if (p.data.medium === 'comics') volumeSet.add(p.id + '::' + it.chapter);
-      else chapterSet.add(p.id + '::' + it.chapter);
-    }
-  }
-}
-const bookCount = all.filter((p) => p.data.medium === 'illustration').length;
-const comicCount = all.filter((p) => p.data.medium === 'comics').length;
-
-// har medium kitna hai — range ek nazar me
-const media = [...new Set(all.map((p) => p.data.medium))].map((m) => ({
-  label: m.charAt(0).toUpperCase() + m.slice(1),
-  n: all.filter((p) => p.data.medium === m).length,
-}));
-
-const step = Math.max(1, Math.floor(marqueeAll.length / 40));
-const strip = marqueeAll.filter((_, i) => i % step === 0).slice(0, 40);
-
-const docket = [
-  { k: 'Textbooks illustrated', v: String(bookCount) },
-  { k: 'Comic titles', v: `${comicCount} across ${volumeSet.size} volumes` },
-  { k: 'Chapters & units', v: String(chapterSet.size) },
-  { k: 'Pages published here', v: `${Math.floor(imgCount / 10) * 10}+` },
-  { k: 'Measured run — delivered', v: '58', hi: true },
-  { k: 'Measured run — generations', v: '165', hi: true },
-  { k: 'Measured run — discarded', v: '107', hi: true },
-];
-
-const mediumLabel = (m: string) => m.charAt(0).toUpperCase() + m.slice(1);
+const illoCount = books.reduce(
+  (n, p) => n + p.data.gallery.filter((g) => typeof g === 'string' || !g.chapter?.startsWith('Rejected attempts')).length,
+  0,
+);
 ---
 
-<Layout title="Kanishk Verma — Generative Media Engineer">
-  <!-- ========================= HERO ========================= -->
-  <section class="wrap" style="padding-block: 4rem 2.5rem;">
-    <p class="reveal label label-mag">Generative Media Engineer · Delhi NCR</p>
-
-    <h1 class="reveal d1 display" style="font-size: clamp(2.8rem, 6.4vw, 5.2rem); margin-top: 1.1rem; max-width: 20ch;">
-      Illustration and comics, built by pipeline and finished for print.
-    </h1>
-
-    <div class="hero-foot">
-      <p class="reveal d2 lede" style="margin:0;">
-        Five textbooks and five comic titles — 480 pages delivered at
-        300&nbsp;DPI. I build the generation pipeline, the review gates and the
-        print QA, and I own how the final artwork looks.
-      </p>
-      <div class="reveal d3" style="display:flex; flex-wrap:wrap; gap:0.75rem;">
-        <a class="btn" href="/work/">See the work</a>
-        <a class="btn btn-ghost" href="/work/jaipuria-science-grade5/">How it’s made</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===================== SHOWCASE ===================== -->
-  <section class="wrap" style="padding-bottom: 3rem;">
-    <div class="showcase">
-      {showcase.map(({ src, p }, i) => (
-        <a class={`reveal ${i ? 'd' + i : ''} showcase-item`} href={`/work/${p.id}/`}>
-          <img src={src} alt={p.data.title} loading={i === 0 ? 'eager' : 'lazy'} />
-          <span class="showcase-cap">
-            <span class="label label-mag">{mediumLabel(p.data.medium)}</span>
-            <span class="showcase-title">{p.data.title}</span>
-          </span>
-        </a>
-      ))}
-    </div>
-  </section>
-
-  <!-- ===================== PRACTICE =====================
-       Kaunse medium me kaam hai, ek nazar me. Ye list schema se aati hai —
-       jis din video ya animation ka pehla project add hoga, woh yahan khud
-       aa jayega, koi edit nahi karna padega. -->
-  <section class="wrap" style="padding-bottom: 2.5rem;">
-    <div class="practice">
-      <span class="label" style="align-self:center;">Practice</span>
-      {media.map((m) => (
-        <a class="practice-item" href="/work/">
-          <span class="practice-label">{m.label}</span>
-          <span class="label mono">{m.n}</span>
-        </a>
-      ))}
-    </div>
-  </section>
-
-  <!-- artwork band -->
-  <div class="marquee" style="border-block: 1px solid var(--ink); padding-block: 0.75rem; background: var(--paper-hi);">
-    <div class="marquee-track marquee-l">
-      {[...strip, ...strip].map((src) => (
-        <img src={src} alt="" loading="lazy" style="height:5.5rem; width:auto; display:block;" />
-      ))}
-    </div>
-  </div>
-
-  <!-- ========================= WORK ========================= -->
-  <section class="wrap" style="padding-block: 4rem;">
-    <div style="display:flex; align-items:baseline; justify-content:space-between; gap:1rem; padding-bottom:0.9rem; border-bottom:1px solid var(--ink);">
-      <h2 class="reveal label" style="color: var(--ink);">Selected work</h2>
-      <a class="reveal label label-mag" href="/work/">All projects →</a>
-    </div>
-
-    <div class="work-grid" style="margin-top:2rem;">
-      {featured.map((p) => (
-        <a class="reveal card" href={`/work/${p.id}/`}>
-          <img src={p.data.cover} alt={p.data.title} loading="lazy" style="aspect-ratio: 16/10; object-fit: cover;" />
-          <div class="card-body">
-            <p class="label" style="display:flex; justify-content:space-between; gap:0.75rem;">
-              <span class="label-mag">{mediumLabel(p.data.medium)}</span>
-              <span class="mono">{p.data.date.getFullYear()}</span>
-            </p>
-            <h3 class="display" style="font-size:1.35rem; margin-top:0.5rem; line-height:1.1;">{p.data.title}</h3>
-            <p style="color: var(--ink-2); font-size:0.95rem; margin-top:0.6rem;">{p.data.summary.slice(0, 128)}…</p>
-          </div>
-        </a>
-      ))}
-    </div>
-  </section>
-
-  <!-- ================= DOCKET + SPECIMEN =================
-       Numbers, aur unke saath woh ek image jo unko sach saabit karti hai. -->
-  <section class="wrap" style="padding-block: 3rem 4.5rem; border-top: 1px solid var(--rule);">
-    <p class="reveal label">Job docket</p>
-    <h2 class="reveal d1 display" style="font-size: clamp(1.9rem, 3.4vw, 2.8rem); margin-top: 0.8rem; max-width: 22ch;">
-      Counted from the files on disk.
-    </h2>
-
-    <div class="docket-grid" style="margin-top:2.5rem;">
-      <table class="reveal spec">
-        <tbody>
-          {docket.map((row) => (
-            <tr>
-              <td>{row.k}</td>
-              <td>{row.hi ? <strong>{row.v}</strong> : row.v}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <div class="reveal d1">
-        <p style="color: var(--ink-2); margin:0 0 1.4rem; max-width: 46ch;">
-          One book kept every rejected attempt instead of overwriting it, which
-          is why it is the only one here whose cost is a measurement rather
-          than a memory. This is what one of those rejects looks like — the
-          skull has no eye sockets.
+<Layout>
+  <!-- ====================== HERO ====================== -->
+  <section class="night hero">
+    <div class="wrap hero-in">
+      <div class="hero-text">
+        <p class="hello">Hi, I’m Kanishk Verma, a generative media designer.</p>
+        <h1 class="h-hero">I make 3D explainer videos, illustrated textbooks and comics with AI.</h1>
+        <p class="lede">
+          Everything here was made for a real audience: {explainers.length} science reels for
+          Instagram, {books.length} school textbooks headed for print, and {comics.length} children’s comics.
+          I build the pipeline and I own how the final piece looks.
         </p>
+        <div class="hero-cta">
+          <a class="btn" href="#videos">Watch the videos</a>
+          <a class="btn btn-line" href="#illustration">See the books</a>
+        </div>
+      </div>
 
-        <figure class="specimen" style="margin:0;">
-          <div class="specimen-grid">
-            <div class="specimen-cell">
-              <div class="specimen-head">
-                <span class="stamp stamp-rej">Rejected</span>
-                <span class="label">Att. 1</span>
-              </div>
-              <img src="/work/rej-skull-noeyes.webp" alt="A rejected attempt: the skull has no eye sockets." loading="lazy" />
-            </div>
-            <div class="specimen-cell">
-              <div class="specimen-head">
-                <span class="stamp stamp-ok">Printed</span>
-                <span class="label">Att. 9</span>
-              </div>
-              <img src="/work/fin-skull.webp" alt="The delivered illustration: the skull has correct eye sockets and teeth." loading="lazy" />
-            </div>
-          </div>
-          <figcaption class="specimen-foot">
-            <span>c1_04_v1_no_eyesockets_WRONG.png</span>
-            <span>8 attempts archived</span>
-          </figcaption>
-        </figure>
+      <div class="hero-reels" aria-label="Three of the videos, playing without sound">
+        {hero.map((v, i) => (
+          <button type="button" class={`hero-reel r${i}`} data-vid={v.id} aria-label={`Play: ${v.title}`}>
+            <video muted loop playsinline preload="none" poster={`/video/${v.id}.webp`} data-loop={`/video/${v.id}-loop.mp4`}></video>
+            <span class="hero-reel-cap">{v.title}</span>
+          </button>
+        ))}
       </div>
     </div>
   </section>
 
-  <!-- ========================= ABOUT ========================= -->
-  <section class="wrap" style="padding-block: 3rem 4rem; border-top: 1px solid var(--rule);">
-    <div class="docket-grid">
+  <!-- ====================== VIDEOS ====================== -->
+  <section id="videos" class="night sec">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <h2 class="h-section">3D explainer videos</h2>
+          <p class="muted">
+            Science and defence stories in Hinglish, made October–November 2026 for my Instagram
+            channel <a class="inline-link" href="https://www.instagram.com/unseen.3d/" target="_blank" rel="noopener">@unseen.3d</a>.
+            Every shot is a real 3D scene built in Blender or three.js rather than a generated clip,
+            so the science stays correct from one shot to the next. Click any video to watch it with sound.
+          </p>
+        </div>
+      </div>
+      <div class="vgrid">
+        {explainers.map((v) => <VideoCard v={v} />)}
+      </div>
+
+      <h3 class="sub-head">Textbook chapter video</h3>
+      <div class="vgrid vgrid-mixed">
+        {otherMotion.map((v) => <VideoCard v={v} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================== BOOKS ====================== -->
+  <section id="illustration" class="sec">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <h2 class="h-section">Textbook illustration</h2>
+          <p class="muted">
+            {books.length} school books, {illoCount}+ illustrations shown here, made June–November 2026 for
+            Possibility Edutech (Jaipuria Group). Each book keeps its characters and style locked from the
+            first page to the last, every diagram is checked for correct science, and the files are delivered
+            at 300 DPI for print.
+          </p>
+        </div>
+      </div>
+      <div class="proj-grid">
+        {books.map((p) => <ProjectCard p={p} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================== COMICS ====================== -->
+  <section id="comics" class="sec">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <h2 class="h-section">Comics</h2>
+          <p class="muted">
+            {comics.length} illustrated children’s comics made at Wippi in 2025. Image models then could not
+            keep a character the same from one page to the next, so consistency came from reference sheets,
+            many rejected attempts and careful hand-picking. Every speech bubble was typeset by hand.
+          </p>
+        </div>
+      </div>
+      <div class="proj-grid">
+        {comics.map((p) => <ProjectCard p={p} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================== ABOUT ====================== -->
+  <section id="about" class="sec">
+    <div class="wrap about">
       <div>
-        <p class="reveal label">Colophon</p>
-        <h2 class="reveal d1 display" style="font-size: clamp(1.9rem, 3.4vw, 2.8rem); margin-top:0.8rem;">
-          How the work<br />gets made.
-        </h2>
+        <h2 class="h-section">About me</h2>
+        <div class="about-text">
+          <p>
+            I take a brief, whether it’s a textbook chapter or a science question, and turn it into
+            finished images and video using AI models, 3D tools and code.
+          </p>
+          <p>
+            The models are good at making something that looks right. My job is to make sure it is right:
+            the skull in a science diagram has eye sockets, the same child looks like herself on page 40, and
+            the file is good enough to print or broadcast.
+          </p>
+        </div>
+        <div class="hero-cta">
+          <a class="btn" href="mailto:kanishkverma688@gmail.com">Email me</a>
+          <a class="btn btn-line" href="https://github.com/Kanishk688/genai-illustration-pipeline" target="_blank" rel="noopener">My pipeline on GitHub</a>
+        </div>
       </div>
 
-      <div class="reveal d1" style="max-width: var(--measure);">
-        <p>
-          I’m Kanishk. I build generative image pipelines and own what comes out
-          of them — the prompts, the agent loops, the review gates and the
-          visual quality of the final asset.
-        </p>
-        <p style="margin-top:1.05rem;">
-          A chapter is read into a shot list, every illustration is generated
-          against a locked style bible and a fixed palette, rejects go to an
-          archive named with the reason they failed, and an automated QA script
-          checks resolution, alpha, print density and edge halos before
-          anything is delivered.
-        </p>
+      <div>
+        <h3 class="col-head">Experience</h3>
+        <ol class="jobs">
+          <li>
+            <span class="when">Feb 2026 – now</span>
+            <strong>Assistant Manager, AI Initiatives</strong>
+            <span class="muted">Possibility Edutech (Jaipuria Group), Delhi NCR. Textbook illustration and chapter videos.</span>
+          </li>
+          <li>
+            <span class="when">Oct 2026 – now</span>
+            <strong>Creator, @unseen.3d</strong>
+            <span class="muted">My own Instagram channel of 3D science explainers.</span>
+          </li>
+          <li>
+            <span class="when">Nov 2024 – Dec 2025</span>
+            <strong>AI &amp; IoT Generalist</strong>
+            <span class="muted">Wippi (Gen Alpha Kids First Media Tech), Bangalore. Comics and ElevenLabs voiceovers.</span>
+          </li>
+        </ol>
 
-        <table class="spec" style="margin-top:2rem;">
-          <tbody>
-            <tr><td>Build with</td><td>Claude Code + MCP, agent loops, Python, n8n</td></tr>
-            <tr><td>Generate with</td><td>Gemini, GPT Image, Magnific, Veo, ElevenLabs</td></tr>
-            <tr><td>Ship as</td><td>300 DPI print files, QA-gated</td></tr>
-            <tr><td>Open source</td><td><a href="https://github.com/Kanishk688/genai-illustration-pipeline" style="color:var(--magenta); text-decoration:underline; text-underline-offset:3px;">genai-illustration-pipeline</a></td></tr>
-          </tbody>
-        </table>
+        <h3 class="col-head">Tools I use</h3>
+        <dl class="tools">
+          <div><dt>Images</dt><dd>GPT Image, Gemini (Nano Banana), Magnific, Photoshop</dd></div>
+          <div><dt>3D and video</dt><dd>Blender, three.js, HyperFrames, Remotion</dd></div>
+          <div><dt>Voice and sound</dt><dd>ElevenLabs, AI music</dd></div>
+          <div><dt>Automation</dt><dd>Python, Claude Code with MCP agents</dd></div>
+        </dl>
       </div>
     </div>
   </section>
 
-  <!-- ========================= CONTACT ========================= -->
-  <section class="wrap" style="padding-block: 3rem 1rem;">
-    <p class="reveal label">Contact</p>
-    <h2 class="reveal d1 display" style="font-size: clamp(2.2rem, 5vw, 3.6rem); margin-top:0.8rem; max-width:18ch;">
-      Need a pipeline built, or one that stopped behaving?
-    </h2>
-    <a class="reveal d2 btn" style="margin-top:1.8rem;" href="mailto:kanishkverma688@gmail.com">
-      kanishkverma688@gmail.com
-    </a>
-  </section>
+  <VideoPlayer />
+
+  <script>
+    // Hero ki 3 videos: sirf tab chalein jab user ne "reduce motion" na lagaya ho.
+    function setupHero() {
+      const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      document.querySelectorAll<HTMLButtonElement>('.hero-reel').forEach((b) => {
+        const v = b.querySelector('video')!;
+        if (!reduce) { v.src = v.dataset.loop!; v.play().catch(() => {}); }
+        b.addEventListener('click', () => {
+          (document.querySelector(`.vcard[data-vid="${b.dataset.vid}"]`) as HTMLElement | null)?.click();
+        });
+      });
+    }
+    document.addEventListener('astro:page-load', setupHero);
+  </script>
 </Layout>
 
 <style>
-  .hero-foot {
+  /* ---------- hero ---------- */
+  .hero { padding-block: clamp(3rem, 7vw, 5.5rem) clamp(2.5rem, 5vw, 4rem); overflow: hidden; }
+  .hero-in {
     display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 2.5rem;
-    align-items: end;
-    margin-top: 2rem;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: 3rem;
+    align-items: center;
   }
+  .hello { color: var(--sun); font-weight: 600; margin: 0 0 1rem; font-size: 1.1rem; }
+  .hero .lede { margin-top: 1.5rem; }
+  .hero-cta { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2rem; }
 
-  /* SHOWCASE — pehla impression. Teen bade plates, alag mood. */
-  .showcase {
+  .hero-reels {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 1.25rem;
+    gap: 1rem;
+    align-items: center;
   }
-  .showcase-item {
-    display: block;
-    border: 1px solid var(--rule);
-    background: var(--paper-hi);
-    transition: border-color .18s ease, transform .18s ease;
+  .hero-reel {
+    position: relative;
+    padding: 0;
+    border: 0;
+    background: var(--night-2);
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    aspect-ratio: 9 / 16;
+    cursor: pointer;
+    box-shadow: 0 20px 50px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.08);
   }
-  .showcase-item:hover { border-color: var(--ink); transform: translateY(-3px); }
-  .showcase-item img {
-    display: block;
-    width: 100%;
-    aspect-ratio: 4 / 3;
-    object-fit: cover;
-  }
-  .showcase-cap {
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-    padding: 0.85rem 1rem 1rem;
-    border-top: 1px solid var(--rule);
-  }
-  .showcase-title {
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 1.05rem;
-    line-height: 1.15;
-    letter-spacing: -0.01em;
-    color: var(--ink);
+  .hero-reel.r1 { transform: translateY(-1.5rem); }
+  .hero-reel video { width: 100%; height: 100%; object-fit: cover; }
+  .hero-reel-cap {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    padding: 2.5rem 0.75rem 0.75rem;
+    background: linear-gradient(transparent, rgba(0,0,0,.78));
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 600;
+    line-height: 1.25;
+    text-align: left;
   }
 
-  .docket-grid {
+  /* ---------- sections ---------- */
+  .sec { padding-block: clamp(3.5rem, 7vw, 5.5rem); }
+  #videos { padding-top: 1.5rem; }
+  #comics { padding-top: 0; }
+  .inline-link { color: var(--sun); text-decoration: underline; text-underline-offset: 3px; }
+
+  .vgrid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 3.5rem;
-    align-items: start;
+    grid-template-columns: repeat(auto-fill, minmax(min(46%, 11rem), 1fr));
+    gap: 2rem 1.1rem;
   }
-  .work-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr));
-    gap: 1.5rem;
-  }
-  .practice {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: stretch;
-    border-top: 1px solid var(--ink);
-    border-bottom: 1px solid var(--ink);
-    padding-left: 1rem;
-    gap: 0;
-  }
-  .practice > .label { padding-right: 1.5rem; }
-  .practice-item {
-    display: flex;
-    align-items: baseline;
-    gap: 0.55rem;
-    padding: 0.85rem 1.25rem;
-    border-left: 1px solid var(--rule);
-    color: var(--ink);
-    transition: background .15s ease;
-  }
-  .practice-item:hover { background: var(--paper-hi); }
-  .practice-label {
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 1.05rem;
-    letter-spacing: -0.01em;
-  }
+  .vgrid-mixed { grid-template-columns: minmax(0, 40rem); }
+  .sub-head { font-weight: 680; font-size: 1.35rem; letter-spacing: -0.015em; margin: 3.5rem 0 1.25rem; }
+
+  /* ---------- about ---------- */
+  #about { border-top: 1px solid var(--line); }
+  .about { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; }
+  .about-text { max-width: 52ch; margin-top: 1.25rem; color: var(--ink-2); font-size: 1.1rem; }
+  .about-text p + p { margin-top: 1rem; }
+  .col-head { font-weight: 680; font-size: 1.15rem; margin: 0 0 1rem; }
+  .col-head + * { margin-bottom: 2.5rem; }
+  .jobs { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.25rem; }
+  .jobs li { display: grid; gap: 0.15rem; padding-left: 1rem; border-left: 3px solid var(--sun); }
+  .when { font-size: 0.9rem; color: var(--ink-3); }
+  .tools { display: grid; gap: 0.6rem; margin: 0; }
+  .tools div { display: grid; grid-template-columns: 9rem 1fr; gap: 1rem; }
+  .tools dt { color: var(--ink-3); }
+  .tools dd { margin: 0; }
 
   @media (max-width: 900px) {
-    .hero-foot { grid-template-columns: 1fr; gap: 1.5rem; align-items: start; }
-    .showcase { grid-template-columns: 1fr; }
-    .docket-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+    .hero-in { grid-template-columns: 1fr; gap: 2.5rem; }
+    .hero-reels { max-width: 34rem; }
+    .about { grid-template-columns: 1fr; gap: 3rem; }
+    .vgrid-mixed { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 520px) {
+    .hero-reel-cap { display: none; }
+    .tools div { grid-template-columns: 1fr; gap: 0; }
   }
 </style>

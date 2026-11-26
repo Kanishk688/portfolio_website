@@ -1,0 +1,76 @@
+---
+// Ek video ka card. Poster dikhta hai; mouse le jaao to bina-awaaz
+// preview chalta hai; click karo to player khulta hai (awaaz ke saath).
+import type { Video } from '../data/videos';
+interface Props { v: Video }
+const { v } = Astro.props;
+---
+
+<button type="button" class:list={['vcard', v.wide && 'vcard-wide']} data-vid={v.id} aria-label={`Play: ${v.title}`}>
+  <span class="vframe">
+    <img src={`/video/${v.id}.webp`} alt="" loading="lazy" />
+    <video muted loop playsinline preload="none" data-loop={`/video/${v.id}-loop.mp4`} aria-hidden="true"></video>
+    <span class="vplay" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="22" height="22"><path d="M8 5.5v13l11-6.5z" fill="currentColor" /></svg>
+    </span>
+    <span class="vlen">{v.length}</span>
+  </span>
+  <span class="vtitle">{v.title}</span>
+  {v.original && <span class="vorig">{v.original}</span>}
+</button>
+
+<style>
+  .vcard {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0;
+    background: none;
+    border: 0;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  .vframe {
+    position: relative;
+    display: block;
+    aspect-ratio: 9 / 16;
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    background: var(--night-2);
+    box-shadow: 0 0 0 1px rgba(255,255,255,.08);
+    margin-bottom: 0.6rem;
+  }
+  .vcard-wide .vframe { aspect-ratio: 16 / 9; }
+  .vframe img, .vframe video {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+  }
+  .vframe video { opacity: 0; transition: opacity .25s ease; }
+  .vcard.is-hover .vframe video { opacity: 1; }
+  .vplay {
+    position: absolute;
+    left: 0.7rem; bottom: 0.7rem;
+    display: grid; place-items: center;
+    width: 2.6rem; height: 2.6rem;
+    border-radius: 50%;
+    background: var(--sun);
+    color: var(--sun-ink);
+    transition: transform .2s ease;
+  }
+  .vcard:hover .vplay { transform: scale(1.1); }
+  .vlen {
+    position: absolute;
+    right: 0.6rem; bottom: 0.75rem;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    background: rgba(0,0,0,.6);
+    color: #fff;
+    font-size: 0.8rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .vtitle { font-weight: 620; font-size: 1rem; line-height: 1.25; }
+  .vorig { font-size: 0.85rem; color: var(--night-dim); }
+</style>

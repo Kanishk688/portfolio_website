@@ -1,14 +1,16 @@
 ---
-// COMMON DHAANCHA — har page isko use karega.
+// COMMON DHAANCHA — har page isko use karta hai.
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import { ClientRouter } from 'astro:transitions';
 
 const {
-  title = 'Kanishk Verma — Generative Media Engineer',
+  title = 'Kanishk Verma — 3D video, illustration and comics with generative AI',
   description =
-    'Generative media engineer. I build the pipelines that turn a manuscript into print-ready artwork at book scale — style locked, every reject archived, cost measured per delivered asset.',
+    'Portfolio of Kanishk Verma: 3D science explainer videos, textbook illustration and comics, made with generative AI and finished to broadcast and print quality.',
+  image = '/video/gangajal.webp',
 } = Astro.props;
+const ogImage = new URL(image, 'https://kannisshk.pages.dev').href;
 ---
 
 <!doctype html>
@@ -21,18 +23,19 @@ const {
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#17183a" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..500&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap"
     />
-
-    <!-- favicon: CMYK registration dots, kyunki kaam print ka hai -->
     <link
       rel="icon"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23e8e9ec'/%3E%3Ccircle cx='9' cy='9' r='6' fill='%230090cf'/%3E%3Ccircle cx='23' cy='9' r='6' fill='%23d1006b'/%3E%3Ccircle cx='9' cy='23' r='6' fill='%23f2c200'/%3E%3Ccircle cx='23' cy='23' r='6' fill='%23141417'/%3E%3C/svg%3E"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2317183a'/%3E%3Ctext x='16' y='22.5' font-family='Arial' font-weight='700' font-size='17' text-anchor='middle' fill='%23ffc531'%3EKV%3C/text%3E%3C/svg%3E"
     />
     <ClientRouter />
   </head>
@@ -40,35 +43,34 @@ const {
     <Header />
     <slot />
 
-    <footer class="wrap" style="padding-block: 3.5rem 4rem; border-top: 1px solid var(--rule); margin-top: 5rem;">
-      <div style="display:flex; flex-wrap:wrap; gap:1.5rem; justify-content:space-between; align-items:baseline;">
-        <span class="label">Kanishk Kumar Verma — Delhi NCR</span>
-        <a class="label label-mag" href="mailto:kanishkverma688@gmail.com">kanishkverma688@gmail.com</a>
+    <footer class="site-foot">
+      <div class="wrap foot-in">
+        <span>Kanishk Verma, Delhi NCR</span>
+        <span class="foot-links">
+          <a href="mailto:kanishkverma688@gmail.com">kanishkverma688@gmail.com</a>
+          <a href="https://www.instagram.com/unseen.3d/" target="_blank" rel="noopener">Instagram</a>
+          <a href="https://github.com/Kanishk688" target="_blank" rel="noopener">GitHub</a>
+        </span>
       </div>
     </footer>
-
-    <!-- SCROLL REVEAL: jaise hi koi .reveal element screen me aata hai, use dikhao. -->
-    <script>
-      function setupReveal() {
-        const els = document.querySelectorAll('.reveal:not(.in)');
-        if (!('IntersectionObserver' in window)) {
-          els.forEach((el) => el.classList.add('in'));
-          return;
-        }
-        const io = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((e) => {
-              if (e.isIntersecting) {
-                e.target.classList.add('in');
-                io.unobserve(e.target);
-              }
-            });
-          },
-          { threshold: 0.08, rootMargin: '0px 0px -6% 0px' }
-        );
-        els.forEach((el) => io.observe(el));
-      }
-      document.addEventListener('astro:page-load', setupReveal);
-    </script>
   </body>
 </html>
+
+<style>
+  .site-foot {
+    margin-top: 6rem;
+    background: var(--night);
+    color: var(--night-dim);
+    font-size: 0.95rem;
+  }
+  .foot-in {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    padding-block: 2.25rem;
+  }
+  .foot-links { display: flex; flex-wrap: wrap; gap: 1.5rem; }
+  .foot-links a { color: var(--night-ink); }
+  .foot-links a:hover { color: var(--sun); }
+</style>

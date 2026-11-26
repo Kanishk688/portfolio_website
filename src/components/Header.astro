@@ -1,33 +1,58 @@
 ---
-// HEADER = press docket ka top strip. Naam, registration dots, aur do links.
-const path = Astro.url.pathname;
+// HEADER — naam, 4 seedhe links, aur email ka button.
+// Links home page ke sections pe le jaate hain, taaki recruiter
+// ek click me kisi bhi tarah ka kaam dekh sake.
 const links = [
-  { href: '/', label: 'Index' },
-  { href: '/work/', label: 'Work' },
+  { href: '/#videos', label: 'Videos' },
+  { href: '/#illustration', label: 'Illustration' },
+  { href: '/#comics', label: 'Comics' },
+  { href: '/#about', label: 'About' },
 ];
-const isOn = (href: string) =>
-  href === '/' ? path === '/' : path.startsWith(href.replace(/\/$/, ''));
 ---
 
-<header style="border-bottom: 1px solid var(--ink); background: var(--paper);">
-  <nav class="wrap" style="display:flex; align-items:center; justify-content:space-between; height:3.5rem; gap:1.5rem;">
-    <a href="/" style="display:flex; align-items:center; gap:0.7rem;">
-      <span class="regmark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
-      <span class="label" style="color: var(--ink); letter-spacing:0.14em;">Kanishk Verma</span>
-    </a>
-
-    <ul style="display:flex; align-items:center; gap:1.5rem; list-style:none; margin:0; padding:0;">
+<header class="site-head">
+  <nav class="wrap nav">
+    <a href="/" class="brand">Kanishk Verma</a>
+    <ul class="links">
       {links.map((l) => (
-        <li>
-          <a
-            href={l.href}
-            class:list={['label', isOn(l.href) && 'label-mag']}
-            style={isOn(l.href) ? '' : 'color: var(--ink-2);'}
-          >
-            {l.label}
-          </a>
-        </li>
+        <li><a href={l.href}>{l.label}</a></li>
       ))}
     </ul>
+    <a class="btn head-btn" href="mailto:kanishkverma688@gmail.com">Email me</a>
   </nav>
 </header>
+
+<style>
+  .site-head {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(23, 24, 58, 0.92);
+    backdrop-filter: blur(10px);
+    color: var(--night-ink);
+  }
+  .nav {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    height: 4rem;
+  }
+  .brand { font-weight: 750; font-size: 1.15rem; letter-spacing: -0.02em; }
+  .links {
+    display: flex;
+    gap: 1.6rem;
+    margin: 0 0 0 auto;
+    padding: 0;
+    list-style: none;
+  }
+  .links a { color: var(--night-dim); font-weight: 500; }
+  .links a:hover { color: var(--night-ink); }
+  .head-btn { padding: 0.6rem 1.05rem; font-size: 0.95rem; }
+
+  @media (max-width: 760px) {
+    .site-head { position: static; }
+    .nav { height: auto; flex-wrap: wrap; gap: 0.4rem 1rem; padding-block: 0.7rem; }
+    .links { order: 3; width: 100%; margin: 0; gap: 1.2rem; overflow-x: auto; }
+    .head-btn { margin-left: auto; }
+  }
+</style>

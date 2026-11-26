@@ -1,263 +1,174 @@
 @import "tailwindcss";
 
 /* ============================================================
-   DESIGN LANGUAGE — "press proof"
+   DESIGN — "screening room + light table"
 
-   Ye site ek illustration portfolio nahi, ek production dossier
-   jaisi dikhni chahiye — kyunki kaam wahi hai: manuscript andar,
-   300 DPI print files bahar.
-
-   Isliye ground paper hai (screen-black nahi), accent CMYK ke
-   process colours se aaye hain, aur numbers/filenames mono me
-   hain — jaise ek asli press proof pe hote hain.
+   Recruiter ke liye: kaam pehle, shabd baad me.
+   - Video wala hissa dark hai (3D reels dark pe chamakti hain,
+     jaise screening room me).
+   - Kitaabon wala hissa light hai (illustrations print ke liye
+     bani hain, safed page pe sahi dikhti hain).
+   - Accent = peela, wahi jo reels ke captions me highlight hota hai.
+   - Ek hi font (Bricolage Grotesque) — saaf aur padhne me aasaan.
    ============================================================ */
 
 :root {
-  /* paper */
-  --paper:      #e8e9ec;   /* page ground — thanda proof grey, warm cream nahi */
-  --paper-hi:   #f4f5f7;   /* card / raised surface */
-  --paper-lo:   #dcdee2;   /* recessed wells */
+  --ground:   #f4f5f9;   /* light page */
+  --raised:   #ffffff;   /* card surface */
+  --ink:      #17183a;   /* main text — indigo, night-sky jaisa */
+  --ink-2:    #545878;   /* secondary text */
+  --ink-3:    #8a8da8;   /* small meta */
+  --line:     #dcdee8;   /* borders */
 
-  /* ink */
-  --ink:        #141417;   /* key black */
-  --ink-2:      #55585f;   /* secondary */
-  --ink-3:      #878b93;   /* captions, meta */
-  --rule:       #c5c8ce;   /* hairline */
-  --rule-soft:  #d5d8dd;
+  --night:    #17183a;   /* dark section */
+  --night-2:  #23254d;   /* card on dark */
+  --night-ink:#eef0fa;
+  --night-dim:#a9acd0;
 
-  /* process colours — CMYK separations */
-  --cyan:       #0090cf;
-  --magenta:    #d1006b;   /* primary accent */
-  --yellow:     #f2c200;
+  --sun:      #ffc531;   /* accent */
+  --sun-ink:  #17183a;
 
-  --font-display: "Bricolage Grotesque", "Arial Narrow", system-ui, sans-serif;
-  --font-body:    "Newsreader", Georgia, "Times New Roman", serif;
-  --font-mono:    "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-
-  --measure: 62ch;
+  --font: "Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --measure: 64ch;
+  --r-sm: 6px;
+  --r-lg: 14px;
 }
 
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
 
 body {
-  background: var(--paper);
+  background: var(--ground);
   color: var(--ink);
-  font-family: var(--font-body);
+  font-family: var(--font);
+  font-optical-sizing: auto;
   font-size: 1.0625rem;
-  line-height: 1.65;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
 
-::selection { background: var(--magenta); color: #fff; }
+::selection { background: var(--sun); color: var(--sun-ink); }
 
-:where(a):focus-visible,
-:where(button):focus-visible {
-  outline: 2px solid var(--magenta);
+:where(a, button, [tabindex]):focus-visible {
+  outline: 3px solid var(--sun);
   outline-offset: 3px;
+  border-radius: 4px;
 }
+
+img, video { display: block; max-width: 100%; }
 
 /* ---------- shell ---------- */
-.wrap { max-width: 76rem; margin-inline: auto; padding-inline: 1.5rem; }
-.rule { border: 0; border-top: 1px solid var(--rule); margin: 0; }
+.wrap { max-width: 80rem; margin-inline: auto; padding-inline: clamp(1rem, 4vw, 2.5rem); }
 
 /* ---------- type ---------- */
-.display {
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-variation-settings: "wdth" 100;
-  letter-spacing: -0.03em;
-  line-height: 0.92;
+.h-hero {
+  font-weight: 750;
+  font-size: clamp(2.6rem, 6vw, 4.75rem);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
   text-wrap: balance;
 }
-
-/* Eyebrow / label — har jagah wahi choti mono line, jaise form field ka naam */
-.label {
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  font-weight: 500;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--ink-3);
+.h-section {
+  font-weight: 720;
+  font-size: clamp(1.75rem, 3.2vw, 2.5rem);
+  line-height: 1.05;
+  letter-spacing: -0.025em;
 }
-.label-mag { color: var(--magenta); }
-
-.lede { font-size: 1.25rem; line-height: 1.55; color: var(--ink-2); max-width: var(--measure); }
-
-.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
-
-/* ---------- registration mark: CMYK dots ---------- */
-.regmark { display: inline-flex; gap: 0.28rem; align-items: center; }
-.regmark i {
-  width: 0.5rem; height: 0.5rem; border-radius: 50%;
-  display: block; mix-blend-mode: multiply;
+.h-card {
+  font-weight: 650;
+  font-size: 1.125rem;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
 }
-.regmark i:nth-child(1) { background: var(--cyan); }
-.regmark i:nth-child(2) { background: var(--magenta); }
-.regmark i:nth-child(3) { background: var(--yellow); }
-.regmark i:nth-child(4) { background: var(--ink); }
-
-/* ---------- specimen: reject bनाम printed ----------
-   Site ka signature. Do panel, beech me hairline, neeche asli
-   filename. Baaki portfolio sirf shipped kaam dikhate hain;
-   yahan archive bhi dikhta hai. */
-.specimen {
-  border: 1px solid var(--ink);
-  background: var(--paper-hi);
+.lede {
+  font-size: clamp(1.1rem, 1.6vw, 1.3rem);
+  line-height: 1.5;
+  color: var(--ink-2);
+  max-width: 52ch;
 }
-.specimen-grid { display: grid; grid-template-columns: 1fr 1fr; }
-.specimen-cell { padding: 1rem; }
-.specimen-cell + .specimen-cell { border-left: 1px solid var(--rule); }
-.specimen-cell img { width: 100%; height: auto; display: block; mix-blend-mode: multiply; }
-.specimen-head {
-  display: flex; align-items: baseline; justify-content: space-between;
-  gap: 0.5rem; margin-bottom: 0.75rem;
-}
-.specimen-foot {
-  border-top: 1px solid var(--rule);
-  padding: 0.7rem 1rem;
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  color: var(--ink-3);
-  display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; justify-content: space-between;
-}
-.stamp {
-  font-family: var(--font-mono);
-  font-size: 0.62rem; font-weight: 600;
-  letter-spacing: 0.12em; text-transform: uppercase;
-  padding: 0.16rem 0.42rem;
-  border: 1px solid currentColor;
-}
-.stamp-rej { color: var(--magenta); }
-.stamp-ok  { color: var(--ink); }
-
-/* ---------- spec table: numbers as a press docket ---------- */
-.spec { width: 100%; border-collapse: collapse; }
-.spec tr { border-top: 1px solid var(--rule-soft); }
-.spec tr:first-child { border-top: 1px solid var(--ink); }
-.spec tr:last-child  { border-bottom: 1px solid var(--ink); }
-.spec td { padding: 0.72rem 0; vertical-align: baseline; }
-.spec td:first-child { color: var(--ink-2); white-space: nowrap; padding-right: 1.5rem; }
-.spec td:last-child {
-  text-align: right; font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums; white-space: nowrap;
-  font-weight: 500;
-}
-.spec td:last-child strong { color: var(--magenta); font-weight: 600; }
-
-/* ---------- cards ---------- */
-.card {
-  background: var(--paper-hi);
-  border: 1px solid var(--rule);
-  display: block;
-  transition: border-color .18s ease, transform .18s ease;
-}
-.card:hover { border-color: var(--ink); transform: translateY(-2px); }
-.card img { display: block; width: 100%; height: auto; }
-.card-body { padding: 1rem 1.1rem 1.2rem; }
-
-/* tag: chip nahi — ek chhota mono field, kyunki ye metadata hai */
-.tag {
-  font-family: var(--font-mono);
-  font-size: 0.66rem; letter-spacing: 0.06em;
-  color: var(--ink-3);
-  text-transform: uppercase;
-}
-.tag + .tag::before { content: "/"; margin: 0 0.4rem; color: var(--rule); }
-
-/* ---------- filter: underline, pill nahi ---------- */
-.filter {
-  font-family: var(--font-mono);
-  font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--ink-3);
-  padding: 0.3rem 0;
-  border-bottom: 2px solid transparent;
-  background: none; cursor: pointer;
-  transition: color .15s ease, border-color .15s ease;
-}
-.filter:hover { color: var(--ink); }
-.filter.is-active { color: var(--ink); border-bottom-color: var(--magenta); }
+.meta { font-size: 0.9rem; color: var(--ink-3); }
+.muted { color: var(--ink-2); }
 
 /* ---------- buttons ---------- */
 .btn {
-  display: inline-flex; align-items: center; gap: 0.5rem;
-  font-family: var(--font-mono);
-  font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase;
-  padding: 0.72rem 1.15rem;
-  border: 1px solid var(--ink);
-  background: var(--ink); color: var(--paper);
-  transition: background .15s ease, color .15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.35rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1;
+  background: var(--sun);
+  color: var(--sun-ink);
+  border: 2px solid var(--sun);
+  transition: transform .15s ease, background .15s ease;
 }
-.btn:hover { background: var(--magenta); border-color: var(--magenta); }
-.btn-ghost { background: none; color: var(--ink); }
-.btn-ghost:hover { background: var(--ink); color: var(--paper); }
+.btn:hover { transform: translateY(-1px); background: #ffd25c; }
+.btn-line {
+  background: transparent;
+  color: inherit;
+  border-color: currentColor;
+}
+.btn-line:hover { background: rgba(127,127,160,.12); }
 
-/* ---------- case-study body ---------- */
-.case-body { max-width: var(--measure); }
-.case-body > * + * { margin-top: 1.15rem; }
-.case-body h2 {
-  font-family: var(--font-display);
-  font-weight: 800; font-size: 1.65rem; letter-spacing: -0.02em;
-  line-height: 1.15; margin-top: 3rem; color: var(--ink);
+/* ---------- section head ---------- */
+.sec-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 0.5rem 2rem;
+  margin-bottom: 1.75rem;
 }
-.case-body h2 + * { margin-top: 0.9rem; }
-.case-body strong { font-weight: 600; }
-.case-body a { color: var(--magenta); text-decoration: underline; text-underline-offset: 3px; }
+.sec-head p { margin: 0.6rem 0 0; max-width: 60ch; }
 
-.case-body table { width: 100%; border-collapse: collapse; margin-top: 1.5rem; font-size: 0.95rem; }
-.case-body thead { display: none; }
-.case-body tbody tr { border-top: 1px solid var(--rule-soft); }
-.case-body tbody tr:first-child { border-top: 1px solid var(--ink); }
-.case-body tbody tr:last-child  { border-bottom: 1px solid var(--ink); }
-.case-body td { padding: 0.72rem 0; vertical-align: baseline; }
-.case-body td:first-child { color: var(--ink-2); }
-.case-body td:last-child {
-  text-align: right; font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums; white-space: nowrap;
+/* ---------- dark zone ---------- */
+.night {
+  background: var(--night);
+  color: var(--night-ink);
 }
-.case-body td:last-child strong { color: var(--magenta); font-weight: 600; }
+.night .lede, .night .muted { color: var(--night-dim); }
+.night .meta { color: #8689b3; }
 
-.case-body pre {
-  margin-top: 1.5rem; padding: 1.15rem 1.25rem;
-  border: 1px solid var(--rule); background: var(--paper-lo);
-  overflow-x: auto; line-height: 1.5;
+/* ---------- project (book / comic) cards ---------- */
+.proj-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 17.5rem), 1fr));
+  gap: 2rem 1.5rem;
 }
-.case-body pre code {
-  font-family: var(--font-mono); font-size: 0.76rem;
-  color: var(--ink-2); white-space: pre;
+.proj-card { display: block; color: inherit; }
+.proj-card .thumb {
+  aspect-ratio: 4 / 3;
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  background: var(--raised);
+  box-shadow: 0 0 0 1px var(--line);
 }
-.case-body :not(pre) > code {
-  font-family: var(--font-mono); font-size: 0.86em;
-  background: var(--paper-lo); border: 1px solid var(--rule-soft);
-  padding: 0.08em 0.32em;
+.proj-card .thumb img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform .4s ease;
 }
+.proj-card:hover .thumb img { transform: scale(1.035); }
+.proj-card .h-card { margin-top: 0.85rem; }
+.proj-card:hover .h-card { text-decoration: underline; text-decoration-color: var(--sun); text-decoration-thickness: 3px; text-underline-offset: 4px; }
+.proj-card .meta { margin-top: 0.3rem; }
 
-/* ---------- gallery ---------- */
-.plate { background: var(--paper-hi); border: 1px solid var(--rule); }
-.plate img { display: block; width: 100%; height: auto; cursor: zoom-in; }
-.plate figcaption {
-  border-top: 1px solid var(--rule-soft);
-  padding: 0.6rem 0.75rem;
-  font-size: 0.82rem; line-height: 1.4; color: var(--ink-2);
+/* ---------- markdown body on project pages ---------- */
+.prose { max-width: var(--measure); color: var(--ink-2); }
+.prose p { margin: 0 0 1rem; }
+.prose h2 {
+  font-weight: 680;
+  font-size: 1.3rem;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+  margin: 2rem 0 0.6rem;
 }
+.prose strong { color: var(--ink); font-weight: 650; }
+.prose a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--sun); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+.prose ul { list-style: disc; padding-left: 1.2rem; margin: 0 0 1rem; }
+.prose table { border-collapse: collapse; margin: 1rem 0 1.5rem; font-size: 0.95rem; }
+.prose th, .prose td { text-align: left; padding: 0.45rem 1rem 0.45rem 0; border-bottom: 1px solid var(--line); }
 
-/* ---------- motion ---------- */
-@media (prefers-reduced-motion: no-preference) {
-  .reveal { opacity: 0; transform: translateY(14px); transition: opacity .5s ease, transform .5s cubic-bezier(.2,.7,.2,1); }
-  .reveal.in { opacity: 1; transform: none; }
-  .reveal.d1 { transition-delay: .06s; }
-  .reveal.d2 { transition-delay: .12s; }
-  .reveal.d3 { transition-delay: .18s; }
-}
-
-/* ---------- marquee ---------- */
-@keyframes marquee-l { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-.marquee { overflow: hidden; }
-.marquee-track { display: flex; width: max-content; gap: 0.75rem; }
-.marquee-l { animation: marquee-l 90s linear infinite; }
-.marquee:hover .marquee-l { animation-play-state: paused; }
-@media (prefers-reduced-motion: reduce) { .marquee-l { animation: none; } }
-
-@media (max-width: 640px) {
-  .specimen-grid { grid-template-columns: 1fr; }
-  .specimen-cell + .specimen-cell { border-left: 0; border-top: 1px solid var(--rule); }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
 }

@@ -1,5 +1,11 @@
 ---
+// PROJECT PAGE — pehle kaam, phir kahani.
+//   1. naam + ek line + 4 facts (kab, kiske liye, role, kitni images)
+//   2. chapter ke shortcut
+//   3. saari images (click = bada karke dekho)
+//   4. neeche: project ke baare me + us saal ke tools ki seema + agle projects
 import Layout from '../../layouts/Layout.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
 import { getCollection, render } from 'astro:content';
 
 export async function getStaticPaths() {
@@ -9,12 +15,12 @@ export async function getStaticPaths() {
 
 const { project } = Astro.props;
 const { Content } = await render(project);
+const d = project.data;
 
-const items = project.data.gallery.map((g) =>
+const items = d.gallery.map((g) =>
   typeof g === 'string' ? { src: g, chapter: undefined, caption: undefined } : g
 );
 
-// chapter ke hisaab se group karo, order wahi rakho jaise likha hai.
 const groups: { chapter: string; images: typeof items }[] = [];
 for (const it of items) {
   const key = it.chapter ?? '';
@@ -22,103 +28,136 @@ for (const it of items) {
   if (!g) { g = { chapter: key, images: [] }; groups.push(g); }
   g.images.push(it);
 }
+// "Chapter 6 — How Do Animals Live?" -> chip me sirf "Ch 6"
+const chip = (c: string) => {
+  const m = c.match(/^(Chapter|Volume|Vol\.?|Unit)\s*(\d+)/i);
+  if (m) return `${m[1].toLowerCase().startsWith('ch') ? 'Ch' : m[1].toLowerCase().startsWith('u') ? 'Unit' : 'Vol'} ${m[2]}`;
+  if (c.startsWith('Rejected')) return 'Rejected attempts';
+  return c.length > 22 ? c.slice(0, 20) + '…' : c;
+};
+
+const isComic = d.medium === 'comics';
+const shown = items.filter((i) => !i.chapter?.startsWith('Rejected attempts')).length;
+const madeOn = d.date.toLocaleString('en-GB', { month: 'long', year: 'numeric' });
+const title = d.title.replace(/ — Textbook Illustrations$/, '');
+
+const all = await getCollection('projects');
+const sameKind = all
+  .filter((p) => p.id !== project.id && p.data.medium === d.medium)
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const more = sameKind.slice(0, 3);
 
 let idx = 0;
-
-// ---- KAB BANA ----
-// Saal akela kaafi nahi; us waqt tooling kahan thi ye bhi spec ka hissa hai.
-const made = project.data.date;
-const madeOn = made.toLocaleString('en-GB', { month: 'long', year: 'numeric' });
-const madeYear = made.getFullYear();
 ---
 
-<Layout title={`${project.data.title} — Kanishk Verma`} description={project.data.summary}>
-  <main class="wrap" style="padding-block: 2.5rem 2rem;">
-    <a class="label" href="/work/" style="color: var(--ink-2);">← Index</a>
+<Layout title={`${title} — Kanishk Verma`} description={d.summary} image={d.cover}>
+  <main>
+    <header class="p-head">
+      <div class="wrap">
+        <a class="back" href={isComic ? '/#comics' : '/#illustration'}>Back to all work</a>
+        <h1 class="h-hero p-title">{title}</h1>
+        <p class="lede p-sum">{d.summary}</p>
 
-    <!-- ---------------- HEAD ---------------- -->
-    <header style="margin-top:2rem; padding-bottom:2rem; border-bottom:1px solid var(--ink);">
-      <p class="reveal label label-mag">
-        {madeYear}{project.data.company ? ` · ${project.data.company}` : ''}
-      </p>
-      <h1 class="reveal d1 display" style="font-size: clamp(2.4rem, 5.5vw, 4rem); margin-top:0.8rem;">
-        {project.data.title}
-      </h1>
-      <p class="reveal d2 lede" style="margin-top:1.2rem;">{project.data.summary}</p>
+        <dl class="facts">
+          <div><dt>Made</dt><dd>{madeOn}</dd></div>
+          {d.company && <div><dt>For</dt><dd>{d.company}</dd></div>}
+          {d.role && <div><dt>My role</dt><dd>{d.role}</dd></div>}
+          <div><dt>{isComic ? 'Pages' : 'Illustrations'}</dt><dd>{shown}</dd></div>
+        </dl>
+      </div>
     </header>
 
-    <!-- ---------------- SPEC ---------------- -->
-    <div class="spec-grid" style="margin-top:2.5rem;">
-      <div class="reveal">
-        <p class="label">Built with the tools of {madeYear}</p>
-        {project.data.eraNote && (
-          <p style="margin-top:0.9rem; color: var(--ink-2); max-width: 58ch;">{project.data.eraNote}</p>
-        )}
-        {project.data.externalUrl && (
-          <a class="btn btn-ghost" href={project.data.externalUrl} target="_blank" rel="noopener" style="margin-top:1.4rem;">
-            {project.data.externalLabel ?? 'View the full work'} ↗
-          </a>
-        )}
-      </div>
-
-      <table class="reveal d1 spec">
-        <tbody>
-          <tr><td>Produced</td><td>{madeOn}</td></tr>
-          {project.data.company && <tr><td>Client</td><td>{project.data.company}</td></tr>}
-          {project.data.role && <tr><td>Role</td><td>{project.data.role}</td></tr>}
-          {project.data.tools.length > 0 && (
-            <tr><td>Tools</td><td>{project.data.tools.join(', ')}</td></tr>
-          )}
-          <tr><td>Plates</td><td>{items.length}</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- ---------------- BODY ---------------- -->
-    <div class="reveal case-body" style="margin-top:3.5rem;">
-      <Content />
-    </div>
-
-    <!-- ---------------- PLATES ---------------- -->
-    {groups.map((group) => (
-      <section style="margin-top:4rem;">
-        {group.chapter && (
-          <div class="reveal" style="display:flex; align-items:baseline; justify-content:space-between; gap:1rem; padding-bottom:0.75rem; margin-bottom:1.5rem; border-bottom:1px solid var(--ink);">
-            <h2 class="display" style="font-size:1.4rem; line-height:1.1;">{group.chapter}</h2>
-            <span class="label mono">{group.images.length} pl.</span>
-          </div>
-        )}
-        <div class="plate-grid">
-          {group.images.map((img) => (
-            <figure class="reveal plate" style="margin:0;">
-              <img
-                src={img.src}
-                alt={img.caption ?? project.data.title}
-                data-idx={idx++}
-                data-caption={img.caption ?? ''}
-                class="lightbox-img"
-                loading="lazy"
-              />
-              {img.caption && <figcaption>{img.caption}</figcaption>}
-            </figure>
+    {groups.length > 1 && (
+      <nav class="chips-bar" aria-label="Jump to a chapter">
+        <div class="wrap chips">
+          {groups.map((g, i) => (
+            <a href={`#part-${i}`} class="chip" title={g.chapter}>{chip(g.chapter)}</a>
           ))}
         </div>
+      </nav>
+    )}
+
+    <div class="wrap">
+      {groups.map((group, gi) => (
+        <section class="part" id={`part-${gi}`}>
+          {group.chapter && (
+            <div class="part-head">
+              <h2>{group.chapter}</h2>
+              <span class="meta">{group.images.length} {isComic ? 'pages' : 'images'}</span>
+            </div>
+          )}
+          <div class:list={['plates', isComic && 'plates-comic']}>
+            {group.images.map((img) => (
+              <figure class="plate">
+                <button type="button" class="plate-btn" aria-label="View larger">
+                  <img
+                    src={img.src}
+                    alt={img.caption ?? d.title}
+                    data-idx={idx++}
+                    data-caption={img.caption ?? ''}
+                    class="lightbox-img"
+                    loading="lazy"
+                  />
+                </button>
+                {img.caption && <figcaption>{img.caption}</figcaption>}
+              </figure>
+            ))}
+          </div>
+        </section>
+      ))}
+
+      <!-- ---------- about this project ---------- -->
+      <section class="about-proj">
+        <div>
+          <h2 class="h-section">About this project</h2>
+          {d.tools.length > 0 && (
+            <dl class="facts facts-tight">
+              <div><dt>Tools</dt><dd>{d.tools.join(', ')}</dd></div>
+            </dl>
+          )}
+          {d.externalUrl && (
+            <a class="btn btn-line ext" href={d.externalUrl} target="_blank" rel="noopener">
+              {d.externalLabel ?? 'View the full work'}
+            </a>
+          )}
+        </div>
+        <div>
+          {d.eraNote && (
+            <div class="era">
+              <h3>What the tools could do in {d.date.getFullYear()}</h3>
+              <p>{d.eraNote}</p>
+            </div>
+          )}
+          <div class="prose"><Content /></div>
+        </div>
       </section>
-    ))}
+
+      {more.length > 0 && (
+        <section class="more">
+          <h2 class="h-section">More {isComic ? 'comics' : 'books'}</h2>
+          <div class="proj-grid" style="margin-top:1.5rem;">
+            {more.map((p) => <ProjectCard p={p} />)}
+          </div>
+        </section>
+      )}
+    </div>
   </main>
 
   <!-- ===== LIGHTBOX ===== -->
-  <div id="lightbox" style="position:fixed; inset:0; z-index:100; display:none; align-items:center; justify-content:center; background:rgba(20,20,23,.94); backdrop-filter:blur(2px); user-select:none;">
-    <button id="lb-close" aria-label="Close" class="label" style="position:absolute; top:1rem; right:1.25rem; color:#e8e9ec; background:none; border:0; font-size:1.5rem; cursor:pointer;">×</button>
-    <button id="lb-prev" aria-label="Previous" class="label" style="position:absolute; left:1rem; top:50%; transform:translateY(-50%); color:#e8e9ec; background:none; border:1px solid #55585f; width:2.75rem; height:2.75rem; cursor:pointer;">‹</button>
-    <figure style="max-height:92vh; max-width:92vw; display:flex; flex-direction:column; align-items:center; gap:0.9rem; margin:0;">
-      <img id="lb-img" src="" alt="" style="max-height:82vh; max-width:92vw; object-fit:contain; background:#fff;" />
-      <figcaption style="text-align:center; color:#c5c8ce; font-size:0.9rem; max-width:60ch; padding-inline:1rem;">
-        <span id="lb-cap"></span>
-        <span id="lb-count" class="label" style="display:block; margin-top:0.4rem;"></span>
-      </figcaption>
+  <div id="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer" hidden>
+    <button id="lb-close" class="lb-btn lb-close" aria-label="Close">
+      <svg viewBox="0 0 24 24" width="22" height="22"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" /></svg>
+    </button>
+    <button id="lb-prev" class="lb-btn lb-prev" aria-label="Previous image">
+      <svg viewBox="0 0 24 24" width="24" height="24"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" /></svg>
+    </button>
+    <figure class="lb-fig">
+      <img id="lb-img" src="" alt="" />
+      <figcaption><span id="lb-cap"></span> <span id="lb-count" class="lb-count"></span></figcaption>
     </figure>
-    <button id="lb-next" aria-label="Next" class="label" style="position:absolute; right:1rem; top:50%; transform:translateY(-50%); color:#e8e9ec; background:none; border:1px solid #55585f; width:2.75rem; height:2.75rem; cursor:pointer;">›</button>
+    <button id="lb-next" class="lb-btn lb-next" aria-label="Next image">
+      <svg viewBox="0 0 24 24" width="24" height="24"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" /></svg>
+    </button>
   </div>
 
   <script>
@@ -130,38 +169,41 @@ const madeYear = made.getFullYear();
       if (!box || !img || !cap || !count) return;
 
       const els = Array.from(document.querySelectorAll<HTMLImageElement>('.lightbox-img'));
-      const list = els.map((el) => ({ src: el.src, caption: el.dataset.caption || '' }));
+      const list = els.map((el) => ({ src: el.currentSrc || el.src, caption: el.dataset.caption || '' }));
       let cur = 0;
+      let lastFocus: HTMLElement | null = null;
 
-      function show(i: number) {
+      const show = (i: number) => {
         cur = (i + list.length) % list.length;
-        img!.src = list[cur].src;
-        cap!.textContent = list[cur].caption;
-        count!.textContent = `${cur + 1} / ${list.length}`;
-      }
-      function open(i: number) {
+        img.src = list[cur].src;
+        img.alt = list[cur].caption;
+        cap.textContent = list[cur].caption;
+        count.textContent = `${cur + 1} of ${list.length}`;
+      };
+      const open = (i: number) => {
+        lastFocus = document.activeElement as HTMLElement;
         show(i);
-        box!.style.display = 'flex';
+        box.hidden = false;
         document.body.style.overflow = 'hidden';
-      }
-      function close() {
-        box!.style.display = 'none';
+        document.getElementById('lb-close')?.focus();
+      };
+      const close = () => {
+        box.hidden = true;
         document.body.style.overflow = '';
-      }
+        lastFocus?.focus();
+      };
 
-      els.forEach((el, i) => el.addEventListener('click', () => open(i)));
+      els.forEach((el, i) => el.closest('button')?.addEventListener('click', () => open(i)));
       document.getElementById('lb-close')?.addEventListener('click', close);
-      document.getElementById('lb-prev')?.addEventListener('click', (e) => { e.stopPropagation(); show(cur - 1); });
-      document.getElementById('lb-next')?.addEventListener('click', (e) => { e.stopPropagation(); show(cur + 1); });
+      document.getElementById('lb-prev')?.addEventListener('click', () => show(cur - 1));
+      document.getElementById('lb-next')?.addEventListener('click', () => show(cur + 1));
       box.addEventListener('click', (e) => { if (e.target === box) close(); });
-
       document.addEventListener('keydown', (e) => {
-        if (box.style.display !== 'flex') return;
+        if (box.hidden) return;
         if (e.key === 'Escape') close();
         else if (e.key === 'ArrowLeft') show(cur - 1);
         else if (e.key === 'ArrowRight') show(cur + 1);
       });
-
       let sx = 0;
       box.addEventListener('touchstart', (e) => { sx = e.changedTouches[0].clientX; }, { passive: true });
       box.addEventListener('touchend', (e) => {
@@ -174,17 +216,123 @@ const madeYear = made.getFullYear();
 </Layout>
 
 <style>
-  .spec-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 3rem;
-    align-items: start;
+  .p-head { background: var(--night); color: var(--night-ink); padding-block: 2rem 2.5rem; }
+  .p-head .lede { color: var(--night-dim); margin-top: 1rem; }
+  .back { color: var(--night-dim); font-weight: 500; }
+  .back:hover { color: var(--sun); }
+  .p-title { margin-top: 1.25rem; font-size: clamp(2.2rem, 5vw, 3.75rem); max-width: 22ch; }
+
+  .facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 2.75rem;
+    margin: 2rem 0 0;
   }
-  /* CSS columns = masonry. Plates ki height alag-alag hoti hai (portrait
-     comic page, landscape diagram), grid me us se badi khaali jagah bachti. */
-  .plate-grid { columns: 3 17rem; column-gap: 1.25rem; }
-  .plate-grid > * { break-inside: avoid; margin-bottom: 1.25rem; }
-  @media (max-width: 900px) {
-    .spec-grid { grid-template-columns: 1fr; gap: 2rem; }
+  .facts dt { font-size: 0.85rem; color: var(--night-dim); }
+  .facts dd { margin: 0.1rem 0 0; font-weight: 600; }
+  .facts-tight { margin-top: 1.25rem; }
+  .facts-tight dt { color: var(--ink-3); }
+  .facts-tight dd { font-weight: 500; }
+
+  .chips-bar {
+    position: sticky;
+    top: 4rem;
+    z-index: 20;
+    background: rgba(244, 245, 249, 0.94);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  .chips { display: flex; gap: 0.5rem; overflow-x: auto; padding-block: 0.7rem; scrollbar-width: thin; }
+  .chip {
+    flex: none;
+    padding: 0.35rem 0.85rem;
+    border-radius: 999px;
+    background: var(--raised);
+    box-shadow: inset 0 0 0 1px var(--line);
+    font-size: 0.9rem;
+    font-weight: 550;
+    white-space: nowrap;
+  }
+  .chip:hover { background: var(--sun); box-shadow: none; }
+
+  .part { padding-top: 3rem; scroll-margin-top: 8rem; }
+  .part-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+  .part-head h2 { font-weight: 680; font-size: 1.35rem; letter-spacing: -0.015em; line-height: 1.2; }
+
+  .plates { columns: 3 16rem; column-gap: 1.25rem; }
+  .plates-comic { columns: 4 13rem; }
+  .plate { break-inside: avoid; margin: 0 0 1.25rem; }
+  .plate-btn {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: var(--raised);
+    border-radius: var(--r-sm);
+    overflow: hidden;
+    box-shadow: 0 0 0 1px var(--line);
+    cursor: zoom-in;
+  }
+  .plate-btn img { width: 100%; height: auto; transition: transform .35s ease; }
+  .plate-btn:hover img { transform: scale(1.02); }
+  .plate figcaption { font-size: 0.9rem; color: var(--ink-2); margin-top: 0.5rem; line-height: 1.45; }
+
+  .about-proj {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+    gap: 3rem;
+    margin-top: 5rem;
+    padding-top: 3rem;
+    border-top: 1px solid var(--line);
+  }
+  .ext { margin-top: 1.5rem; }
+  .era {
+    background: var(--raised);
+    border-left: 4px solid var(--sun);
+    border-radius: 0 var(--r-sm) var(--r-sm) 0;
+    padding: 1.1rem 1.25rem;
+    margin-bottom: 2rem;
+    max-width: var(--measure);
+  }
+  .era h3 { font-weight: 650; font-size: 1rem; margin-bottom: 0.35rem; }
+  .era p { color: var(--ink-2); font-size: 0.98rem; }
+  .more { margin-top: 5rem; }
+
+  /* lightbox */
+  #lightbox {
+    position: fixed; inset: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(10, 11, 28, 0.95);
+  }
+  #lightbox[hidden] { display: none; }
+  .lb-fig { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 0.9rem; max-width: 92vw; }
+  .lb-fig img { max-height: 84vh; max-width: 88vw; object-fit: contain; background: #fff; border-radius: 4px; }
+  .lb-fig figcaption { color: #d7d9ee; font-size: 0.95rem; max-width: 62ch; text-align: center; padding-inline: 1rem; }
+  .lb-count { color: #9a9dc4; margin-left: 0.5rem; white-space: nowrap; }
+  .lb-btn {
+    position: absolute;
+    display: grid; place-items: center;
+    width: 3rem; height: 3rem;
+    border-radius: 50%;
+    border: 0;
+    background: rgba(255,255,255,.12);
+    color: #fff;
+    cursor: pointer;
+  }
+  .lb-btn:hover { background: var(--sun); color: var(--sun-ink); }
+  .lb-close { top: 1rem; right: 1rem; }
+  .lb-prev { left: 1rem; top: 50%; transform: translateY(-50%); }
+  .lb-next { right: 1rem; top: 50%; transform: translateY(-50%); }
+
+  @media (max-width: 820px) {
+    .about-proj { grid-template-columns: 1fr; gap: 1.5rem; }
+    .lb-prev, .lb-next { top: auto; bottom: 1rem; transform: none; }
+    .chips-bar { top: 0; }
   }
 </style>

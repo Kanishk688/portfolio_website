@@ -22,3 +22,6 @@ Thumbs.db
 
 # playwright screenshots (test ke temp files)
 .playwright-mcp/
+
+# browser test screenshots
+.playwright-mcp/

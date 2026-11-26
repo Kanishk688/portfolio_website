@@ -1,0 +1,19 @@
+---
+// Ek kitaab / comic ka card: badi image, naam, aur ek line —
+// kitni images, kab, kahan.
+import type { CollectionEntry } from 'astro:content';
+interface Props { p: CollectionEntry<'projects'> }
+const { p } = Astro.props;
+
+const n = p.data.gallery.filter((g) => typeof g === 'string' || !g.chapter?.startsWith('Rejected attempts')).length;
+const unit = p.data.medium === 'comics' ? 'pages' : 'illustrations';
+const year = p.data.date.getFullYear();
+---
+
+<a class="proj-card" href={`/work/${p.id}/`}>
+  <div class="thumb">
+    <img src={p.data.cover} alt="" loading="lazy" />
+  </div>
+  <h3 class="h-card">{p.data.title.replace(/ — Textbook Illustrations$/, '')}</h3>
+  <p class="meta">{n} {unit}, {year}</p>
+</a>

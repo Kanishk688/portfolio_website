@@ -1,194 +1,58 @@
 ---
+// /work/ — saara kaam ek jagah, bina kisi lambi baat ke.
+// (Home page pe bhi yahi sab hai; ye page purane links ke liye zinda hai.)
 import Layout from '../layouts/Layout.astro';
+import VideoCard from '../components/VideoCard.astro';
+import VideoPlayer from '../components/VideoPlayer.astro';
+import ProjectCard from '../components/ProjectCard.astro';
 import { getCollection } from 'astro:content';
+import { videos } from '../data/videos';
 
-const projects = await getCollection('projects');
-projects.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
-
-// ---- MEDIUM = pehla axis ----
-// Pehle filters "Grade 1 / Grade 2" the, jo sirf textbook ki bhasha hai —
-// us me video ya animation kabhi fit nahi hoti. Medium se filter karne par
-// naya kaam bas ek nayi tab ban jaata hai.
-const MEDIA: { slug: string; label: string }[] = [
-  { slug: 'illustration', label: 'Illustration' },
-  { slug: 'comics',       label: 'Comics' },
-  { slug: 'video',        label: 'Video' },
-  { slug: 'animation',    label: 'Animation' },
-  { slug: 'characters',   label: 'Characters' },
-  { slug: 'interactive',  label: 'Interactive' },
-];
-
-const countOf = (slug: string) => projects.filter((p) => p.data.medium === slug).length;
-
-// sirf wahi medium dikhao jisme sach me kaam hai
-const tabs = [
-  { slug: 'all', label: 'All work', n: projects.length },
-  ...MEDIA.filter((m) => countOf(m.slug) > 0).map((m) => ({ ...m, n: countOf(m.slug) })),
-];
-
-// ---- SAAL = doosra axis (capability era) ----
-const ERAS: Record<number, string> = {
-  2026:
-    'Character and style consistency had largely become something the tools handled. ' +
-    'The difficulty moved to correctness, print QA, and knowing what each delivered asset cost.',
-  2025:
-    'No character reference, no style lock, no printable generated text. Keeping a cast ' +
-    'recognisable across a whole book was manual work, and every speech bubble was typeset over the art.',
-};
-
-const years = [...new Set(projects.map((p) => p.data.date.getFullYear()))].sort((a, b) => b - a);
-const byYear = years.map((year) => ({
-  year,
-  era: ERAS[year],
-  items: projects.filter((p) => p.data.date.getFullYear() === year),
-}));
-
-const mediumLabel = (slug: string) =>
-  MEDIA.find((m) => m.slug === slug)?.label ?? slug;
+const all = await getCollection('projects');
+const newest = (a: any, b: any) => b.data.date.getTime() - a.data.date.getTime();
+const books = all.filter((p) => p.data.medium === 'illustration').sort(newest);
+const comics = all.filter((p) => p.data.medium === 'comics').sort(newest);
 ---
 
-<Layout title="Work — Kanishk Verma">
-  <main class="wrap" style="padding-block: 3.5rem 2rem;">
-    <p class="reveal label label-mag">Index of work</p>
-    <h1 class="reveal d1 display" style="font-size: clamp(2.6rem, 6vw, 4.4rem); margin-top:0.9rem;">
-      Sorted by what<br />the tools could do.
-    </h1>
-    <p class="reveal d2 lede" style="margin-top:1.4rem;">
-      Filter by what it is; read it by the year it was made. In generative work
-      the year is part of the spec — what took a week in 2025 can take an
-      afternoon now, and the same will be said of 2026.
-    </p>
-
-    <!-- MEDIUM TABS — filter bhi, aur ek nazar me range bhi -->
-    <div id="filters" class="reveal d2 medium-tabs">
-      {tabs.map((t, i) => (
-        <button type="button" data-filter={t.slug} class:list={['medium-tab', i === 0 && 'is-active']}>
-          <span class="medium-tab-label">{t.label}</span>
-          <span class="medium-tab-n mono">{t.n}</span>
-        </button>
-      ))}
+<Layout title="All work — Kanishk Verma">
+  <section class="night sec-w">
+    <div class="wrap">
+      <h1 class="h-hero">All work</h1>
+      <p class="lede" style="margin-top:1rem;">
+        {videos.length} videos, {books.length} textbooks and {comics.length} comics. Click a video to watch it,
+        or a book to see every illustration in it.
+      </p>
+      <h2 class="h-section" style="margin-top:3rem;">Videos</h2>
+      <div class="vgrid">
+        {videos.map((v) => <VideoCard v={v} />)}
+      </div>
     </div>
+  </section>
 
-    <!-- HAR SAAL KA BLOCK -->
-    {byYear.map(({ year, era, items }) => (
-      <section class="year-block" data-year={year} style="margin-top:3.5rem;">
-        <div class="year-head reveal">
-          <span class="display mono" style="font-size:2.6rem; line-height:1;">{year}</span>
-          {era && <p style="color: var(--ink-2); font-size:0.95rem; max-width:56ch; margin:0;">{era}</p>}
-        </div>
+  <section class="sec-w">
+    <div class="wrap">
+      <h2 class="h-section">Textbook illustration</h2>
+      <div class="proj-grid" style="margin-top:1.5rem;">
+        {books.map((p) => <ProjectCard p={p} />)}
+      </div>
+      <h2 class="h-section" style="margin-top:4rem;">Comics</h2>
+      <div class="proj-grid" style="margin-top:1.5rem;">
+        {comics.map((p) => <ProjectCard p={p} />)}
+      </div>
+    </div>
+  </section>
 
-        <div class="work-grid">
-          {items.map((p) => (
-            <div class="project-card reveal" data-medium={p.data.medium}>
-              <a class="card" href={`/work/${p.id}/`}>
-                <img src={p.data.cover} alt={p.data.title} loading="lazy" style="aspect-ratio: 4/3; object-fit: cover;" />
-                <div class="card-body">
-                  <p class="label" style="display:flex; justify-content:space-between; gap:0.75rem;">
-                    <span class="label-mag">{mediumLabel(p.data.medium)}</span>
-                    <span>{p.data.gallery.length} pl.</span>
-                  </p>
-                  <h2 class="display" style="font-size:1.3rem; margin-top:0.55rem; line-height:1.1;">{p.data.title}</h2>
-                  {p.data.company && (
-                    <p class="label mono" style="margin-top:0.4rem;">{p.data.company}</p>
-                  )}
-                  <p style="color: var(--ink-2); font-size:0.92rem; margin-top:0.6rem;">{p.data.summary.slice(0, 116)}…</p>
-                </div>
-              </a>
-            </div>
-          ))}
-        </div>
-      </section>
-    ))}
-
-    <p id="empty" class="label" style="display:none; text-align:center; padding-block:4rem;">
-      Nothing in this medium yet.
-    </p>
-  </main>
-
-  <script>
-    function setupFilters() {
-      const tabs = document.querySelectorAll<HTMLButtonElement>('.medium-tab');
-      const cards = document.querySelectorAll<HTMLElement>('.project-card');
-      const blocks = document.querySelectorAll<HTMLElement>('.year-block');
-      const empty = document.getElementById('empty');
-      if (!tabs.length) return;
-
-      function apply(slug: string) {
-        let shown = 0;
-        cards.forEach((card) => {
-          const show = slug === 'all' || card.dataset.medium === slug;
-          card.style.display = show ? '' : 'none';
-          if (show) shown++;
-        });
-        // khaali saal ka heading bhi hata do
-        blocks.forEach((b) => {
-          const alive = [...b.querySelectorAll<HTMLElement>('.project-card')]
-            .some((c) => c.style.display !== 'none');
-          b.style.display = alive ? '' : 'none';
-        });
-        if (empty) empty.style.display = shown ? 'none' : 'block';
-      }
-
-      tabs.forEach((tab) => {
-        tab.addEventListener('click', () => {
-          tabs.forEach((t) => t.classList.remove('is-active'));
-          tab.classList.add('is-active');
-          apply(tab.dataset.filter || 'all');
-        });
-      });
-    }
-    document.addEventListener('astro:page-load', setupFilters);
-  </script>
+  <VideoPlayer />
 </Layout>
 
 <style>
-  .medium-tabs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0;
-    margin-top: 2.5rem;
-    border-top: 1px solid var(--ink);
-    border-bottom: 1px solid var(--ink);
-  }
-  .medium-tab {
-    display: flex;
-    align-items: baseline;
-    gap: 0.55rem;
-    padding: 0.9rem 1.25rem;
-    background: none;
-    border: 0;
-    border-right: 1px solid var(--rule);
-    cursor: pointer;
-    color: var(--ink-2);
-    transition: background .15s ease, color .15s ease;
-  }
-  .medium-tab:last-child { border-right: 0; }
-  .medium-tab-label {
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 1.05rem;
-    letter-spacing: -0.01em;
-  }
-  .medium-tab-n { font-size: 0.72rem; color: var(--ink-3); }
-  .medium-tab:hover { color: var(--ink); background: var(--paper-hi); }
-  .medium-tab.is-active { color: var(--paper); background: var(--ink); }
-  .medium-tab.is-active .medium-tab-n { color: var(--paper); opacity: 0.6; }
-
-  .year-head {
-    display: flex;
-    align-items: baseline;
-    gap: 2rem;
-    padding-bottom: 0.9rem;
-    margin-bottom: 1.75rem;
-    border-bottom: 1px solid var(--ink);
-  }
-  .work-grid {
+  .sec-w { padding-block: 3.5rem; }
+  .vgrid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(min(46%, 11rem), 1fr));
+    gap: 2rem 1.1rem;
+    margin-top: 1.5rem;
+    align-items: start;
   }
-  @media (max-width: 640px) {
-    .year-head { flex-direction: column; gap: 0.6rem; }
-    .medium-tab { flex: 1 1 auto; }
-  }
+  .vgrid :global(.vcard-wide) { grid-column: span 2; }
 </style>

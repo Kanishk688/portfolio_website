@@ -1,0 +1,183 @@
+---
+// VIDEO PLAYER — ek popup jo kisi bhi .vcard pe click karne se khulta hai.
+// Awaaz ke saath chalta hai, ← → se agli/pichhli video, Esc se band.
+// Link share karna ho to: kannisshk.pages.dev/#watch-agni5
+import { videos } from '../data/videos';
+const data = videos.map(({ id, title, original, summary, made, length, tools, wide, link }) => ({
+  id, title, original, summary, made, length, tools, wide, link,
+}));
+---
+
+<dialog id="vplayer" aria-label="Video player">
+  <div class="vp-in">
+    <div class="vp-stage">
+      <video id="vp-video" controls playsinline preload="metadata"></video>
+    </div>
+    <div class="vp-side">
+      <button type="button" class="vp-close" id="vp-close" aria-label="Close video">
+        <svg viewBox="0 0 24 24" width="22" height="22"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" /></svg>
+      </button>
+      <h2 id="vp-title" class="vp-title"></h2>
+      <p id="vp-orig" class="vp-orig"></p>
+      <p id="vp-sum" class="vp-sum"></p>
+      <dl class="vp-facts">
+        <div><dt>Made</dt><dd id="vp-made"></dd></div>
+        <div><dt>Length</dt><dd id="vp-len"></dd></div>
+        <div><dt>Built with</dt><dd id="vp-tools"></dd></div>
+      </dl>
+      <a id="vp-link" class="vp-ig" target="_blank" rel="noopener">See it on Instagram</a>
+      <div class="vp-nav">
+        <button type="button" class="btn btn-line" id="vp-prev">Previous</button>
+        <button type="button" class="btn" id="vp-next">Next video</button>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<script type="application/json" id="vp-data" set:html={JSON.stringify(data)} />
+
+<script>
+  type V = { id: string; title: string; original?: string; summary: string; made: string; length: string; tools: string[]; wide?: boolean; link?: string };
+
+  function setupVideos() {
+    const dlg = document.getElementById('vplayer') as HTMLDialogElement | null;
+    const dataEl = document.getElementById('vp-data');
+    if (!dlg || !dataEl || dlg.dataset.ready) return;
+    dlg.dataset.ready = '1';
+
+    const all: V[] = JSON.parse(dataEl.textContent || '[]');
+    const $ = (id: string) => document.getElementById(id)!;
+    const video = $('vp-video') as HTMLVideoElement;
+    // Is page pe jo cards dikh rahe hain, unhi ke order me agla/pichhla.
+    const order = [...new Set([...document.querySelectorAll<HTMLElement>('.vcard')].map((c) => c.dataset.vid!))];
+    let cur = 0;
+
+    function show(id: string) {
+      const v = all.find((x) => x.id === id);
+      if (!v) return;
+      cur = order.indexOf(id);
+      dlg!.classList.toggle('is-wide', !!v.wide);
+      video.poster = `/video/${v.id}.webp`;
+      video.src = `/video/${v.id}.mp4`;
+      $('vp-title').textContent = v.title;
+      $('vp-orig').textContent = v.original ? `Original title: ${v.original}` : '';
+      $('vp-sum').textContent = v.summary;
+      $('vp-made').textContent = v.made;
+      $('vp-len').textContent = v.length;
+      $('vp-tools').textContent = v.tools.join(', ');
+      const ig = $('vp-link') as HTMLAnchorElement;
+      if (v.link) { ig.href = v.link; ig.style.display = ''; } else { ig.style.display = 'none'; }
+      history.replaceState(null, '', `#watch-${v.id}`);
+      video.play().catch(() => {});
+    }
+    function open(id: string) {
+      if (!dlg!.open) dlg!.showModal();
+      show(id);
+    }
+    function step(d: number) {
+      if (!order.length) return;
+      show(order[(cur + d + order.length) % order.length]);
+    }
+
+    document.querySelectorAll<HTMLElement>('.vcard').forEach((card) => {
+      card.addEventListener('click', () => open(card.dataset.vid!));
+      // hover preview (sirf mouse wale devices pe)
+      const loop = card.querySelector('video');
+      if (!loop || !matchMedia('(hover: hover)').matches) return;
+      card.addEventListener('mouseenter', () => {
+        if (!loop.src) loop.src = loop.dataset.loop!;
+        card.classList.add('is-hover');
+        loop.play().catch(() => {});
+      });
+      card.addEventListener('mouseleave', () => {
+        card.classList.remove('is-hover');
+        loop.pause();
+      });
+    });
+
+    $('vp-close').addEventListener('click', () => dlg.close());
+    $('vp-prev').addEventListener('click', () => step(-1));
+    $('vp-next').addEventListener('click', () => step(1));
+    dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+    dlg.addEventListener('close', () => {
+      video.pause();
+      video.removeAttribute('src');
+      video.load();
+      if (location.hash.startsWith('#watch-')) history.replaceState(null, '', location.pathname);
+    });
+    dlg.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') step(1);
+      else if (e.key === 'ArrowLeft') step(-1);
+    });
+
+    const m = location.hash.match(/^#watch-(.+)$/);
+    if (m) open(m[1]);
+  }
+  document.addEventListener('astro:page-load', setupVideos);
+</script>
+
+<style>
+  dialog {
+    margin: auto;   /* Tailwind ka reset margin 0 kar deta hai — beech me rakhne ke liye */
+    width: min(64rem, 94vw);
+    max-height: 94vh;
+    padding: 0;
+    border: 0;
+    border-radius: var(--r-lg);
+    background: var(--night);
+    color: var(--night-ink);
+    overflow: hidden;
+  }
+  dialog::backdrop { background: rgba(8, 9, 24, 0.86); }
+  .vp-in {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    max-height: 94vh;
+  }
+  .vp-stage { background: #000; display: grid; place-items: center; }
+  .vp-stage video {
+    height: min(86vh, 52rem);
+    aspect-ratio: 9 / 16;
+    width: auto;
+    background: #000;
+  }
+  dialog.is-wide { width: min(80rem, 96vw); }
+  dialog.is-wide .vp-in { grid-template-columns: 1fr; overflow-y: auto; }
+  dialog.is-wide .vp-stage video { width: 100%; height: auto; aspect-ratio: 16 / 9; max-height: 70vh; }
+
+  .vp-side {
+    position: relative;
+    padding: 2rem 1.75rem 1.75rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .vp-close {
+    position: absolute; top: 0.9rem; right: 0.9rem;
+    display: grid; place-items: center;
+    width: 2.5rem; height: 2.5rem;
+    border-radius: 50%;
+    border: 0;
+    background: var(--night-2);
+    color: var(--night-ink);
+    cursor: pointer;
+  }
+  .vp-close:hover { background: #33366a; }
+  .vp-title { font-weight: 720; font-size: 1.6rem; line-height: 1.1; letter-spacing: -0.02em; padding-right: 2.5rem; }
+  .vp-orig { margin: 0.4rem 0 0; color: var(--night-dim); font-size: 0.95rem; }
+  .vp-sum { margin: 1rem 0 0; color: var(--night-ink); max-width: 46ch; }
+  .vp-facts { margin: 1.5rem 0 0; display: grid; gap: 0.7rem; }
+  .vp-facts div { display: grid; grid-template-columns: 6.5rem 1fr; gap: 1rem; }
+  .vp-facts dt { color: var(--night-dim); }
+  .vp-facts dd { margin: 0; }
+  .vp-ig { margin-top: 1.25rem; color: var(--sun); text-decoration: underline; text-underline-offset: 3px; align-self: start; }
+  .vp-nav { display: flex; gap: 0.75rem; margin-top: auto; padding-top: 2rem; }
+
+  @media (max-width: 760px) {
+    dialog { width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; border-radius: 0; }
+    .vp-in { grid-template-columns: 1fr; height: 100%; overflow-y: auto; }
+    .vp-stage video { height: 68dvh; }
+    .vp-side { padding: 1.25rem 1.1rem 1.5rem; }
+    .vp-close { position: fixed; top: 0.75rem; right: 0.75rem; z-index: 2; }
+  }
+</style>
