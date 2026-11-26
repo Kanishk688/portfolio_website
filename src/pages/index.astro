@@ -8,6 +8,8 @@ import VideoPlayer from '../components/VideoPlayer.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import { getCollection } from 'astro:content';
 import { videos } from '../data/videos';
+import { jobs, projects } from '../data/experience';
+import JobBlock from '../components/JobBlock.astro';
 
 const all = await getCollection('projects');
 const newest = (a: any, b: any) => b.data.date.getTime() - a.data.date.getTime();
@@ -30,12 +32,11 @@ const illoCount = books.reduce(
   <section class="night hero">
     <div class="wrap hero-in">
       <div class="hero-text">
-        <p class="hello">Hi, I’m Kanishk Verma, a generative media designer.</p>
-        <h1 class="h-hero">I make 3D explainer videos, illustrated textbooks and comics with AI.</h1>
+        <p class="hello">Kanishk Kumar Verma, creative technologist</p>
+        <h1 class="h-hero hero-h1">I build the systems behind generative media, not one&#8209;off outputs.</h1>
         <p class="lede">
-          Everything here was made for a real audience: {explainers.length} science reels for
-          Instagram, {books.length} school textbooks headed for print, and {comics.length} children’s comics.
-          I build the pipeline and I own how the final piece looks.
+          An agent pipeline that turns textbook manuscripts into print-ready art, and 3D video
+          rendered entirely in code with Three.js, Blender and HyperFrames.
         </p>
         <div class="hero-cta">
           <a class="btn" href="#videos">Watch the videos</a>
@@ -52,6 +53,15 @@ const illoCount = books.reduce(
         ))}
       </div>
     </div>
+    <div class="wrap">
+      <dl class="stats">
+        <div><dt>print-ready illustrations</dt><dd>1,500+</dd></div>
+        <div><dt>textbooks</dt><dd>10+</dd></div>
+        <div><dt>illustrated comics</dt><dd>25+</dd></div>
+        <div><dt>hours of voiced stories</dt><dd>30+</dd></div>
+        <div><dt>views on best reel</dt><dd>1.5M+</dd></div>
+      </dl>
+    </div>
   </section>
 
   <!-- ====================== VIDEOS ====================== -->
@@ -61,10 +71,12 @@ const illoCount = books.reduce(
         <div>
           <h2 class="h-section">3D explainer videos</h2>
           <p class="muted">
-            Science and defence stories in Hinglish, made October–November 2026 for my Instagram
-            channel <a class="inline-link" href="https://www.instagram.com/unseen.3d/" target="_blank" rel="noopener">@unseen.3d</a>.
-            Every shot is a real 3D scene built in Blender or three.js rather than a generated clip,
-            so the science stays correct from one shot to the next. Click any video to watch it with sound.
+            Science and defence stories in Hinglish for my Instagram channel
+            <a class="inline-link" href="https://www.instagram.com/unseen.3d/" target="_blank" rel="noopener">@unseen.3d</a>,
+            where the best reel has passed 1.5M organic views. Each reel is built entirely in code instead of
+            paying per clip for a video model: Three.js and shaders for scenes and lighting, Blender for models,
+            HyperFrames and Remotion for frame-accurate rendering, ElevenLabs for narration. Because every reel is
+            code, it can be re-rendered and edited parameter by parameter. Click any video to watch it with sound.
           </p>
         </div>
       </div>
@@ -86,10 +98,10 @@ const illoCount = books.reduce(
         <div>
           <h2 class="h-section">Textbook illustration</h2>
           <p class="muted">
-            {books.length} school books, {illoCount}+ illustrations shown here, made June–November 2026 for
-            Possibility Edutech (Jaipuria Group). Each book keeps its characters and style locked from the
-            first page to the last, every diagram is checked for correct science, and the files are delivered
-            at 300 DPI for print.
+            Made at Possibility Edutech (Jaipuria Group) for a network of 60+ schools. My agent pipeline
+            (Claude Code + MCP) takes a .docx manuscript to 300 DPI print-ready artwork, and has shipped
+            1,500+ illustrations across 10+ textbooks with locked style, consistent characters and an
+            automated print-QA gate. {books.length} of those books are shown here, {illoCount}+ illustrations in all.
           </p>
         </div>
       </div>
@@ -106,9 +118,10 @@ const illoCount = books.reduce(
         <div>
           <h2 class="h-section">Comics</h2>
           <p class="muted">
-            {comics.length} illustrated children’s comics made at Wippi in 2025. Image models then could not
-            keep a character the same from one page to the next, so consistency came from reference sheets,
-            many rejected attempts and careful hand-picking. Every speech bubble was typeset by hand.
+            25+ illustrated comics made at Wippi in 2024–25, {comics.length} of them shown here. This was before
+            image models had character-reference features, so characters stayed on-model through reference
+            sheets and careful selection, and all dialogue was typeset in InDesign. Every comic was also voiced
+            with my multi-character ElevenLabs engine, about an hour of audio per title.
           </p>
         </div>
       </div>
@@ -118,54 +131,61 @@ const illoCount = books.reduce(
     </div>
   </section>
 
+  <!-- ====================== EXPERIENCE (resume se) ====================== -->
+  <section id="experience" class="sec">
+    <div class="wrap">
+      <h2 class="h-section">Experience</h2>
+      <div class="jobs-list">
+        {jobs.map((j) => <JobBlock job={j} />)}
+      </div>
+
+      <h2 class="h-section" style="margin-top:3.5rem;">Projects</h2>
+      <div class="jobs-list">
+        {projects.map((j) => <JobBlock job={j} />)}
+      </div>
+    </div>
+  </section>
+
   <!-- ====================== ABOUT ====================== -->
-  <section id="about" class="sec">
+  <section id="about" class="sec about-sec">
     <div class="wrap about">
       <div>
         <h2 class="h-section">About me</h2>
         <div class="about-text">
           <p>
-            I take a brief, whether it’s a textbook chapter or a science question, and turn it into
-            finished images and video using AI models, 3D tools and code.
+            Creative technologist who builds the <strong>production systems behind generative media</strong>,
+            not one-off outputs. I designed an <strong>agent-orchestrated pipeline (Claude Code + MCP)</strong> that
+            has shipped <strong>1,500+ print-ready illustrations</strong> across <strong>10+ textbooks</strong> for a
+            60+ school network, with routed image models, locked style and character consistency, and automated
+            print QA.
           </p>
           <p>
-            The models are good at making something that looks right. My job is to make sure it is right:
-            the skull in a science diagram has eye sockets, the same child looks like herself on page 40, and
-            the file is good enough to print or broadcast.
+            I make <strong>code-rendered 3D video</strong> with Three.js, shaders, Blender, Remotion and HyperFrames;
+            my best reel reached <strong>1.5M+ views</strong>. I treat models as instruments: evaluated, routed by
+            task and measured by cost per delivered asset.
           </p>
         </div>
         <div class="hero-cta">
           <a class="btn" href="mailto:kanishkverma688@gmail.com">Email me</a>
-          <a class="btn btn-line" href="https://github.com/Kanishk688/genai-illustration-pipeline" target="_blank" rel="noopener">My pipeline on GitHub</a>
+          <a class="btn btn-line" href="https://www.linkedin.com/in/kanishk-verma" target="_blank" rel="noopener">LinkedIn</a>
+          <a class="btn btn-line" href="https://github.com/Kanishk688" target="_blank" rel="noopener">GitHub</a>
         </div>
       </div>
 
       <div>
-        <h3 class="col-head">Experience</h3>
-        <ol class="jobs">
-          <li>
-            <span class="when">Feb 2026 – now</span>
-            <strong>Assistant Manager, AI Initiatives</strong>
-            <span class="muted">Possibility Edutech (Jaipuria Group), Delhi NCR. Textbook illustration and chapter videos.</span>
-          </li>
-          <li>
-            <span class="when">Oct 2026 – now</span>
-            <strong>Creator, @unseen.3d</strong>
-            <span class="muted">My own Instagram channel of 3D science explainers.</span>
-          </li>
-          <li>
-            <span class="when">Nov 2024 – Dec 2025</span>
-            <strong>AI &amp; IoT Generalist</strong>
-            <span class="muted">Wippi (Gen Alpha Kids First Media Tech), Bangalore. Comics and ElevenLabs voiceovers.</span>
-          </li>
-        </ol>
-
-        <h3 class="col-head">Tools I use</h3>
+        <h3 class="col-head">Skills</h3>
         <dl class="tools">
-          <div><dt>Images</dt><dd>GPT Image, Gemini (Nano Banana), Magnific, Photoshop</dd></div>
-          <div><dt>3D and video</dt><dd>Blender, three.js, HyperFrames, Remotion</dd></div>
-          <div><dt>Voice and sound</dt><dd>ElevenLabs, AI music</dd></div>
-          <div><dt>Automation</dt><dd>Python, Claude Code with MCP agents</dd></div>
+          <div><dt>Generative media</dt><dd>GPT Image, Nano Banana Pro (Gemini), Seedream, Magnific, Veo, ElevenLabs. Evaluated: Midjourney, Flux, SDXL/ComfyUI, Imagen, Runway, Kling</dd></div>
+          <div><dt>Real-time 3D and motion</dt><dd>Three.js, WebGL, shaders, Blender, Remotion, HyperFrames, FFmpeg</dd></div>
+          <div><dt>Agentic systems</dt><dd>Claude Code, MCP servers, skills/CLAUDE.md, n8n, model routing, compiled prompt templates</dd></div>
+          <div><dt>Engineering</dt><dd>Python (Pillow, NumPy, SciPy), pytest, GitHub Actions, HTML/CSS/JS, Astro, Cloudflare Pages, Vercel, AWS S3/IAM</dd></div>
+          <div><dt>Art direction and print</dt><dd>Style bibles, character consistency, Photoshop, InDesign hand-off, 300 DPI / alpha / colour QA</dd></div>
+        </dl>
+
+        <h3 class="col-head">Education</h3>
+        <dl class="tools">
+          <div><dt>2025</dt><dd>B.Tech, Computer Science Engineering, Chandigarh University</dd></div>
+          <div><dt>2021</dt><dd>Senior Secondary (12th, PCM), CBSE</dd></div>
         </dl>
       </div>
     </div>
@@ -198,6 +218,7 @@ const illoCount = books.reduce(
     gap: 3rem;
     align-items: center;
   }
+  .hero-h1 { font-size: clamp(2.3rem, 4.4vw, 3.9rem); hyphens: manual; }
   .hello { color: var(--sun); font-weight: 600; margin: 0 0 1rem; font-size: 1.1rem; }
   .hero .lede { margin-top: 1.5rem; }
   .hero-cta { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2rem; }
@@ -247,15 +268,28 @@ const illoCount = books.reduce(
   .sub-head { font-weight: 680; font-size: 1.35rem; letter-spacing: -0.015em; margin: 3.5rem 0 1.25rem; }
 
   /* ---------- about ---------- */
-  #about { border-top: 1px solid var(--line); }
+  #experience { background: var(--raised); border-top: 1px solid var(--line); }
+  .jobs-list { margin-top: 1.25rem; }
+  .about-text strong { color: var(--ink); font-weight: 650; }
   .about { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; }
   .about-text { max-width: 52ch; margin-top: 1.25rem; color: var(--ink-2); font-size: 1.1rem; }
   .about-text p + p { margin-top: 1rem; }
   .col-head { font-weight: 680; font-size: 1.15rem; margin: 0 0 1rem; }
   .col-head + * { margin-bottom: 2.5rem; }
-  .jobs { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.25rem; }
-  .jobs li { display: grid; gap: 0.15rem; padding-left: 1rem; border-left: 3px solid var(--sun); }
-  .when { font-size: 0.9rem; color: var(--ink-3); }
+
+  /* resume ke numbers — hero ke neeche */
+  .stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem 2rem;
+    justify-content: space-between;
+    margin: 3rem 0 0;
+    padding-top: 1.75rem;
+    border-top: 1px solid rgba(255,255,255,.12);
+  }
+  .stats div { display: flex; flex-direction: column-reverse; }
+  .stats dd { margin: 0; font-weight: 750; font-size: 1.6rem; letter-spacing: -0.02em; color: var(--night-ink); line-height: 1.1; }
+  .stats dt { font-size: 0.85rem; color: var(--night-dim); }
   .tools { display: grid; gap: 0.6rem; margin: 0; }
   .tools div { display: grid; grid-template-columns: 9rem 1fr; gap: 1rem; }
   .tools dt { color: var(--ink-3); }

@@ -1,0 +1,84 @@
+---
+// Ek job / project: baayen taraf role + bade numbers, daayen taraf kaam ki bullets.
+import type { Job } from '../data/experience';
+interface Props { job: Job }
+const { job } = Astro.props;
+
+// **text** -> <strong>text</strong> (baaki sab escape karke)
+const esc = (t: string) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const rich = (t: string) => esc(t).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+---
+
+<article class="job">
+  <div class="job-left">
+    <p class="job-when">{job.when} · {job.where}</p>
+    <h3 class="job-role">{job.role}</h3>
+    {job.orgUrl
+      ? <a class="job-org" href={job.orgUrl} target="_blank" rel="noopener">{job.org}</a>
+      : <p class="job-org">{job.org}</p>}
+    <p class="job-ctx">{job.context}</p>
+    <dl class="job-nums">
+      {job.numbers.map((x) => (
+        <div><dd>{x.n}</dd><dt>{x.label}</dt></div>
+      ))}
+    </dl>
+  </div>
+  <ul class="job-points">
+    {job.points.map((p) => <li set:html={rich(p)} />)}
+  </ul>
+</article>
+
+<style>
+  .job {
+    display: grid;
+    grid-template-columns: minmax(0, 22rem) minmax(0, 1fr);
+    gap: 2.5rem 4rem;
+    padding-block: 2.75rem;
+    border-top: 1px solid var(--line);
+  }
+  .job-when { font-size: 0.92rem; color: var(--ink-3); margin: 0; }
+  .job-role { font-weight: 720; font-size: 1.5rem; line-height: 1.15; letter-spacing: -0.02em; margin-top: 0.4rem; }
+  .job-org { display: inline-block; margin-top: 0.35rem; font-weight: 600; color: var(--ink); }
+  a.job-org { text-decoration: underline; text-decoration-color: var(--sun); text-decoration-thickness: 2px; text-underline-offset: 3px; word-break: break-word; }
+  .job-ctx { margin-top: 0.75rem; color: var(--ink-2); font-size: 0.95rem; }
+  .job-nums { display: flex; flex-wrap: wrap; gap: 1.25rem 2rem; margin: 1.5rem 0 0; }
+  .job-nums div { display: flex; flex-direction: column; }
+  .job-nums dd {
+    margin: 0;
+    font-weight: 780;
+    font-size: 2.1rem;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+    box-shadow: inset 0 -0.35em 0 var(--sun);
+    align-self: start;
+    padding-inline: 0.05em;
+  }
+  .job-nums dt { margin-top: 0.4rem; font-size: 0.85rem; color: var(--ink-2); max-width: 11rem; }
+
+  .job-points {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    align-content: start;
+    gap: 0.95rem;
+    color: var(--ink-2);
+    font-size: 1.02rem;
+    line-height: 1.55;
+  }
+  .job-points li { position: relative; padding-left: 1.4rem; }
+  .job-points li::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0.6em;
+    width: 0.55rem; height: 0.55rem;
+    border-radius: 2px;
+    background: var(--sun);
+  }
+  .job-points :global(strong) { color: var(--ink); font-weight: 680; }
+
+  @media (max-width: 860px) {
+    .job { grid-template-columns: 1fr; gap: 1.5rem; }
+  }
+</style>
