@@ -19,7 +19,7 @@
 <td align="center" width="25%"><h2>1,500+</h2>print-ready illustrations</td>
 <td align="center" width="25%"><h2>10+</h2>textbooks</td>
 <td align="center" width="25%"><h2>25+</h2>illustrated comics</td>
-<td align="center" width="25%"><h2>12</h2>3D explainer videos, rendered in code</td>
+<td align="center" width="25%"><h2>13</h2>3D explainer videos, rendered in code</td>
 </tr>
 </table>
 
