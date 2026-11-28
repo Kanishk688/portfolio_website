@@ -31,7 +31,7 @@ export const experience: Exp[] = [
     when: 'Oct 2026 – Present',
     line: '3D science and defence explainers, rendered entirely in code.',
     numbers: [
-      { n: '1.5M+', label: 'views on best reel' },
+      { n: '1M+', label: 'views on best reel' },
       { n: '12', label: 'reels shown here' },
     ],
     images: ['/video/agni5.webp', '/video/gangajal.webp', '/video/ev.webp'],
