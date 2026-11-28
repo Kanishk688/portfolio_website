@@ -1,60 +1,67 @@
 <div align="center">
 
-# Kanishk Verma — Portfolio
+# Kanishk Kumar Verma · Portfolio
 
-### 🌐 **[kannisshk.pages.dev](https://kannisshk.pages.dev)**
+### I build the systems behind generative media, not one-off outputs.
 
-Generative media engineer. I build the pipelines that turn a manuscript into
-print-ready artwork at book scale — style locked across hundreds of assets,
-rejects archived with the reason they failed, and cost measured per delivered
-image.
+**[▶ kannisshk.pages.dev](https://kannisshk.pages.dev)**
 
-`Astro 5` · `Tailwind CSS 4` · `Cloudflare Pages`
+![Astro](https://img.shields.io/badge/Astro_5-Static_site-BC52EE?style=for-the-badge&logo=astro&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS_4-Styling-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![Cloudflare Pages](https://img.shields.io/badge/Cloudflare_Pages-Hosting-F38020?style=for-the-badge&logo=cloudflare&logoColor=white)
+
+<a href="https://kannisshk.pages.dev"><img src="readme/site-hero.jpg" width="100%" alt="Portfolio home page: headline and a wall of 3D explainer videos"></a>
 
 </div>
 
----
+<table>
+<tr>
+<td align="center" width="25%"><h2>1,500+</h2>print-ready illustrations</td>
+<td align="center" width="25%"><h2>10+</h2>textbooks</td>
+<td align="center" width="25%"><h2>25+</h2>illustrated comics</td>
+<td align="center" width="25%"><h2>12</h2>3D explainer videos, rendered in code</td>
+</tr>
+</table>
 
-> **Looking for the site, not the code?** → **[kannisshk.pages.dev](https://kannisshk.pages.dev)**
-> This repository is the source that builds it.
+> **Looking for the work, not the code?** → **[kannisshk.pages.dev](https://kannisshk.pages.dev)**. This repository is the source that builds it.
+
+---
 
 ## What's on the site
 
-**5 books · 44 chapters & units · 280+ illustrations**, presented as case studies:
+### 3D explainer videos
+Science and defence explainers for [@unseen.3d](https://www.instagram.com/unseen.3d/): Agni-5, BrahMos, S-400, the F-35 helmet, an electric car's motor and more. Every scene is built in code (Three.js, Blender, HyperFrames) by an AI agent I direct. How they are made → [agentic-3d-explainer-pipeline](https://github.com/Kanishk688/agentic-3d-explainer-pipeline)
 
-| Case study | |
+<img src="readme/site-videos.jpg" width="100%" alt="Grid of 3D explainer videos on the site">
+
+### Textbook illustration
+Science, music and English textbooks, made with my AI pipeline at Possibility Edutech (Jaipuria Group) and printed for 60+ schools. How they are made → [genai-illustration-pipeline](https://github.com/Kanishk688/genai-illustration-pipeline)
+
+<img src="readme/illustration-mosaic.jpg" width="100%" alt="Illustrations from the science, music and English textbooks">
+
+### Comics
+Five illustrated comics, 192 pages, made at Wippi in 2025, before AI could reliably keep a character the same across pages.
+
+<img src="readme/comics-mosaic.jpg" width="100%" alt="Covers of Alice in Wonderland, The Little Mermaid, Doctor Dolittle, Bhagwan Mahavir and The Velveteen Rabbit">
+
+---
+
+## What this repo shows
+
+| Skill | Where to look |
 |---|---|
-| [Grade-5 Science](https://kannisshk.pages.dev/work/jaipuria-science-grade5/) | The book with numbers — 58 delivered illustrations from 165 generations, every reject archived and counted |
-| [Grade-4 Science](https://kannisshk.pages.dev/work/jaipuria-science-textbook/) | Full textbook set across all 13 chapters — openers, classroom scenes, science diagrams, two recurring hero characters |
-| [Grade-3 Science](https://kannisshk.pages.dev/work/jaipuria-science-grade3/) | Chapter-by-chapter set — human body, food, plants, animals, weather, soil, birds, the night sky |
-| [English Literature, Grade 1](https://kannisshk.pages.dev/work/english-literature-grade1/) | Full-book set — seaside day out, phonics word-play, a night-sky adventure, village animal tales |
-| [English Literature, Grade 2](https://kannisshk.pages.dev/work/english-literature-grade2/) | Folktales, a moonlit fantasy, a bird field-guide, travel writing, classroom scenes |
-
-## How the artwork was made
-
-The illustrations on this site were produced with an agent-orchestrated
-pipeline — manuscript in, print-ready artwork out, with enforced style and
-character consistency across hundreds of assets, and an automated print-QA gate
-that fails the run on wrong DPI, a missing alpha channel, muddy print density
-or a white halo on a cut-out.
-
-The Grade-5 book is the one that can prove its own cost: it kept all 107
-rejected attempts instead of deleting them, so its 58 delivered illustrations
-can be reported honestly at 2.8 generations per asset. The earlier books
-overwrote their rejects and cannot be measured the same way.
-
-**That system is open source →
-[genai-illustration-pipeline](https://github.com/Kanishk688/genai-illustration-pipeline)**
+| **Content-driven architecture**: each book is one Markdown file and each video one data entry; pages, routes and counts build themselves | `src/content/` · `src/data/` |
+| **Performance on a media-heavy site**: static Astro, WebP images, videos that play only when on screen | `src/components/` |
+| **Design system**: dark premium theme, bento grids, responsive from phone to desktop | `src/styles/global.css` |
+| **Shipping**: Cloudflare Pages deploys, custom build and publish flow | [Deployment](#deployment) |
 
 ## Tech
 
-- **[Astro 5](https://astro.build)** — static output, zero client JS by default, so pages load instantly
-- **[Tailwind CSS 4](https://tailwindcss.com)** — via the Vite plugin, no config file needed
-- **Cloudflare Pages** — hosting, deployed automatically on every push to `main`
+- **[Astro 5](https://astro.build)**: static output with zero client JS by default, so pages load instantly
+- **[Tailwind CSS 4](https://tailwindcss.com)**: via the Vite plugin, no config file needed
+- **Cloudflare Pages**: global hosting
 
-Image-heavy portfolios live or die on load time, which is why this is static
-Astro rather than a JS framework: the artwork is the payload, so nothing else
-is allowed to compete for bandwidth.
+Image- and video-heavy portfolios live or die on load time, which is why this is static Astro rather than a JS framework. The artwork is the payload, so nothing else competes for bandwidth.
 
 ## Local development
 
@@ -72,37 +79,41 @@ Node version is pinned in `.node-version`.
 ```
 src/
 ├─ content.config.ts              content-collection schema
-├─ content/projects/*.md          one Markdown file per book — the case studies
+├─ content/projects/*.md          one Markdown file per book or comic
+├─ data/                          video list for the explainer and chapter-video sections
 ├─ pages/
-│  ├─ index.astro                 landing — intro, stats, featured work
+│  ├─ index.astro                 landing: hero video wall, videos, books, comics, about
 │  ├─ work.astro                  all case studies
 │  └─ work/[...slug].astro        renders each project from the collection
+├─ components/                    hero wall, video cards and player, project and experience cards
 ├─ layouts/Layout.astro           page shell
-├─ components/Header.astro        nav
 └─ styles/global.css
-public/                           images and static assets
+public/                           images, videos and static assets
+readme/                           images used in this README
 ```
 
-Case studies are a **content collection**, so adding a book is one Markdown file
-in `src/content/projects/` — the route, the work index and the featured section
-all pick it up automatically. No new page, no template edit.
+Case studies are a **content collection**, so adding a book is one Markdown file in `src/content/projects/`. The route, the work index and the home-page sections all pick it up automatically.
 
 ## Deployment
 
-The Cloudflare Pages project (`kannisshk`) is **direct-upload, not
-git-connected** — pushing to `main` does not deploy anything. Publish
-explicitly:
+The Cloudflare Pages project (`kannisshk`) is **direct-upload, not git-connected**: pushing to `main` saves history but does not deploy. Publish explicitly:
 
 ```bash
 npm run build
 npx wrangler pages deploy dist --project-name=kannisshk
 ```
 
-`netlify.toml` deliberately skips Netlify builds (`ignore = "exit 0"`) — the
-site moved to Cloudflare and the config stays only to stop the old Netlify
-project burning build minutes.
+`netlify.toml` deliberately skips Netlify builds (`ignore = "exit 0"`). The site moved to Cloudflare and the config stays only to stop the old Netlify project burning build minutes.
 
 ---
 
-**Contact** — [kanishkverma688@gmail.com](mailto:kanishkverma688@gmail.com) ·
-Available for textbook and publishing projects.
+## More of my work
+
+| | |
+|---|---|
+| 🎬 **[Agentic 3D Explainer Pipeline](https://github.com/Kanishk688/agentic-3d-explainer-pipeline)** | Cinematic 3D defence and science videos, every scene built in code by an AI agent |
+| 🎨 **[GenAI Illustration Pipeline](https://github.com/Kanishk688/genai-illustration-pipeline)** | Manuscript → print-ready textbook art, 1,500+ illustrations shipped |
+| 🌐 **[Portfolio website](https://github.com/Kanishk688/portfolio_website)** | The live site: [kannisshk.pages.dev](https://kannisshk.pages.dev) |
+| 🧩 **[Pipeline Builder](https://github.com/Kanishk688/react-flow-pipeline-builder)** | Node-based workflow editor with graph validation, React + FastAPI |
+
+<sub><b>Kanishk Kumar Verma</b> · Creative technologist · <a href="https://kannisshk.pages.dev">kannisshk.pages.dev</a> · <a href="https://www.linkedin.com/in/kanishk-verma-b0929021b/">LinkedIn</a> · <a href="mailto:kanishkverma688@gmail.com">kanishkverma688@gmail.com</a></sub>
