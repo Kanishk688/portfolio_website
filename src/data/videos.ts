@@ -23,6 +23,17 @@ export type Video = {
 
 export const videos: Video[] = [
   {
+    id: 's400',
+    title: 'S-400 vs Erieye: a 300 km shot',
+    original: 'S-400 ne Erieye uda diya',
+    summary: 'How an S-400 air-defence battery finds, locks and hits an airborne radar aircraft about 300 km away: the map, the radar lock, the launch and the impact, built as word-synced 3D beats.',
+    made: 'Nov 2026',
+    length: '0:32',
+    tools: ['Blender', 'Python', 'AI voice', 'AI music'],
+    group: 'explainer',
+    link: 'https://www.instagram.com/reel/DgNu5DDIXZO/',
+  },
+  {
     id: 'agni5',
     title: 'Agni-5: one missile, many targets',
     original: 'Agni-5',
